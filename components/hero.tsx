@@ -28,7 +28,7 @@ export function Hero() {
           className="mb-4 text-sm uppercase tracking-[0.4em] text-primary"
           style={{ fontFamily: "var(--font-inter), sans-serif" }}
         >
-          Живая музыка каждый вечер
+          Здесь каждое событие становится особенным
         </p>
         <h1 className="mb-6 font-sans text-5xl font-bold leading-tight tracking-wide text-white md:text-7xl lg:text-8xl">
           Кафе JAZZ
@@ -37,8 +37,7 @@ export function Hero() {
           className="mb-10 max-w-xl text-lg leading-relaxed text-white/70"
           style={{ fontFamily: "var(--font-inter), sans-serif" }}
         >
-          Изысканная кухня, авторские коктейли и лучшие джазовые музыканты города
-          в атмосфере уюта и вдохновения
+          Изысканная кухня, мягкий свет, уютный интерьер и джазовые мелодии, которые льются как вино
         </p>
         <div className="flex flex-col items-center gap-4 sm:flex-row">
           <a
@@ -55,19 +54,6 @@ export function Hero() {
           >
             Смотреть меню
           </a>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2">
-        <div className="flex flex-col items-center gap-2">
-          <span
-            className="text-xs uppercase tracking-[0.3em] text-white/40"
-            style={{ fontFamily: "var(--font-inter), sans-serif" }}
-          >
-            scroll
-          </span>
-          <div className="h-12 w-px bg-white/20" />
         </div>
       </div>
     </section>

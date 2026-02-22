@@ -8,7 +8,6 @@ const navLinks = [
   { href: "#menu", label: "Меню" },
   { href: "#banquets", label: "Банкеты" },
   { href: "#gallery", label: "Галерея" },
-  { href: "#reviews", label: "Отзывы" },
   { href: "#contacts", label: "Контакты" },
 ]
 
