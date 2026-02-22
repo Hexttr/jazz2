@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { CalendarDays, Clock, Users } from "lucide-react"
+import { CalendarDays, Phone, Users } from "lucide-react"
 
 export function Reservation() {
   const [formState, setFormState] = useState({
@@ -77,16 +77,24 @@ export function Reservation() {
               </div>
               <div className="flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center border border-primary/30">
-                  <Clock className="h-5 w-5 text-primary" />
+                  <Phone className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-sans font-semibold">Живая музыка</p>
-                  <p
-                    className="text-sm text-muted-foreground"
+                  <p className="font-sans font-semibold">Телефон для бронирования</p>
+                  <a
+                    href="tel:+74752525697"
+                    className="block text-sm text-muted-foreground transition-colors hover:text-primary"
                     style={{ fontFamily: "var(--font-inter), sans-serif" }}
                   >
-                    Ежедневно с 19:00
-                  </p>
+                    +7 (4752) 52-56-97
+                  </a>
+                  <a
+                    href="tel:+79156612821"
+                    className="block text-sm text-muted-foreground transition-colors hover:text-primary"
+                    style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                  >
+                    +7 (915) 661-28-21
+                  </a>
                 </div>
               </div>
               <div className="flex items-center gap-4">
