@@ -32,7 +32,7 @@ export function Footer() {
               {[
                 { href: "#about", label: "О нас" },
                 { href: "#menu", label: "Меню" },
-                { href: "#events", label: "Афиша" },
+                { href: "#banquets", label: "Банкеты" },
                 { href: "#gallery", label: "Галерея" },
                 { href: "#reviews", label: "Отзывы" },
                 { href: "#contacts", label: "Контакты" },
@@ -59,9 +59,7 @@ export function Footer() {
             </h4>
             <div className="flex flex-col gap-2.5">
               {[
-                { day: "Пн - Чт", hours: "12:00 - 00:00" },
-                { day: "Пт - Сб", hours: "12:00 - 02:00" },
-                { day: "Воскресенье", hours: "11:00 - 23:00" },
+                { day: "Ежедневно", hours: "10:00 - 24:00" },
               ].map((item) => (
                 <div
                   key={item.day}
@@ -76,7 +74,7 @@ export function Footer() {
                 className="mt-2 text-sm text-primary"
                 style={{ fontFamily: "var(--font-inter), sans-serif" }}
               >
-                Живая музыка с 19:00
+                Бизнес-ланч 12:00–16:00 — 350 ₽
               </p>
             </div>
           </div>
@@ -93,13 +91,15 @@ export function Footer() {
               className="flex flex-col gap-2.5 text-sm text-muted-foreground"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
-              <p>ул. Большая Дмитровка, д. 15</p>
-              <p>г. Москва</p>
-              <a href="tel:+74951234567" className="transition-colors hover:text-primary">
-                +7 (495) 123-45-67
+              <p>г. Тамбов, ул. Мичуринская, 140 «Б»</p>
+              <a href="tel:+74752525697" className="transition-colors hover:text-primary">
+                +7 (4752) 52-56-97
               </a>
-              <a href="mailto:info@cafe-jazz.ru" className="transition-colors hover:text-primary">
-                info@cafe-jazz.ru
+              <a href="tel:+79156612821" className="transition-colors hover:text-primary">
+                +7 (915) 661-28-21
+              </a>
+              <a href="mailto:kafejazz@yandex.ru" className="transition-colors hover:text-primary">
+                kafejazz@yandex.ru
               </a>
             </div>
           </div>

@@ -1,65 +1,34 @@
-import { Calendar, Clock, Music } from "lucide-react"
+"use client"
 
-const events = [
+import Image from "next/image"
+import { Users, Sparkles, Wine } from "lucide-react"
+
+const banquetHalls = [
   {
-    day: "Пт",
-    date: "28 февраля",
-    time: "20:00",
-    title: "Jazz Quartet Night",
-    artist: "Алексей Козлов Квартет",
-    description: "Классический джаз в исполнении легендарного саксофониста и его группы",
-    tag: "Джаз",
+    id: "ambiance",
+    name: "Амбианс",
+    subtitle: "Камерный зал",
+    capacity: 40,
+    image: "/images/gallery-3.jpg",
+    description: "Уютное пространство для тёплых торжеств. Тёплое освещение, живая музыка на расстоянии вытянутой руки и атмосфера, где каждый гость — часть одного целого.",
+    ideal: "Свадьбы, юбилеи, корпоративные вечера, дни рождения",
+    features: ["Живой джаз-бэнд", "Винная карта", "Индивидуальное меню", "Звукоизоляция"],
   },
   {
-    day: "Сб",
-    date: "1 марта",
-    time: "21:00",
-    title: "Blues & Soul Evening",
-    artist: "Мария Чайковская",
-    description: "Вечер блюза и соула с потрясающим вокалом и живым бэндом",
-    tag: "Блюз",
-  },
-  {
-    day: "Вс",
-    date: "2 марта",
-    time: "18:00",
-    title: "Sunday Jazz Brunch",
-    artist: "Smooth Jazz Trio",
-    description: "Расслабленный воскресный бранч под лёгкий smooth jazz",
-    tag: "Бранч",
-  },
-  {
-    day: "Чт",
-    date: "6 марта",
-    time: "20:00",
-    title: "Jam Session",
-    artist: "Открытый микрофон",
-    description: "Свободная джем-сессия для всех музыкантов — приходите играть!",
-    tag: "Джем",
-  },
-  {
-    day: "Пт",
-    date: "7 марта",
-    time: "20:30",
-    title: "Latin Jazz Fiesta",
-    artist: "Cuba Libre Band",
-    description: "Зажигательный вечер латиноамериканского джаза и босса-новы",
-    tag: "Латин",
-  },
-  {
-    day: "Сб",
-    date: "8 марта",
-    time: "19:00",
-    title: "Ladies Night Special",
-    artist: "Elena & The Swing Band",
-    description: "Праздничный вечер для прекрасных дам с лучшими свинг-хитами",
-    tag: "Свинг",
+    id: "grand",
+    name: "Гранд",
+    subtitle: "Парадный зал",
+    capacity: 100,
+    image: "/images/hero.jpg",
+    description: "Просторный зал с панорамной сценой и профессиональным звуком. Идеален для масштабных праздников — свадебных банкетов, корпоративов и премиум-мероприятий.",
+    ideal: "Большие свадьбы, юбилеи компаний, гала-ужины, презентации",
+    features: ["Сцена с аппаратурой", "Танцпол", "Премиум-бар", "Зал для ведущего"],
   },
 ]
 
 export function Events() {
   return (
-    <section id="events" className="py-24 lg:py-32">
+    <section id="banquets" className="py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Section header */}
         <div className="mb-16 flex flex-col items-center text-center">
@@ -67,75 +36,103 @@ export function Events() {
             className="mb-4 text-sm uppercase tracking-[0.3em] text-primary"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
-            Афиша
+            Аренда залов
           </span>
           <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl">
-            Ближайшие события
+            Банкеты
           </h2>
-          <div className="h-px w-16 bg-primary" />
+          <p
+            className="mx-auto max-w-2xl text-muted-foreground"
+            style={{ fontFamily: "var(--font-inter), sans-serif" }}
+          >
+            Два зала — от камерного ужина до масштабного торжества
+          </p>
+          <div className="mt-6 h-px w-16 bg-primary" />
         </div>
 
-        {/* Events grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {events.map((event) => (
+        {/* Banquet halls */}
+        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+          {banquetHalls.map((hall) => (
             <div
-              key={event.title}
-              className="group border border-border bg-card p-6 transition-all hover:border-primary/50"
+              key={hall.id}
+              className="group relative overflow-hidden border border-border bg-card transition-all hover:border-primary/40"
             >
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-14 w-14 flex-col items-center justify-center border border-primary/30">
-                    <span
-                      className="text-xs uppercase text-primary"
-                      style={{ fontFamily: "var(--font-inter), sans-serif" }}
-                    >
-                      {event.day}
-                    </span>
-                    <span
-                      className="text-sm font-semibold text-foreground"
-                      style={{ fontFamily: "var(--font-inter), sans-serif" }}
-                    >
-                      {event.date.split(" ")[0]}
-                    </span>
-                  </div>
-                  <div>
-                    <div
-                      className="flex items-center gap-1.5 text-xs text-muted-foreground"
-                      style={{ fontFamily: "var(--font-inter), sans-serif" }}
-                    >
-                      <Calendar className="h-3 w-3" />
-                      {event.date}
-                    </div>
-                    <div
-                      className="flex items-center gap-1.5 text-xs text-muted-foreground"
-                      style={{ fontFamily: "var(--font-inter), sans-serif" }}
-                    >
-                      <Clock className="h-3 w-3" />
-                      {event.time}
-                    </div>
-                  </div>
+              {/* Image block */}
+              <div className="relative aspect-[16/10] overflow-hidden">
+                <Image
+                  src={hall.image}
+                  alt={hall.name}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+
+                {/* Capacity badge */}
+                <div className="absolute right-6 top-6 flex items-center gap-2 border border-primary/50 bg-background/90 px-4 py-2.5 backdrop-blur-sm">
+                  <Users className="h-5 w-5 text-primary" />
+                  <span
+                    className="font-sans text-lg font-semibold tracking-wide"
+                    style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                  >
+                    до {hall.capacity} гостей
+                  </span>
                 </div>
-                <span
-                  className="border border-primary/30 px-2.5 py-1 text-xs uppercase tracking-wider text-primary"
-                  style={{ fontFamily: "var(--font-inter), sans-serif" }}
-                >
-                  {event.tag}
-                </span>
+
+                {/* Title overlay */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <span
+                    className="mb-1 block text-xs uppercase tracking-[0.3em] text-primary/90"
+                    style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                  >
+                    {hall.subtitle}
+                  </span>
+                  <h3 className="font-sans text-3xl font-bold tracking-wide text-white md:text-4xl">
+                    {hall.name}
+                  </h3>
+                </div>
               </div>
 
-              <h3 className="mb-1 font-sans text-xl font-semibold group-hover:text-primary transition-colors">
-                {event.title}
-              </h3>
-              <p className="mb-2 flex items-center gap-1.5 text-sm text-primary" style={{ fontFamily: "var(--font-inter), sans-serif" }}>
-                <Music className="h-3.5 w-3.5" />
-                {event.artist}
-              </p>
-              <p
-                className="text-sm leading-relaxed text-muted-foreground"
-                style={{ fontFamily: "var(--font-inter), sans-serif" }}
-              >
-                {event.description}
-              </p>
+              {/* Content block */}
+              <div className="p-6 lg:p-8">
+                <p
+                  className="mb-6 leading-relaxed text-muted-foreground"
+                  style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                >
+                  {hall.description}
+                </p>
+
+                <div className="mb-6 flex items-start gap-2">
+                  <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <p
+                    className="text-sm text-foreground/90"
+                    style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                  >
+                    <span className="font-medium text-primary">Идеально для: </span>
+                    {hall.ideal}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {hall.features.map((feature) => (
+                    <span
+                      key={feature}
+                      className="flex items-center gap-1.5 border border-border bg-muted/30 px-3 py-1.5 text-xs uppercase tracking-wider text-foreground/80"
+                      style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                    >
+                      <Wine className="h-3 w-3 text-primary" />
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+
+                <a
+                  href="#reservation"
+                  className="mt-6 inline-block border border-primary bg-primary px-6 py-3 text-sm font-medium uppercase tracking-[0.2em] text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
+                  style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                >
+                  Забронировать зал
+                </a>
+              </div>
             </div>
           ))}
         </div>

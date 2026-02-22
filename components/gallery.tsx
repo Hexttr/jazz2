@@ -8,7 +8,7 @@ const images = [
   { src: "/images/gallery-1.jpg", alt: "Джаз-бэнд на сцене", span: "md:col-span-2 md:row-span-2" },
   { src: "/images/gallery-2.jpg", alt: "Бар Кафе JAZZ", span: "" },
   { src: "/images/gallery-3.jpg", alt: "Романтический ужин", span: "" },
-  { src: "/images/hero.jpg", alt: "Интерьер кафе", span: "md:col-span-2" },
+  { src: "/images/hero.jpg", alt: "Интерьер кафе", span: "md:col-span-2 md:row-span-2" },
   { src: "/images/gallery-4.jpg", alt: "Шеф-повар за работой", span: "" },
   { src: "/images/about.jpg", alt: "Саксофонист", span: "" },
 ]
@@ -34,7 +34,7 @@ export function Gallery() {
         </div>
 
         {/* Gallery grid */}
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-[repeat(3,1fr)] md:aspect-[4/3] md:gap-4 md:w-full">
           {images.map((image, index) => (
             <button
               key={image.src}

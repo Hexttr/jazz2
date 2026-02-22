@@ -14,6 +14,16 @@ export function Hero() {
       <div className="absolute inset-0 bg-black/60" />
 
       <div className="relative z-10 flex h-full flex-col items-center justify-end pb-24 px-6 text-center">
+        <div className="relative mb-6 flex justify-center">
+          <Image
+            src="/images/logo.png"
+            alt="Логотип Кафе JAZZ"
+            width={200}
+            height={200}
+            className="object-contain"
+            priority
+          />
+        </div>
         <p
           className="mb-4 text-sm uppercase tracking-[0.4em] text-primary"
           style={{ fontFamily: "var(--font-inter), sans-serif" }}

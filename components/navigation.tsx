@@ -6,7 +6,7 @@ import { Menu, X, Phone } from "lucide-react"
 const navLinks = [
   { href: "#about", label: "О нас" },
   { href: "#menu", label: "Меню" },
-  { href: "#events", label: "Афиша" },
+  { href: "#banquets", label: "Банкеты" },
   { href: "#gallery", label: "Галерея" },
   { href: "#reviews", label: "Отзывы" },
   { href: "#contacts", label: "Контакты" },
@@ -34,10 +34,10 @@ export function Navigation() {
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
         <a href="#" className="flex items-center gap-2">
-          <span className="font-sans text-2xl font-bold tracking-wide text-primary">
+          <span className="font-sans text-3xl font-bold tracking-wide text-primary">
             JAZZ
           </span>
-          <span className="hidden text-xs uppercase tracking-[0.3em] text-muted-foreground sm:inline">
+          <span className="hidden text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:inline">
             cafe
           </span>
         </a>
@@ -57,12 +57,12 @@ export function Navigation() {
 
         <div className="hidden items-center gap-6 lg:flex">
           <a
-            href="tel:+74951234567"
+            href="tel:+74752525697"
             className="flex items-center gap-2 text-sm text-foreground/70 transition-colors hover:text-primary"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
             <Phone className="h-4 w-4" />
-            +7 (495) 123-45-67
+            +7 (4752) 52-56-97
           </a>
           <a
             href="#reservation"
@@ -103,12 +103,12 @@ export function Navigation() {
             ))}
             <div className="mt-4 flex flex-col gap-3 border-t border-border pt-4">
               <a
-                href="tel:+74951234567"
+                href="tel:+74752525697"
                 className="flex items-center gap-2 text-foreground/70"
                 style={{ fontFamily: "var(--font-inter), sans-serif" }}
               >
                 <Phone className="h-4 w-4" />
-                +7 (495) 123-45-67
+                +7 (4752) 52-56-97
               </a>
               <a
                 href="#reservation"
