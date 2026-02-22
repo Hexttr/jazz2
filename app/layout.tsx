@@ -18,6 +18,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Кафе JAZZ | Живая музыка и изысканная кухня',
   description: 'Кафе JAZZ — атмосферное место с живой джазовой музыкой, авторской кухней и фирменными коктейлями. Забронируйте столик прямо сейчас.',
+  icons: {
+    icon: '/images/favicon.png',
+  },
 }
 
 export const viewport: Viewport = {
