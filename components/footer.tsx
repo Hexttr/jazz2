@@ -1,4 +1,36 @@
+"use client"
+
+import { useState } from "react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
+const privacyText = `Кафе JAZZ соблюдает вашу конфиденциальность. Мы собираем только те данные, которые вы добровольно указываете при бронировании столика или обратной связи: имя, контактный телефон и при необходимости электронную почту.
+
+Эти данные используются исключительно для связи с вами, подтверждения брони и улучшения качества обслуживания. Мы не передаём ваши персональные данные третьим лицам и не используем их в рекламных рассылках без вашего согласия.
+
+При посещении сайта могут сохраняться технические данные (cookie) для корректной работы страницы. Вы можете отключить cookie в настройках браузера.
+
+По вопросам обработки персональных данных и их удаления обращайтесь: kafejazz@yandex.ru. Мы рассмотрим ваш запрос в разумные сроки.`
+
+const termsText = `Используя сайт Кафе JAZZ, вы соглашаетесь с настоящими условиями.
+
+Сайт предназначен для информирования о заведении, меню, мероприятиях и бронировании. Оформляя заявку на бронь, вы подтверждаете достоверность указанных контактных данных. Администрация оставляет за собой право связаться с вами для подтверждения бронирования.
+
+Все материалы сайта (тексты, изображения, логотипы) являются собственностью Кафе JAZZ или используются с разрешения правообладателей. Копирование и использование без согласования не допускается.
+
+Кафе JAZZ не несёт ответственности за временную недоступность сайта или неточности в информации, возникшие по техническим причинам. Актуальные данные уточняйте по телефону или электронной почте.
+
+По всем вопросам: kafejazz@yandex.ru, +7 (4752) 52-56-97.`
+
 export function Footer() {
+  const [openPrivacy, setOpenPrivacy] = useState(false)
+  const [openTerms, setOpenTerms] = useState(false)
+
   return (
     <footer className="border-t border-border bg-card py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -110,23 +142,57 @@ export function Footer() {
             className="text-xs text-muted-foreground"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
-            &copy; 2025 Кафе JAZZ. Все права защищены.
+            &copy; 2026 Кафе JAZZ. Все права защищены.
           </p>
           <div className="flex gap-6">
-            <a
-              href="#"
-              className="text-xs text-muted-foreground transition-colors hover:text-primary"
-              style={{ fontFamily: "var(--font-inter), sans-serif" }}
-            >
-              Политика конфиденциальности
-            </a>
-            <a
-              href="#"
-              className="text-xs text-muted-foreground transition-colors hover:text-primary"
-              style={{ fontFamily: "var(--font-inter), sans-serif" }}
-            >
-              Пользовательское соглашение
-            </a>
+            <Dialog open={openPrivacy} onOpenChange={setOpenPrivacy}>
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  className="text-xs text-muted-foreground transition-colors hover:text-primary"
+                  style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                >
+                  Политика конфиденциальности
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-h-[85vh] max-w-lg overflow-hidden flex flex-col sm:max-w-xl">
+                <DialogHeader>
+                  <DialogTitle className="font-sans">
+                    Политика конфиденциальности
+                  </DialogTitle>
+                </DialogHeader>
+                <div
+                  className="overflow-y-auto pr-2 text-sm leading-relaxed text-muted-foreground"
+                  style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                >
+                  {privacyText}
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Dialog open={openTerms} onOpenChange={setOpenTerms}>
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  className="text-xs text-muted-foreground transition-colors hover:text-primary"
+                  style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                >
+                  Пользовательское соглашение
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-h-[85vh] max-w-lg overflow-hidden flex flex-col sm:max-w-xl">
+                <DialogHeader>
+                  <DialogTitle className="font-sans">
+                    Пользовательское соглашение
+                  </DialogTitle>
+                </DialogHeader>
+                <div
+                  className="overflow-y-auto pr-2 text-sm leading-relaxed text-muted-foreground"
+                  style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                >
+                  {termsText}
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>
