@@ -36,7 +36,7 @@ export function Navigation() {
           <span className="font-sans text-3xl font-bold tracking-wide text-primary">
             JAZZ
           </span>
-          <span className="hidden text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:inline">
+          <span className="hidden text-sm font-semibold uppercase tracking-[0.3em] text-white sm:inline">
             cafe
           </span>
         </a>
