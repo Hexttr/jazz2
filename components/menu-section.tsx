@@ -192,6 +192,9 @@ export function MenuSection() {
           ))}
         </div>
       </div>
+      <p className="mt-12 text-center text-sm text-muted-foreground" style={{ fontFamily: "var(--font-inter), sans-serif" }}>
+        Не является офертой. Стоимость и внешний вид блюд могут отличаться. Узнавайте подробности в кафе.
+      </p>
     </section>
   )
 }
