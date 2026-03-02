@@ -3,7 +3,10 @@
 import { useState } from "react"
 import { CalendarDays, Phone, Users, Building2 } from "lucide-react"
 
-export function Reservation() {
+export function Reservation({ content }: { content?: Record<string, unknown> | null }) {
+  const label = (content?.label as string) ?? "Бронирование"
+  const title = (content?.title as string) ?? "Забронируйте зал"
+  const text = (content?.text as string) ?? "Выберите зал «Амбианс» (до 20 гостей) или «Гранд» (до 80 гостей). Заполните форму — мы свяжемся с вами для подтверждения."
   const [formState, setFormState] = useState({
     name: "",
     phone: "",
@@ -32,20 +35,17 @@ export function Reservation() {
               className="mb-4 text-sm uppercase tracking-[0.3em] text-primary"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
-              Бронирование
+              {label}
             </span>
             <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl">
-              Забронируйте
-              <br />
-              зал
+              {title}
             </h2>
             <div className="mb-8 h-px w-16 bg-primary" />
             <p
               className="mb-8 text-lg leading-relaxed text-foreground/70"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
-              Выберите зал «Амбианс» (до 20 гостей) или «Гранд» (до 80 гостей).
-              Заполните форму — мы свяжемся с вами для подтверждения.
+              {text}
             </p>
 
             <div className="flex flex-col gap-6">

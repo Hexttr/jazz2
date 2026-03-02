@@ -1,43 +1,62 @@
 import Image from "next/image"
 
-export function Hero() {
+type HeroContent = {
+  label?: string
+  title?: string
+  text?: string
+  image?: string
+  logo?: string
+}
+
+const defaultHero: HeroContent = {
+  label: "Здесь каждое событие становится особенным",
+  title: "Кафе JAZZ",
+  text: "Изысканная кухня, мягкий свет, уютный интерьер и джазовые мелодии, которые льются как вино",
+  image: "/images/hero.jpg",
+  logo: "/images/logo.png",
+}
+
+export function Hero({ content }: { content?: Record<string, unknown> | null }) {
+  const c: HeroContent = content ? { ...defaultHero, ...content } : defaultHero
   return (
     <section id="hero" className="relative h-screen w-full overflow-hidden">
       <Image
-        src="/images/hero.jpg"
+        src={c.image ?? "/images/hero.jpg"}
         alt="Интерьер Кафе JAZZ"
         fill
         className="object-cover"
         priority
         quality={90}
+        unoptimized={(c.image ?? "").startsWith("http")}
       />
       <div className="absolute inset-0 bg-black/60" />
 
       <div className="relative z-10 flex h-full flex-col items-center justify-end pb-24 px-6 text-center">
         <div className="relative mb-6 flex justify-center">
           <Image
-            src="/images/logo.png"
+            src={c.logo ?? "/images/logo.png"}
             alt="Логотип Кафе JAZZ"
             width={200}
             height={200}
             className="object-contain"
             priority
+            unoptimized={(c.logo ?? "").startsWith("http")}
           />
         </div>
         <p
           className="mb-4 text-sm uppercase tracking-[0.4em] text-primary"
           style={{ fontFamily: "var(--font-inter), sans-serif" }}
         >
-          Здесь каждое событие становится особенным
+          {c.label}
         </p>
         <h1 className="mb-6 font-sans text-5xl font-bold leading-tight tracking-wide text-white md:text-7xl lg:text-8xl">
-          Кафе JAZZ
+          {c.title}
         </h1>
         <p
           className="mb-10 max-w-xl text-lg leading-relaxed text-white/70"
           style={{ fontFamily: "var(--font-inter), sans-serif" }}
         >
-          Изысканная кухня, мягкий свет, уютный интерьер и джазовые мелодии, которые льются как вино
+          {c.text}
         </p>
         <div className="flex flex-col items-center gap-4 sm:flex-row">
           <a

@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { X } from "lucide-react"
 
-const images = [
+const defaultImages = [
   { src: "/images/gallery-1.jpg", alt: "Джаз-бэнд на сцене", span: "md:col-span-2 md:row-span-2" },
   { src: "/images/gallery-2.jpg", alt: "Бар Кафе JAZZ", span: "" },
   { src: "/images/gallery-3.jpg", alt: "Романтический ужин", span: "" },
@@ -13,8 +13,11 @@ const images = [
   { src: "/images/about.jpg", alt: "Саксофонист", span: "" },
 ]
 
-export function Gallery() {
+export function Gallery({ content }: { content?: Record<string, unknown> | null }) {
   const [lightbox, setLightbox] = useState<number | null>(null)
+  const label = (content?.label as string) ?? "Галерея"
+  const title = (content?.title as string) ?? "Атмосфера вечера"
+  const images = (content?.images as typeof defaultImages) ?? defaultImages
 
   return (
     <section id="gallery" className="bg-card py-24 lg:py-32">
@@ -25,10 +28,10 @@ export function Gallery() {
             className="mb-4 text-sm uppercase tracking-[0.3em] text-primary"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
-            Галерея
+            {label}
           </span>
           <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl">
-            Атмосфера вечера
+            {title}
           </h2>
           <div className="h-px w-16 bg-primary" />
         </div>

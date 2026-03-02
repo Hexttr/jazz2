@@ -22,7 +22,13 @@ const features = [
   },
 ]
 
-export function About() {
+export function About({ content }: { content?: Record<string, unknown> | null }) {
+  const label = (content?.label as string) ?? "О нас"
+  const title = (content?.title as string) ?? "Мы — Кафе JAZZ"
+  const text = (content?.text as string) ?? "С 2010 года мы создаём пространство, где каждый чувствует себя как дома. Тысячи гостей возвращаются к нам за неповторимой атмосферой, изысканной кухней и заботой, которая проявляется в каждой мелочи."
+  const text2 = (content?.text2 as string) ?? "Кафе JAZZ — здесь каждое событие становится особенным. Доверьте нам ваш праздник — и мы сделаем всё, чтобы он запомнился! Большая парковка и удобное расположение — дополнительные плюсы вашего визита."
+  const image = (content?.image as string) ?? "/images/about.jpg"
+  const imageAlt = (content?.imageAlt as string) ?? "Саксофонист на сцене Кафе JAZZ"
   return (
     <section id="about" className="py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -32,10 +38,10 @@ export function About() {
             className="mb-4 text-sm uppercase tracking-[0.3em] text-primary"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
-            О нас
+            {label}
           </span>
           <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl">
-            Мы — Кафе JAZZ
+            {title}
           </h2>
           <div className="h-px w-16 bg-primary" />
         </div>
@@ -44,10 +50,11 @@ export function About() {
           {/* Image */}
           <div className="relative aspect-[4/5] overflow-hidden">
             <Image
-              src="/images/about.jpg"
-              alt="Саксофонист на сцене Кафе JAZZ"
+              src={image}
+              alt={imageAlt}
               fill
               className="object-cover"
+              unoptimized={image.startsWith("http")}
             />
             <div className="absolute inset-0 bg-black/20" />
           </div>
@@ -58,18 +65,13 @@ export function About() {
               className="mb-8 text-lg leading-relaxed text-foreground/70"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
-              С 2010 года мы создаём пространство, где каждый чувствует себя как
-              дома. Тысячи гостей возвращаются к нам за неповторимой атмосферой,
-              изысканной кухней и заботой, которая проявляется в каждой мелочи.
+              {text}
             </p>
             <p
               className="mb-12 text-lg leading-relaxed text-foreground/70"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
-              Кафе JAZZ — здесь каждое событие становится особенным. Доверьте
-              нам ваш праздник — и мы сделаем всё, чтобы он запомнился! Большая
-              парковка и удобное расположение — дополнительные плюсы вашего
-              визита.
+              {text2}
             </p>
 
             <div className="flex flex-col gap-8">

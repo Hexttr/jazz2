@@ -1,6 +1,11 @@
 import { MapPin, Phone, Clock, Mail, UtensilsCrossed } from "lucide-react"
 
-export function Contacts() {
+export function Contacts({ content }: { content?: Record<string, unknown> | null }) {
+  const label = (content?.label as string) ?? "Контакты"
+  const title = (content?.title as string) ?? "Как нас найти"
+  const businessLunch = (content?.businessLunch as { title?: string; text?: string; price?: string }) ?? {}
+  const address = (content?.address as string) ?? "г. Тамбов, ул. Мичуринская, 140 «Б»"
+  const hours = (content?.hours as string) ?? "Работаем каждый день с 10:00 до 24:00"
   return (
     <section id="contacts" className="py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -13,18 +18,18 @@ export function Contacts() {
               </div>
               <div>
                 <h3 className="mb-1 font-sans text-2xl font-bold tracking-wide text-primary md:text-3xl">
-                  Бизнес-ланч
+                  {businessLunch.title ?? "Бизнес-ланч"}
                 </h3>
                 <p
                   className="text-sm text-muted-foreground"
                   style={{ fontFamily: "var(--font-inter), sans-serif" }}
                 >
-                  По будням с 12:00 до 16:00
+                  {businessLunch.text ?? "По будням с 12:00 до 16:00"}
                 </p>
               </div>
             </div>
             <div className="mt-4 flex items-baseline gap-2 border-t border-primary/20 pt-4 md:mt-0 md:border-t-0 md:pt-0 md:border-l md:border-primary/20 md:pl-8">
-              <span className="font-sans text-4xl font-bold tracking-wide text-primary">350</span>
+              <span className="font-sans text-4xl font-bold tracking-wide text-primary">{businessLunch.price ?? "350"}</span>
               <span
                 className="text-lg text-muted-foreground"
                 style={{ fontFamily: "var(--font-inter), sans-serif" }}
@@ -41,10 +46,10 @@ export function Contacts() {
             className="mb-4 text-sm uppercase tracking-[0.3em] text-primary"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
-            Контакты
+            {label}
           </span>
           <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl">
-            Как нас найти
+            {title}
           </h2>
           <div className="h-px w-16 bg-primary" />
         </div>
@@ -62,7 +67,7 @@ export function Contacts() {
                   className="text-sm leading-relaxed text-muted-foreground"
                   style={{ fontFamily: "var(--font-inter), sans-serif" }}
                 >
-                  г. Тамбов, ул. Мичуринская, 140 «Б»
+                  {address}
                 </p>
               </div>
             </div>
@@ -100,9 +105,7 @@ export function Contacts() {
                   className="text-sm leading-relaxed text-muted-foreground"
                   style={{ fontFamily: "var(--font-inter), sans-serif" }}
                 >
-                  Работаем каждый день
-                  <br />
-                  с 10:00 до 24:00
+                  {hours}
                 </p>
               </div>
             </div>

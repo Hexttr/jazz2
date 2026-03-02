@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Image from "next/image"
+import type { MenuContent } from "@/lib/content-types"
 
-const categories = [
+const defaultCategories = [
   { id: "cuts", label: "Нарезки и закуски" },
   { id: "salads", label: "Салаты" },
   { id: "hot-appetizers", label: "Горячие закуски" },
@@ -12,7 +13,7 @@ const categories = [
   { id: "pancakes", label: "Блинчики" },
 ]
 
-const menuItems: Record<
+const defaultMenuItems: Record<
   string,
   { name: string; portion?: string; description: string; price: string; image?: string }[]
 > = {
@@ -95,9 +96,43 @@ const menuItems: Record<
   ],
 }
 
-export function MenuSection() {
-  const [activeCategory, setActiveCategory] = useState("cuts")
-  const items = menuItems[activeCategory]
+const defaultSection = {
+  label: "Меню",
+  title: "Наши блюда",
+  footerNote: "Не является офертой. Стоимость и внешний вид блюд могут отличаться. Узнавайте подробности в кафе.",
+}
+
+function useMenuData(menu: MenuContent | null | undefined, sectionContent?: Record<string, unknown> | null) {
+  return useMemo(() => {
+    const sec = sectionContent ? { ...defaultSection, ...sectionContent } : defaultSection
+    if (!menu?.categories?.length) {
+      return {
+        categories: defaultCategories,
+        menuItems: defaultMenuItems,
+        ...sec,
+      }
+    }
+    const categories = [...menu.categories].sort((a, b) => a.order - b.order).map((c) => ({ id: c.id, label: c.name }))
+    const menuItems: Record<string, { name: string; portion?: string; description: string; price: string; image?: string }[]> = {}
+    for (const c of categories) {
+      menuItems[c.id] = (menu.dishes || [])
+        .filter((d) => d.categoryId === c.id)
+        .map((d) => ({
+          name: d.name,
+          portion: d.portion,
+          description: d.description,
+          price: d.price,
+          image: d.image,
+        }))
+    }
+    return { categories, menuItems, ...sec }
+  }, [menu, sectionContent])
+}
+
+export function MenuSection({ menu, sectionContent }: { menu?: MenuContent | null; sectionContent?: Record<string, unknown> | null }) {
+  const { categories, menuItems, label, title, footerNote } = useMenuData(menu, sectionContent)
+  const [activeCategory, setActiveCategory] = useState(categories[0]?.id ?? "cuts")
+  const items = menuItems[activeCategory] ?? []
 
   return (
     <section id="menu" className="bg-card py-24 lg:py-32">
@@ -108,10 +143,10 @@ export function MenuSection() {
             className="mb-4 text-sm uppercase tracking-[0.3em] text-primary"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
-            Меню
+            {label}
           </span>
           <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl">
-            Наши блюда
+            {title}
           </h2>
           <div className="h-px w-16 bg-primary" />
         </div>
@@ -193,7 +228,7 @@ export function MenuSection() {
         </div>
       </div>
       <p className="mt-12 text-center text-sm text-muted-foreground" style={{ fontFamily: "var(--font-inter), sans-serif" }}>
-        Не является офертой. Стоимость и внешний вид блюд могут отличаться. Узнавайте подробности в кафе.
+        {footerNote}
       </p>
     </section>
   )

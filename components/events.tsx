@@ -26,7 +26,11 @@ const banquetHalls = [
   },
 ]
 
-export function Events() {
+export function Events({ content }: { content?: Record<string, unknown> | null }) {
+  const label = (content?.label as string) ?? "Аренда залов"
+  const title = (content?.title as string) ?? "Банкеты"
+  const subtitle = (content?.subtitle as string) ?? "Два зала — от камерного ужина до масштабного торжества"
+  const halls = (content?.halls as typeof banquetHalls) ?? banquetHalls
   return (
     <section id="banquets" className="py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -36,23 +40,23 @@ export function Events() {
             className="mb-4 text-sm uppercase tracking-[0.3em] text-primary"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
-            Аренда залов
+            {label}
           </span>
           <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl">
-            Банкеты
+            {title}
           </h2>
           <p
             className="mx-auto max-w-2xl text-muted-foreground"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
-            Два зала — от камерного ужина до масштабного торжества
+            {subtitle}
           </p>
           <div className="mt-6 h-px w-16 bg-primary" />
         </div>
 
         {/* Banquet halls */}
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-          {banquetHalls.map((hall) => (
+          {halls.map((hall) => (
             <div
               key={hall.id}
               className="group relative overflow-hidden border border-border bg-card transition-all hover:border-primary/40"
