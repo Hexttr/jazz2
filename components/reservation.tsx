@@ -1,12 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { CalendarDays, Phone, Users } from "lucide-react"
+import { CalendarDays, Phone, Users, Building2 } from "lucide-react"
 
 export function Reservation() {
   const [formState, setFormState] = useState({
     name: "",
     phone: "",
+    hall: "",
     date: "",
     time: "",
     guests: "",
@@ -18,7 +19,7 @@ export function Reservation() {
     e.preventDefault()
     setSubmitted(true)
     setTimeout(() => setSubmitted(false), 3000)
-    setFormState({ name: "", phone: "", date: "", time: "", guests: "", comment: "" })
+    setFormState({ name: "", phone: "", hall: "", date: "", time: "", guests: "", comment: "" })
   }
 
   return (
@@ -36,42 +37,43 @@ export function Reservation() {
             <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl">
               Забронируйте
               <br />
-              ваш столик
+              зал
             </h2>
             <div className="mb-8 h-px w-16 bg-primary" />
             <p
               className="mb-8 text-lg leading-relaxed text-foreground/70"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
-              Мы рекомендуем бронировать столики заранее, особенно на пятницу и
-              субботу. Для больших компаний или специальных мероприятий свяжитесь
-              с нами по телефону.
+              Выберите зал «Амбианс» (до 20 гостей) или «Гранд» (до 80 гостей).
+              Заполните форму — мы свяжемся с вами для подтверждения.
             </p>
 
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center border border-primary/30">
+                  <Building2 className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-sans font-semibold">Два зала</p>
+                  <p
+                    className="text-sm text-muted-foreground"
+                    style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                  >
+                    Амбианс — до 20 гостей, Гранд — до 80 гостей
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center border border-primary/30">
                   <CalendarDays className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-sans font-semibold">Ежедневно</p>
+                  <p className="font-sans font-semibold">Часы работы</p>
                   <p
                     className="text-sm text-muted-foreground"
                     style={{ fontFamily: "var(--font-inter), sans-serif" }}
                   >
-                    Пн-Чт: 12:00 - 00:00
-                  </p>
-                  <p
-                    className="text-sm text-muted-foreground"
-                    style={{ fontFamily: "var(--font-inter), sans-serif" }}
-                  >
-                    Пт-Сб: 12:00 - 02:00
-                  </p>
-                  <p
-                    className="text-sm text-muted-foreground"
-                    style={{ fontFamily: "var(--font-inter), sans-serif" }}
-                  >
-                    Вс: 11:00 - 23:00
+                    Ежедневно с 10:00 до 24:00
                   </p>
                 </div>
               </div>
@@ -107,7 +109,7 @@ export function Reservation() {
                     className="text-sm text-muted-foreground"
                     style={{ fontFamily: "var(--font-inter), sans-serif" }}
                   >
-                    До 120 гостей, VIP-зал на 20 персон
+                    До 80 гостей
                   </p>
                 </div>
               </div>
@@ -178,6 +180,29 @@ export function Reservation() {
                     />
                   </div>
                 </div>
+                <div className="flex flex-col gap-1.5">
+                  <label
+                    htmlFor="hall"
+                    className="text-xs uppercase tracking-wider text-muted-foreground"
+                    style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                  >
+                    Зал
+                  </label>
+                  <select
+                    id="hall"
+                    required
+                    value={formState.hall}
+                    onChange={(e) =>
+                      setFormState({ ...formState, hall: e.target.value })
+                    }
+                    className="border border-border bg-transparent px-4 py-3 text-foreground outline-none transition-colors focus:border-primary"
+                    style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                  >
+                    <option value="" className="bg-card">Выбрать зал</option>
+                    <option value="ambiance" className="bg-card">Амбианс (до 20 гостей)</option>
+                    <option value="grand" className="bg-card">Гранд (до 80 гостей)</option>
+                  </select>
+                </div>
                 <div className="grid gap-5 md:grid-cols-3">
                   <div className="flex flex-col gap-1.5">
                     <label
@@ -238,13 +263,11 @@ export function Reservation() {
                       style={{ fontFamily: "var(--font-inter), sans-serif" }}
                     >
                       <option value="" className="bg-card">Выбрать</option>
-                      <option value="1" className="bg-card">1 гость</option>
-                      <option value="2" className="bg-card">2 гостя</option>
-                      <option value="3" className="bg-card">3 гостя</option>
-                      <option value="4" className="bg-card">4 гостя</option>
-                      <option value="5" className="bg-card">5 гостей</option>
-                      <option value="6" className="bg-card">6 гостей</option>
-                      <option value="7+" className="bg-card">7+ гостей</option>
+                      {Array.from({ length: 80 }, (_, i) => i + 1).map((n) => (
+                        <option key={n} value={String(n)} className="bg-card">
+                          {n} {n === 1 ? "гость" : n < 5 ? "гостя" : "гостей"}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>

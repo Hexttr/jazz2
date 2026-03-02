@@ -46,7 +46,7 @@ export function Navigation() {
             <a
               key={link.href}
               href={link.href}
-              className="text-sm tracking-wide text-foreground/70 transition-colors hover:text-primary"
+              className="text-base tracking-wide text-foreground/70 transition-colors hover:text-primary"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
               {link.label}
@@ -57,7 +57,7 @@ export function Navigation() {
         <div className="hidden items-center gap-6 lg:flex">
           <a
             href="tel:+74752525697"
-            className="flex items-center gap-2 text-sm text-foreground/70 transition-colors hover:text-primary"
+            className="flex items-center gap-2 text-base text-foreground/70 transition-colors hover:text-primary"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
             <Phone className="h-4 w-4" />
@@ -65,10 +65,10 @@ export function Navigation() {
           </a>
           <a
             href="#reservation"
-            className="rounded-none border border-primary bg-primary px-6 py-2.5 text-sm font-medium tracking-wider text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
+            className="rounded-none border border-primary bg-primary px-6 py-2.5 text-base font-medium tracking-wider text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
-            Бронь стола
+            Бронь зала
           </a>
         </div>
 
@@ -94,7 +94,7 @@ export function Navigation() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="text-lg text-foreground/70 transition-colors hover:text-primary"
+                className="text-xl text-foreground/70 transition-colors hover:text-primary"
                 style={{ fontFamily: "var(--font-inter), sans-serif" }}
               >
                 {link.label}
@@ -112,10 +112,10 @@ export function Navigation() {
               <a
                 href="#reservation"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="inline-block border border-primary bg-primary px-6 py-2.5 text-center text-sm font-medium tracking-wider text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
+                className="inline-block border border-primary bg-primary px-6 py-2.5 text-center text-base font-medium tracking-wider text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
                 style={{ fontFamily: "var(--font-inter), sans-serif" }}
               >
-                Бронь стола
+                Бронь зала
               </a>
             </div>
           </div>

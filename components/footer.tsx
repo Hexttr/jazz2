@@ -47,8 +47,7 @@ export function Footer() {
               className="mt-4 text-sm leading-relaxed text-muted-foreground"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
-              Место, где музыка встречается с
-              изысканной кухней. С 2015 года.
+              С 2010 года мы создаём пространство, где каждый чувствует себя как дома
             </p>
           </div>
 
@@ -90,7 +89,13 @@ export function Footer() {
             </h4>
             <div className="flex flex-col gap-2.5">
               {[
-                { day: "Ежедневно", hours: "10:00 - 24:00" },
+                { day: "Понедельник", hours: "10:00 – 24:00" },
+                { day: "Вторник", hours: "10:00 – 24:00" },
+                { day: "Среда", hours: "10:00 – 24:00" },
+                { day: "Четверг", hours: "10:00 – 24:00" },
+                { day: "Пятница", hours: "10:00 – 24:00" },
+                { day: "Суббота", hours: "10:00 – 24:00" },
+                { day: "Воскресенье", hours: "10:00 – 24:00" },
               ].map((item) => (
                 <div
                   key={item.day}
@@ -101,12 +106,6 @@ export function Footer() {
                   <span className="text-foreground/80">{item.hours}</span>
                 </div>
               ))}
-              <p
-                className="mt-2 text-sm text-primary"
-                style={{ fontFamily: "var(--font-inter), sans-serif" }}
-              >
-                Бизнес-ланч 12:00–16:00 — 350 ₽
-              </p>
             </div>
           </div>
 

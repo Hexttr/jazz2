@@ -1,4 +1,4 @@
-import { MapPin, Phone, Clock, Mail, Instagram, UtensilsCrossed } from "lucide-react"
+import { MapPin, Phone, Clock, Mail, UtensilsCrossed } from "lucide-react"
 
 export function Contacts() {
   return (
@@ -123,21 +123,7 @@ export function Contacts() {
               </div>
             </div>
 
-            <div className="flex items-start gap-4 border border-border p-6 transition-all hover:border-primary/50">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-primary/30">
-                <Instagram className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h3 className="mb-1 font-sans font-semibold">Соцсети</h3>
-                <p
-                  className="text-sm text-muted-foreground"
-                  style={{ fontFamily: "var(--font-inter), sans-serif" }}
-                >
-                  @cafe_jazz_msk
-                </p>
-              </div>
             </div>
-          </div>
 
           {/* Map */}
           <div className="lg:col-span-2">
