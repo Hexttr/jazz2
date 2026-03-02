@@ -263,7 +263,7 @@ export function Reservation() {
                       style={{ fontFamily: "var(--font-inter), sans-serif" }}
                     >
                       <option value="" className="bg-card">Выбрать</option>
-                      {Array.from({ length: 80 }, (_, i) => i + 1).map((n) => (
+                      {Array.from({ length: 66 }, (_, i) => i + 15).map((n) => (
                         <option key={n} value={String(n)} className="bg-card">
                           {n} {n === 1 ? "гость" : n < 5 ? "гостя" : "гостей"}
                         </option>

@@ -37,12 +37,14 @@ export function Footer() {
         <div className="grid gap-12 md:grid-cols-4">
           {/* Brand */}
           <div className="md:col-span-1">
-            <span className="font-sans text-2xl font-bold tracking-wide text-primary">
-              JAZZ
-            </span>
-            <span className="ml-2 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              cafe
-            </span>
+            <a href="#" className="flex items-center gap-2">
+              <span className="font-sans text-3xl font-bold tracking-wide text-primary">
+                JAZZ
+              </span>
+              <span className="hidden text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:inline">
+                cafe
+              </span>
+            </a>
             <p
               className="mt-4 text-sm leading-relaxed text-muted-foreground"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}

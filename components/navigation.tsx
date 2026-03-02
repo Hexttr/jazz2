@@ -46,7 +46,7 @@ export function Navigation() {
             <a
               key={link.href}
               href={link.href}
-              className="text-base tracking-wide text-foreground/70 transition-colors hover:text-primary"
+              className="text-base uppercase tracking-wide text-foreground/70 transition-colors hover:text-primary"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
               {link.label}
@@ -94,7 +94,7 @@ export function Navigation() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="text-xl text-foreground/70 transition-colors hover:text-primary"
+                className="text-xl uppercase text-foreground/70 transition-colors hover:text-primary"
                 style={{ fontFamily: "var(--font-inter), sans-serif" }}
               >
                 {link.label}
