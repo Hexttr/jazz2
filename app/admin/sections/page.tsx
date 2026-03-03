@@ -30,16 +30,21 @@ function ColorInput({
   title?: string
   defaultValue?: string
 }) {
+  const color = value || defaultValue
   return (
     <label
-      className="flex h-9 w-9 shrink-0 cursor-pointer overflow-hidden rounded-full border border-white/40 ring-1 ring-white/10"
+      className="relative flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/40 ring-1 ring-white/10"
       title={title}
     >
+      <span
+        className="h-6 w-6 rounded-full border border-white/30 shadow-inner"
+        style={{ backgroundColor: color }}
+      />
       <input
         type="color"
-        value={value || defaultValue}
+        value={color}
         onChange={(e) => onChange(e.target.value)}
-        className="h-full w-full cursor-pointer border-0 bg-transparent p-0"
+        className="absolute inset-0 cursor-pointer opacity-0"
       />
     </label>
   )
@@ -293,27 +298,27 @@ export default function AdminSectionsPage() {
             {openSection === "hero" && (
                       <div className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Подпись (над заголовком)</Label>
-                              <Input value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Подпись (над заголовком)</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                              <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                             </div>
-                            <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                           </div>
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Заголовок</Label>
-                              <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Заголовок</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                              <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
-                        <div className="flex gap-3 items-center">
-                          <div className="flex-1 space-y-2">
-                            <Label>Текст под заголовком</Label>
-                            <Input value={(block.text as string) ?? ""} onChange={(e) => updateSection(openSection, "text", e.target.value)} />
+                        <div className="space-y-2">
+                          <Label>Текст под заголовком</Label>
+                          <div className="flex gap-3 items-center">
+                            <Input className="flex-1" value={(block.text as string) ?? ""} onChange={(e) => updateSection(openSection, "text", e.target.value)} />
+                            <ColorInput value={block.textColor as string} onChange={(v) => updateSection(openSection, "textColor", v)} defaultValue={isHeroSection ? DEFAULTS.white70 : DEFAULTS.foreground} />
                           </div>
-                          <ColorInput value={block.textColor as string} onChange={(v) => updateSection(openSection, "textColor", v)} defaultValue={isHeroSection ? DEFAULTS.white70 : DEFAULTS.foreground} />
                         </div>
                         <div className="grid gap-4 sm:grid-cols-2">
                           <div className="space-y-2">
@@ -336,34 +341,34 @@ export default function AdminSectionsPage() {
                     {openSection === "about" && (
                       <div className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Подпись</Label>
-                              <Input value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Подпись</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                              <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                             </div>
-                            <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                           </div>
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Заголовок</Label>
-                              <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Заголовок</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                              <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
-                        <div className="flex gap-3 items-center">
-                          <div className="flex-1 space-y-2">
-                            <Label>Первый абзац</Label>
-                            <Input value={(block.text as string) ?? ""} onChange={(e) => updateSection(openSection, "text", e.target.value)} className="h-auto min-h-[80px]" />
+                        <div className="space-y-2">
+                          <Label>Первый абзац</Label>
+                          <div className="flex gap-3 items-start">
+                            <Input className="flex-1 min-h-[80px]" value={(block.text as string) ?? ""} onChange={(e) => updateSection(openSection, "text", e.target.value)} />
+                            <ColorInput value={block.textColor as string} onChange={(v) => updateSection(openSection, "textColor", v)} defaultValue={isHeroSection ? DEFAULTS.white70 : DEFAULTS.foreground} />
                           </div>
-                          <ColorInput value={block.textColor as string} onChange={(v) => updateSection(openSection, "textColor", v)} defaultValue={isHeroSection ? DEFAULTS.white70 : DEFAULTS.foreground} />
                         </div>
-                        <div className="flex gap-3 items-center">
-                          <div className="flex-1 space-y-2">
-                            <Label>Второй абзац</Label>
-                            <Input value={(block.text2 as string) ?? ""} onChange={(e) => updateSection(openSection, "text2", e.target.value)} className="h-auto min-h-[80px]" />
+                        <div className="space-y-2">
+                          <Label>Второй абзац</Label>
+                          <div className="flex gap-3 items-start">
+                            <Input className="flex-1 min-h-[80px]" value={(block.text2 as string) ?? ""} onChange={(e) => updateSection(openSection, "text2", e.target.value)} />
+                            <ColorInput value={block.text2Color as string} onChange={(v) => updateSection(openSection, "text2Color", v)} defaultValue={DEFAULTS.foreground} />
                           </div>
-                          <ColorInput value={block.text2Color as string} onChange={(v) => updateSection(openSection, "text2Color", v)} defaultValue={DEFAULTS.foreground} />
                         </div>
                         <div className="space-y-2">
                           <Label>Изображение блока</Label>
@@ -403,54 +408,54 @@ export default function AdminSectionsPage() {
                     {openSection === "menu" && (
                       <div className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Подпись</Label>
-                              <Input value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Подпись</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                              <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                             </div>
-                            <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                           </div>
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Заголовок</Label>
-                              <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Заголовок</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                              <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
-                        <div className="flex gap-3 items-center">
-                          <div className="flex-1 space-y-2">
-                            <Label>Подпись под меню</Label>
-                            <Input value={(block.footerNote as string) ?? ""} onChange={(e) => updateSection(openSection, "footerNote", e.target.value)} />
+                        <div className="space-y-2">
+                          <Label>Подпись под меню</Label>
+                          <div className="flex gap-3 items-center">
+                            <Input className="flex-1" value={(block.footerNote as string) ?? ""} onChange={(e) => updateSection(openSection, "footerNote", e.target.value)} />
+                            <ColorInput value={block.footerNoteColor as string} onChange={(v) => updateSection(openSection, "footerNoteColor", v)} defaultValue={DEFAULTS.muted} />
                           </div>
-                          <ColorInput value={block.footerNoteColor as string} onChange={(v) => updateSection(openSection, "footerNoteColor", v)} defaultValue={DEFAULTS.muted} />
                         </div>
                       </div>
                     )}
                     {openSection === "events" && (
                       <div className="space-y-6">
                         <div className="grid gap-4 sm:grid-cols-2">
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Подпись</Label>
-                              <Input value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Подпись</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                              <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                             </div>
-                            <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                           </div>
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Заголовок</Label>
-                              <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Заголовок</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                              <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
-                        <div className="flex gap-3 items-center">
-                          <div className="flex-1 space-y-2">
-                            <Label>Подзаголовок</Label>
-                            <Input value={(block.subtitle as string) ?? ""} onChange={(e) => updateSection(openSection, "subtitle", e.target.value)} />
+                        <div className="space-y-2">
+                          <Label>Подзаголовок</Label>
+                          <div className="flex gap-3 items-center">
+                            <Input className="flex-1" value={(block.subtitle as string) ?? ""} onChange={(e) => updateSection(openSection, "subtitle", e.target.value)} />
+                            <ColorInput value={block.subtitleColor as string} onChange={(v) => updateSection(openSection, "subtitleColor", v)} defaultValue={DEFAULTS.muted} />
                           </div>
-                          <ColorInput value={block.subtitleColor as string} onChange={(v) => updateSection(openSection, "subtitleColor", v)} defaultValue={DEFAULTS.muted} />
                         </div>
                         <div className="border-t border-white/20 pt-4 space-y-6">
                           <Label className="text-base">Карточки залов</Label>
@@ -495,19 +500,19 @@ export default function AdminSectionsPage() {
                     {openSection === "gallery" && (
                       <div className="space-y-6">
                         <div className="grid gap-4 sm:grid-cols-2">
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Подпись</Label>
-                              <Input value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Подпись</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                              <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                             </div>
-                            <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                           </div>
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Заголовок</Label>
-                              <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Заголовок</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                              <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
                         <div className="border-t border-white/20 pt-4">
@@ -547,27 +552,27 @@ export default function AdminSectionsPage() {
                     {openSection === "reservation" && (
                       <div className="space-y-6">
                         <div className="grid gap-4 sm:grid-cols-2">
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Подпись</Label>
-                              <Input value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Подпись</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                              <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                             </div>
-                            <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                           </div>
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Заголовок</Label>
-                              <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Заголовок</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                              <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
-                        <div className="flex gap-3 items-center">
-                          <div className="flex-1 space-y-2">
-                            <Label>Текст (основной)</Label>
-                            <Input value={(block.text as string) ?? ""} onChange={(e) => updateSection(openSection, "text", e.target.value)} className="h-auto min-h-[60px]" />
+                        <div className="space-y-2">
+                          <Label>Текст (основной)</Label>
+                          <div className="flex gap-3 items-start">
+                            <Input className="flex-1 min-h-[60px]" value={(block.text as string) ?? ""} onChange={(e) => updateSection(openSection, "text", e.target.value)} />
+                            <ColorInput value={block.textColor as string} onChange={(v) => updateSection(openSection, "textColor", v)} defaultValue={isHeroSection ? DEFAULTS.white70 : DEFAULTS.foreground} />
                           </div>
-                          <ColorInput value={block.textColor as string} onChange={(v) => updateSection(openSection, "textColor", v)} defaultValue={isHeroSection ? DEFAULTS.white70 : DEFAULTS.foreground} />
                         </div>
                         <div className="border-t border-white/20 pt-4 space-y-4">
                           <Label className="text-base">Блоки под текстом</Label>
@@ -601,19 +606,19 @@ export default function AdminSectionsPage() {
                     {openSection === "contacts" && (
                       <div className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Подпись</Label>
-                              <Input value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Подпись</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.label as string) ?? ""} onChange={(e) => updateSection(openSection, "label", e.target.value)} />
+                              <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                             </div>
-                            <ColorInput value={block.labelColor as string} onChange={(v) => updateSection(openSection, "labelColor", v)} defaultValue={DEFAULTS.primary} />
                           </div>
-                          <div className="flex gap-3 items-center">
-                            <div className="flex-1 space-y-2">
-                              <Label>Заголовок</Label>
-                              <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                          <div className="space-y-2">
+                            <Label>Заголовок</Label>
+                            <div className="flex gap-3 items-center">
+                              <Input className="flex-1" value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
+                              <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
                         <div className="space-y-2">
@@ -658,12 +663,12 @@ export default function AdminSectionsPage() {
                       </div>
                     )}
             {openSection === "footer" && (
-              <div className="flex gap-3 items-center">
-                <div className="flex-1 space-y-2">
-                  <Label>Слоган (под логотипом)</Label>
-                  <Input value={(block.tagline as string) ?? ""} onChange={(e) => updateSection(openSection, "tagline", e.target.value)} />
+              <div className="space-y-2">
+                <Label>Слоган (под логотипом)</Label>
+                <div className="flex gap-3 items-center">
+                  <Input className="flex-1" value={(block.tagline as string) ?? ""} onChange={(e) => updateSection(openSection, "tagline", e.target.value)} />
+                  <ColorInput value={block.taglineColor as string} onChange={(v) => updateSection(openSection, "taglineColor", v)} defaultValue={DEFAULTS.muted} />
                 </div>
-                <ColorInput value={block.taglineColor as string} onChange={(v) => updateSection(openSection, "taglineColor", v)} defaultValue={DEFAULTS.muted} />
               </div>
             )}
           </div>
