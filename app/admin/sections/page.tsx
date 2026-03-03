@@ -22,15 +22,15 @@ const SECTION_LABELS: Record<string, string> = {
   footer: "Подвал",
 }
 
-const SECTION_IMAGES: Record<string, string> = {
-  hero: "https://picsum.photos/seed/jazz-hero/400/250",
-  about: "https://picsum.photos/seed/jazz-about/400/250",
-  menu: "https://picsum.photos/seed/jazz-menu/400/250",
-  events: "https://picsum.photos/seed/jazz-events/400/250",
-  gallery: "https://picsum.photos/seed/jazz-gallery/400/250",
-  reservation: "https://picsum.photos/seed/jazz-reservation/400/250",
-  contacts: "https://picsum.photos/seed/jazz-contacts/400/250",
-  footer: "https://picsum.photos/seed/jazz-footer/400/250",
+const SECTION_PREVIEW_IMAGES: Record<string, string> = {
+  hero: "/admin/sections/section-hero.jpg",
+  about: "/admin/sections/section-about.jpg",
+  menu: "/admin/sections/section-menu.jpg",
+  events: "/admin/sections/section-events.jpg",
+  gallery: "/admin/sections/section-gallery.jpg",
+  reservation: "/admin/sections/section-reservation.jpg",
+  contacts: "/admin/sections/section-contacts.jpg",
+  footer: "/admin/sections/section-footer.jpg",
 }
 
 export default function AdminSectionsPage() {
@@ -142,69 +142,78 @@ export default function AdminSectionsPage() {
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Карточки разделов — 6 в ряд, как в Меню */}
+      <div className="grid gap-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
         {sectionKeys.map((key) => {
           const block = (sections[key] as Record<string, unknown>) || {}
           const isOpen = openSection === key
-          const cardImage = (block.image as string) || SECTION_IMAGES[key]
+          const cardImage = SECTION_PREVIEW_IMAGES[key]
 
           return (
             <div
               key={key}
-              className="group overflow-hidden rounded-2xl border border-border bg-card transition-all hover:border-primary/40 hover:shadow-lg"
+              className={cn(
+                "group overflow-hidden rounded-xl border bg-card transition-all hover:border-primary/40 hover:shadow-md",
+                isOpen ? "ring-2 ring-primary border-primary" : "border-border"
+              )}
             >
               <div
-                className="relative aspect-[16/10] cursor-pointer overflow-hidden bg-muted"
+                className="relative aspect-[4/3] cursor-pointer overflow-hidden bg-muted"
                 onClick={() => setOpenSection(isOpen ? null : key)}
               >
-                {cardImage ? (
-                  <Image
-                    src={cardImage}
-                    alt={SECTION_LABELS[key]}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    unoptimized={cardImage.startsWith("http")}
-                    sizes="400px"
-                  />
-                ) : null}
+                <Image
+                  src={cardImage}
+                  alt={SECTION_LABELS[key]}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  sizes="180px"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between p-4">
-                  <h3 className="font-sans text-lg font-semibold text-white">
+                <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between p-2">
+                  <h3 className="truncate font-sans text-sm font-semibold text-white">
                     {SECTION_LABELS[key]}
                   </h3>
-                  <div className="flex items-center gap-1 rounded-full bg-white/20 p-1.5">
+                  <div className="shrink-0 rounded-full bg-white/20 p-1">
                     {isOpen ? (
-                      <ChevronDown className="h-5 w-5 text-white" />
+                      <ChevronDown className="h-4 w-4 text-white" />
                     ) : (
-                      <ChevronRight className="h-5 w-5 text-white" />
+                      <ChevronRight className="h-4 w-4 text-white" />
                     )}
                   </div>
                 </div>
               </div>
+            </div>
+          )
+        })}
+      </div>
 
-              <div
-                className={cn(
-                  "grid overflow-hidden transition-all duration-300 ease-in-out",
-                  isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                )}
-              >
-                <div className="min-h-0">
-                  <div className="border-t border-border bg-muted/20 p-4">
-                    {key === "hero" && (
+      {/* Редактирование выбранного раздела — ниже карточек */}
+      {openSection && (() => {
+        const block = (sections[openSection] as Record<string, unknown>) || {}
+        return (
+        <div
+          className="rounded-xl border-2 border-border p-4"
+          style={{ backgroundColor: "lab(20 18.7 33.77)" }}
+        >
+          <h2 className="mb-4 font-sans text-lg font-semibold">
+            {SECTION_LABELS[openSection]}
+          </h2>
+          <div className="space-y-4">
+            {openSection === "hero" && (
                       <div className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">
                           <div className="space-y-2">
                             <Label>Подпись (над заголовком)</Label>
                             <Input
                               value={(block.label as string) ?? ""}
-                              onChange={(e) => updateSection(key, "label", e.target.value)}
+                              onChange={(e) => updateSection(openSection, "label", e.target.value)}
                             />
                           </div>
                           <div className="space-y-2">
                             <Label>Заголовок</Label>
                             <Input
                               value={(block.title as string) ?? ""}
-                              onChange={(e) => updateSection(key, "title", e.target.value)}
+                              onChange={(e) => updateSection(openSection, "title", e.target.value)}
                             />
                           </div>
                         </div>
@@ -212,7 +221,7 @@ export default function AdminSectionsPage() {
                           <Label>Текст под заголовком</Label>
                           <Input
                             value={(block.text as string) ?? ""}
-                            onChange={(e) => updateSection(key, "text", e.target.value)}
+                            onChange={(e) => updateSection(openSection, "text", e.target.value)}
                           />
                         </div>
                         <div className="grid gap-4 sm:grid-cols-2">
@@ -220,34 +229,34 @@ export default function AdminSectionsPage() {
                             <Label>Фоновое изображение</Label>
                             <ImageDropzone
                               value={(block.image as string) ?? ""}
-                              onChange={(url) => updateSection(key, "image", url)}
+                              onChange={(url) => updateSection(openSection, "image", url)}
                             />
                           </div>
                           <div className="space-y-2">
                             <Label>Логотип</Label>
                             <ImageDropzone
                               value={(block.logo as string) ?? ""}
-                              onChange={(url) => updateSection(key, "logo", url)}
+                              onChange={(url) => updateSection(openSection, "logo", url)}
                             />
                           </div>
                         </div>
                       </div>
                     )}
-                    {key === "about" && (
+                    {openSection === "about" && (
                       <div className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">
                           <div className="space-y-2">
                             <Label>Подпись</Label>
                             <Input
                               value={(block.label as string) ?? ""}
-                              onChange={(e) => updateSection(key, "label", e.target.value)}
+                              onChange={(e) => updateSection(openSection, "label", e.target.value)}
                             />
                           </div>
                           <div className="space-y-2">
                             <Label>Заголовок</Label>
                             <Input
                               value={(block.title as string) ?? ""}
-                              onChange={(e) => updateSection(key, "title", e.target.value)}
+                              onChange={(e) => updateSection(openSection, "title", e.target.value)}
                             />
                           </div>
                         </div>
@@ -255,7 +264,7 @@ export default function AdminSectionsPage() {
                           <Label>Первый абзац</Label>
                           <Input
                             value={(block.text as string) ?? ""}
-                            onChange={(e) => updateSection(key, "text", e.target.value)}
+                            onChange={(e) => updateSection(openSection, "text", e.target.value)}
                             className="h-auto min-h-[80px]"
                           />
                         </div>
@@ -263,7 +272,7 @@ export default function AdminSectionsPage() {
                           <Label>Второй абзац</Label>
                           <Input
                             value={(block.text2 as string) ?? ""}
-                            onChange={(e) => updateSection(key, "text2", e.target.value)}
+                            onChange={(e) => updateSection(openSection, "text2", e.target.value)}
                             className="h-auto min-h-[80px]"
                           />
                         </div>
@@ -271,7 +280,7 @@ export default function AdminSectionsPage() {
                           <Label>Изображение блока</Label>
                           <ImageDropzone
                             value={(block.image as string) ?? ""}
-                            onChange={(url) => updateSection(key, "image", url)}
+                            onChange={(url) => updateSection(openSection, "image", url)}
                           />
                         </div>
                         <div className="space-y-3">
@@ -302,21 +311,21 @@ export default function AdminSectionsPage() {
                         </div>
                       </div>
                     )}
-                    {key === "menu" && (
+                    {openSection === "menu" && (
                       <div className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">
                           <div className="space-y-2">
                             <Label>Подпись</Label>
                             <Input
                               value={(block.label as string) ?? ""}
-                              onChange={(e) => updateSection(key, "label", e.target.value)}
+                              onChange={(e) => updateSection(openSection, "label", e.target.value)}
                             />
                           </div>
                           <div className="space-y-2">
                             <Label>Заголовок</Label>
                             <Input
                               value={(block.title as string) ?? ""}
-                              onChange={(e) => updateSection(key, "title", e.target.value)}
+                              onChange={(e) => updateSection(openSection, "title", e.target.value)}
                             />
                           </div>
                         </div>
@@ -324,26 +333,26 @@ export default function AdminSectionsPage() {
                           <Label>Подпись под меню</Label>
                           <Input
                             value={(block.footerNote as string) ?? ""}
-                            onChange={(e) => updateSection(key, "footerNote", e.target.value)}
+                            onChange={(e) => updateSection(openSection, "footerNote", e.target.value)}
                           />
                         </div>
                       </div>
                     )}
-                    {key === "events" && (
+                    {openSection === "events" && (
                       <div className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">
                           <div className="space-y-2">
                             <Label>Подпись</Label>
                             <Input
                               value={(block.label as string) ?? ""}
-                              onChange={(e) => updateSection(key, "label", e.target.value)}
+                              onChange={(e) => updateSection(openSection, "label", e.target.value)}
                             />
                           </div>
                           <div className="space-y-2">
                             <Label>Заголовок</Label>
                             <Input
                               value={(block.title as string) ?? ""}
-                              onChange={(e) => updateSection(key, "title", e.target.value)}
+                              onChange={(e) => updateSection(openSection, "title", e.target.value)}
                             />
                           </div>
                         </div>
@@ -351,44 +360,44 @@ export default function AdminSectionsPage() {
                           <Label>Подзаголовок</Label>
                           <Input
                             value={(block.subtitle as string) ?? ""}
-                            onChange={(e) => updateSection(key, "subtitle", e.target.value)}
+                            onChange={(e) => updateSection(openSection, "subtitle", e.target.value)}
                           />
                         </div>
                       </div>
                     )}
-                    {key === "gallery" && (
+                    {openSection === "gallery" && (
                       <div className="grid gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
                           <Label>Подпись</Label>
                           <Input
                             value={(block.label as string) ?? ""}
-                            onChange={(e) => updateSection(key, "label", e.target.value)}
+                            onChange={(e) => updateSection(openSection, "label", e.target.value)}
                           />
                         </div>
                         <div className="space-y-2">
                           <Label>Заголовок</Label>
                           <Input
                             value={(block.title as string) ?? ""}
-                            onChange={(e) => updateSection(key, "title", e.target.value)}
+                            onChange={(e) => updateSection(openSection, "title", e.target.value)}
                           />
                         </div>
                       </div>
                     )}
-                    {key === "reservation" && (
+                    {openSection === "reservation" && (
                       <div className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">
                           <div className="space-y-2">
                             <Label>Подпись</Label>
                             <Input
                               value={(block.label as string) ?? ""}
-                              onChange={(e) => updateSection(key, "label", e.target.value)}
+                              onChange={(e) => updateSection(openSection, "label", e.target.value)}
                             />
                           </div>
                           <div className="space-y-2">
                             <Label>Заголовок</Label>
                             <Input
                               value={(block.title as string) ?? ""}
-                              onChange={(e) => updateSection(key, "title", e.target.value)}
+                              onChange={(e) => updateSection(openSection, "title", e.target.value)}
                             />
                           </div>
                         </div>
@@ -396,27 +405,27 @@ export default function AdminSectionsPage() {
                           <Label>Текст</Label>
                           <Input
                             value={(block.text as string) ?? ""}
-                            onChange={(e) => updateSection(key, "text", e.target.value)}
+                            onChange={(e) => updateSection(openSection, "text", e.target.value)}
                             className="h-auto min-h-[60px]"
                           />
                         </div>
                       </div>
                     )}
-                    {key === "contacts" && (
+                    {openSection === "contacts" && (
                       <div className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">
                           <div className="space-y-2">
                             <Label>Подпись</Label>
                             <Input
                               value={(block.label as string) ?? ""}
-                              onChange={(e) => updateSection(key, "label", e.target.value)}
+                              onChange={(e) => updateSection(openSection, "label", e.target.value)}
                             />
                           </div>
                           <div className="space-y-2">
                             <Label>Заголовок</Label>
                             <Input
                               value={(block.title as string) ?? ""}
-                              onChange={(e) => updateSection(key, "title", e.target.value)}
+                              onChange={(e) => updateSection(openSection, "title", e.target.value)}
                             />
                           </div>
                         </div>
@@ -424,21 +433,21 @@ export default function AdminSectionsPage() {
                           <Label>Адрес</Label>
                           <Input
                             value={(block.address as string) ?? ""}
-                            onChange={(e) => updateSection(key, "address", e.target.value)}
+                            onChange={(e) => updateSection(openSection, "address", e.target.value)}
                           />
                         </div>
                         <div className="space-y-2">
                           <Label>Email</Label>
                           <Input
                             value={(block.email as string) ?? ""}
-                            onChange={(e) => updateSection(key, "email", e.target.value)}
+                            onChange={(e) => updateSection(openSection, "email", e.target.value)}
                           />
                         </div>
                         <div className="space-y-2">
                           <Label>Часы работы (текст)</Label>
                           <Input
                             value={(block.hours as string) ?? ""}
-                            onChange={(e) => updateSection(key, "hours", e.target.value)}
+                            onChange={(e) => updateSection(openSection, "hours", e.target.value)}
                           />
                         </div>
                         <div className="space-y-2">
@@ -446,7 +455,7 @@ export default function AdminSectionsPage() {
                           <Input
                             value={((block.businessLunch as Record<string, string>)?.title) ?? ""}
                             onChange={(e) =>
-                              updateSectionNested(key, "businessLunch", "title", e.target.value)
+                              updateSectionNested(openSection, "businessLunch", "title", e.target.value)
                             }
                           />
                         </div>
@@ -455,28 +464,25 @@ export default function AdminSectionsPage() {
                           <Input
                             value={((block.businessLunch as Record<string, string>)?.price) ?? ""}
                             onChange={(e) =>
-                              updateSectionNested(key, "businessLunch", "price", e.target.value)
+                              updateSectionNested(openSection, "businessLunch", "price", e.target.value)
                             }
                           />
                         </div>
                       </div>
                     )}
-                    {key === "footer" && (
-                      <div className="space-y-2">
-                        <Label>Слоган (под логотипом)</Label>
-                        <Input
-                          value={(block.tagline as string) ?? ""}
-                          onChange={(e) => updateSection(key, "tagline", e.target.value)}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
+            {openSection === "footer" && (
+              <div className="space-y-2">
+                <Label>Слоган (под логотипом)</Label>
+                <Input
+                  value={(block.tagline as string) ?? ""}
+                  onChange={(e) => updateSection(openSection, "tagline", e.target.value)}
+                />
               </div>
-            </div>
-          )
-        })}
-      </div>
+            )}
+          </div>
+        </div>
+        )
+      })()}
     </div>
   )
 }
