@@ -7,6 +7,14 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
   const label = (content?.label as string) ?? "Бронирование"
   const title = (content?.title as string) ?? "Забронируйте зал"
   const text = (content?.text as string) ?? "Выберите зал «Амбианс» (до 20 гостей) или «Гранд» (до 80 гостей). Заполните форму — мы свяжемся с вами для подтверждения."
+  const twoHallsTitle = (content?.twoHallsTitle as string) ?? "Два зала"
+  const twoHallsText = (content?.twoHallsText as string) ?? "Амбианс — до 20 гостей, Гранд — до 80 гостей"
+  const hoursTitle = (content?.hoursTitle as string) ?? "Часы работы"
+  const hoursText = (content?.hoursText as string) ?? "Ежедневно с 10:00 до 24:00"
+  const phoneTitle = (content?.phoneTitle as string) ?? "Телефон для бронирования"
+  const phones = (content?.phones as string[]) ?? ["+7 (4752) 52-56-97", "+7 (915) 661-28-21"]
+  const capacityTitle = (content?.capacityTitle as string) ?? "Вместимость"
+  const capacityText = (content?.capacityText as string) ?? "До 80 гостей"
   const [formState, setFormState] = useState({
     name: "",
     phone: "",
@@ -33,17 +41,17 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
           <div className="flex flex-col justify-center">
             <span
               className="mb-4 text-sm uppercase tracking-[0.3em] text-primary"
-              style={{ fontFamily: "var(--font-inter), sans-serif" }}
+              style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.labelColor && { color: content.labelColor as string }) }}
             >
               {label}
             </span>
-            <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl">
+            <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl" style={content?.titleColor ? { color: content.titleColor as string } : undefined}>
               {title}
             </h2>
             <div className="mb-8 h-px w-16 bg-primary" />
             <p
               className="mb-8 text-lg leading-relaxed text-foreground/70"
-              style={{ fontFamily: "var(--font-inter), sans-serif" }}
+              style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.textColor && { color: content.textColor as string }) }}
             >
               {text}
             </p>
@@ -54,12 +62,12 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
                   <Building2 className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-sans font-semibold">Два зала</p>
+                  <p className="font-sans font-semibold">{twoHallsTitle}</p>
                   <p
                     className="text-sm text-muted-foreground"
                     style={{ fontFamily: "var(--font-inter), sans-serif" }}
                   >
-                    Амбианс — до 20 гостей, Гранд — до 80 гостей
+                    {twoHallsText}
                   </p>
                 </div>
               </div>
@@ -68,12 +76,12 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
                   <CalendarDays className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-sans font-semibold">Часы работы</p>
+                  <p className="font-sans font-semibold">{hoursTitle}</p>
                   <p
                     className="text-sm text-muted-foreground"
                     style={{ fontFamily: "var(--font-inter), sans-serif" }}
                   >
-                    Ежедневно с 10:00 до 24:00
+                    {hoursText}
                   </p>
                 </div>
               </div>
@@ -82,21 +90,17 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
                   <Phone className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-sans font-semibold">Телефон для бронирования</p>
-                  <a
-                    href="tel:+74752525697"
-                    className="block text-sm text-muted-foreground transition-colors hover:text-primary"
-                    style={{ fontFamily: "var(--font-inter), sans-serif" }}
-                  >
-                    +7 (4752) 52-56-97
-                  </a>
-                  <a
-                    href="tel:+79156612821"
-                    className="block text-sm text-muted-foreground transition-colors hover:text-primary"
-                    style={{ fontFamily: "var(--font-inter), sans-serif" }}
-                  >
-                    +7 (915) 661-28-21
-                  </a>
+                  <p className="font-sans font-semibold">{phoneTitle}</p>
+                  {phones.map((phone) => (
+                    <a
+                      key={phone}
+                      href={`tel:${phone.replace(/\D/g, "")}`}
+                      className="block text-sm text-muted-foreground transition-colors hover:text-primary"
+                      style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                    >
+                      {phone}
+                    </a>
+                  ))}
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -104,12 +108,12 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
                   <Users className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-sans font-semibold">Вместимость</p>
+                  <p className="font-sans font-semibold">{capacityTitle}</p>
                   <p
                     className="text-sm text-muted-foreground"
                     style={{ fontFamily: "var(--font-inter), sans-serif" }}
                   >
-                    До 80 гостей
+                    {capacityText}
                   </p>
                 </div>
               </div>

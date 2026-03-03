@@ -38,16 +38,16 @@ export function Events({ content }: { content?: Record<string, unknown> | null }
         <div className="mb-16 flex flex-col items-center text-center">
           <span
             className="mb-4 text-sm uppercase tracking-[0.3em] text-primary"
-            style={{ fontFamily: "var(--font-inter), sans-serif" }}
+            style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.labelColor && { color: content.labelColor as string }) }}
           >
             {label}
           </span>
-          <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl">
+          <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl" style={content?.titleColor ? { color: content.titleColor as string } : undefined}>
             {title}
           </h2>
           <p
             className="mx-auto max-w-2xl text-muted-foreground"
-            style={{ fontFamily: "var(--font-inter), sans-serif" }}
+            style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.subtitleColor && { color: content.subtitleColor as string }) }}
           >
             {subtitle}
           </p>

@@ -45,16 +45,16 @@ export function Hero({ content }: { content?: Record<string, unknown> | null }) 
         </div>
         <p
           className="mb-4 text-sm uppercase tracking-[0.4em] text-primary"
-          style={{ fontFamily: "var(--font-inter), sans-serif" }}
+          style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.labelColor && { color: content.labelColor as string }) }}
         >
           {c.label}
         </p>
-        <h1 className="mb-6 font-sans text-5xl font-bold leading-tight tracking-wide text-white md:text-7xl lg:text-8xl">
+        <h1 className="mb-6 font-sans text-5xl font-bold leading-tight tracking-wide text-white md:text-7xl lg:text-8xl" style={content?.titleColor ? { color: content.titleColor as string } : undefined}>
           {c.title}
         </h1>
         <p
           className="mb-10 max-w-xl text-lg leading-relaxed text-white/70"
-          style={{ fontFamily: "var(--font-inter), sans-serif" }}
+          style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.textColor && { color: content.textColor as string }) }}
         >
           {c.text}
         </p>

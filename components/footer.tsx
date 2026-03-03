@@ -57,7 +57,7 @@ export function Footer({ content }: { content?: Record<string, unknown> | null }
             </a>
             <p
               className="mt-4 text-sm leading-relaxed text-muted-foreground"
-              style={{ fontFamily: "var(--font-inter), sans-serif" }}
+              style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.taglineColor && { color: content.taglineColor as string }) }}
             >
               {tagline}
             </p>

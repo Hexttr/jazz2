@@ -141,11 +141,11 @@ export function MenuSection({ menu, sectionContent }: { menu?: MenuContent | nul
         <div className="mb-16 flex flex-col items-center text-center">
           <span
             className="mb-4 text-sm uppercase tracking-[0.3em] text-primary"
-            style={{ fontFamily: "var(--font-inter), sans-serif" }}
+            style={{ fontFamily: "var(--font-inter), sans-serif", ...(sectionContent?.labelColor && { color: sectionContent.labelColor as string }) }}
           >
             {label}
           </span>
-          <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl">
+          <h2 className="mb-6 font-sans text-3xl font-bold tracking-wide md:text-5xl" style={sectionContent?.titleColor ? { color: sectionContent.titleColor as string } : undefined}>
             {title}
           </h2>
           <div className="h-px w-16 bg-primary" />
@@ -227,7 +227,7 @@ export function MenuSection({ menu, sectionContent }: { menu?: MenuContent | nul
           ))}
         </div>
       </div>
-      <p className="mt-12 text-center text-sm text-muted-foreground" style={{ fontFamily: "var(--font-inter), sans-serif" }}>
+      <p className="mt-12 text-center text-sm text-muted-foreground" style={{ fontFamily: "var(--font-inter), sans-serif", ...(sectionContent?.footerNoteColor && { color: sectionContent.footerNoteColor as string }) }}>
         {footerNote}
       </p>
     </section>
