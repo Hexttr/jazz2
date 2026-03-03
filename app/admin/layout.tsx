@@ -28,10 +28,16 @@ export default function AdminLayout({
 
   return (
     <div className="flex min-h-screen bg-muted/30">
-      <aside className="sticky top-0 flex h-screen w-56 flex-col border-r border-border bg-card">
-        <div className="flex h-14 items-center border-b border-border px-4">
-          <Link href="/admin" className="font-sans text-lg font-bold tracking-wide text-primary">
-            JAZZ Admin
+      <aside className="sticky top-0 flex h-screen w-56 flex-col border-r border-primary/20 bg-primary">
+        <div className="flex h-14 items-center border-b border-white/20 px-4">
+          <Link href="/admin" className="flex items-center gap-2">
+            <span className="font-sans text-2xl font-bold tracking-wide text-white">
+              JAZZ
+            </span>
+            <span className="hidden text-xs font-semibold uppercase tracking-[0.3em] text-white/90 sm:inline">
+              cafe
+            </span>
+            <span className="ml-1 text-[10px] uppercase tracking-wider text-white/70">admin</span>
           </Link>
         </div>
         <nav className="flex-1 space-y-0.5 p-2">
@@ -43,10 +49,10 @@ export default function AdminLayout({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white transition-colors",
                   isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "bg-white/20 text-white"
+                    : "text-white/80 hover:bg-white/10 hover:text-white"
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />
@@ -55,10 +61,10 @@ export default function AdminLayout({
             )
           })}
         </nav>
-        <div className="border-t border-border p-2">
+        <div className="border-t border-white/20 p-2">
           <Button
             variant="ghost"
-            className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground"
+            className="w-full justify-start gap-3 text-white/80 hover:bg-white/10 hover:text-white"
             onClick={handleLogout}
           >
             <LogOut className="h-4 w-4" />

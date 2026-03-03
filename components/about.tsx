@@ -1,25 +1,39 @@
 import Image from "next/image"
-import { Music, Utensils, CalendarDays } from "lucide-react"
+import {
+  Music,
+  Utensils,
+  CalendarDays,
+  Users,
+  Sparkles,
+  Wine,
+  MapPin,
+  Phone,
+  Clock,
+  Mail,
+  UtensilsCrossed,
+  Building2,
+} from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 
-const features = [
-  {
-    icon: Utensils,
-    title: "Авторская кухня",
-    description:
-      "Наш шеф-повар создаёт блюда, вдохновлённые европейской и азиатской кулинарными традициями",
-  },
-  {
-    icon: CalendarDays,
-    title: "Банкетные залы",
-    description:
-      "Амбианс — до 20 гостей, Гранд — до 80 гостей. Звоните +7 (4752) 52-56-97",
-  },
-  {
-    icon: Music,
-    title: "Живая музыка",
-    description:
-      "Каждый вечер на нашей сцене выступают лучшие джазовые музыканты города и приглашённые гости",
-  },
+const ICON_MAP: Record<string, LucideIcon> = {
+  Music,
+  Utensils,
+  CalendarDays,
+  Users,
+  Sparkles,
+  Wine,
+  MapPin,
+  Phone,
+  Clock,
+  Mail,
+  UtensilsCrossed,
+  Building2,
+}
+
+const defaultFeatures = [
+  { icon: "Utensils", title: "Авторская кухня", description: "Наш шеф-повар создаёт блюда, вдохновлённые европейской и азиатской кулинарными традициями" },
+  { icon: "CalendarDays", title: "Банкетные залы", description: "Амбианс — до 20 гостей, Гранд — до 80 гостей. Звоните +7 (4752) 52-56-97" },
+  { icon: "Music", title: "Живая музыка", description: "Каждый вечер на нашей сцене выступают лучшие джазовые музыканты города и приглашённые гости" },
 ]
 
 export function About({ content }: { content?: Record<string, unknown> | null }) {
@@ -29,6 +43,11 @@ export function About({ content }: { content?: Record<string, unknown> | null })
   const text2 = (content?.text2 as string) ?? "Кафе JAZZ — здесь каждое событие становится особенным. Доверьте нам ваш праздник — и мы сделаем всё, чтобы он запомнился! Большая парковка и удобное расположение — дополнительные плюсы вашего визита."
   const image = (content?.image as string) ?? "/images/about.jpg"
   const imageAlt = (content?.imageAlt as string) ?? "Саксофонист на сцене Кафе JAZZ"
+  const featuresRaw = (content?.features as { icon?: string; title?: string; description?: string }[]) ?? defaultFeatures
+  const features = featuresRaw.map((f) => ({
+    ...f,
+    Icon: ICON_MAP[f.icon ?? "Utensils"] ?? Utensils,
+  }))
   return (
     <section id="about" className="py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -75,10 +94,10 @@ export function About({ content }: { content?: Record<string, unknown> | null })
             </p>
 
             <div className="flex flex-col gap-8">
-              {features.map((feature) => (
-                <div key={feature.title} className="flex gap-5">
+              {features.map((feature, i) => (
+                <div key={i} className="flex gap-5">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-primary/30">
-                    <feature.icon className="h-5 w-5 text-primary" />
+                    <feature.Icon className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <h3 className="mb-1.5 font-sans text-lg font-semibold">

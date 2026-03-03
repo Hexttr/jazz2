@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import {
   Plus,
   Pencil,
@@ -12,7 +13,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -28,6 +28,12 @@ function newId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2)
 }
 
+function getCategoryImage(dishes: MenuDish[], categoryId: string): string | undefined {
+  const withImage = dishes.filter((d) => d.categoryId === categoryId && d.image)
+  if (withImage.length === 0) return undefined
+  return withImage[Math.floor(Math.random() * withImage.length)].image
+}
+
 export default function AdminMenuPage() {
   const [menu, setMenu] = useState<MenuContent | null>(null)
   const [loading, setLoading] = useState(true)
@@ -36,7 +42,6 @@ export default function AdminMenuPage() {
   const [openCategory, setOpenCategory] = useState<string | null>(null)
   const [editingCategory, setEditingCategory] = useState<MenuCategory | null>(null)
   const [editingDish, setEditingDish] = useState<MenuDish | null>(null)
-  const [addingDishTo, setAddingDishTo] = useState<string | null>(null)
 
   useEffect(() => {
     fetch("/api/content", { credentials: "include" })
@@ -60,7 +65,6 @@ export default function AdminMenuPage() {
         credentials: "include",
         body: JSON.stringify({ menu }),
       })
-      const data = await res.json().catch(() => ({}))
       if (res.ok) setSaveMessage("success")
       else setSaveMessage("error")
     } catch {
@@ -97,7 +101,7 @@ export default function AdminMenuPage() {
   }
 
   function deleteCategory(id: string) {
-    const remaining = menu.categories.filter((c) => c.id !== id)
+    const remaining = menu!.categories.filter((c) => c.id !== id)
     setMenu((m) =>
       m
         ? {
@@ -119,10 +123,7 @@ export default function AdminMenuPage() {
       description: "",
       price: "",
     }
-    setMenu((m) =>
-      m ? { ...m, dishes: [...m.dishes, dish] } : m
-    )
-    setAddingDishTo(null)
+    setMenu((m) => (m ? { ...m, dishes: [...m.dishes, dish] } : m))
     setEditingDish(dish)
   }
 
@@ -153,10 +154,16 @@ export default function AdminMenuPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-sans text-2xl font-bold tracking-wide">Меню и блюда</h1>
-        <Button onClick={save} disabled={saving}>
-          <Save className="mr-2 h-4 w-4" />
-          {saving ? "Сохранение…" : "Сохранить"}
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={addCategory}>
+            <Plus className="mr-2 h-4 w-4" />
+            Категория
+          </Button>
+          <Button onClick={save} disabled={saving}>
+            <Save className="mr-2 h-4 w-4" />
+            {saving ? "Сохранение…" : "Сохранить"}
+          </Button>
+        </div>
       </div>
       {saveMessage === "success" && (
         <p className="rounded-md bg-green-500/10 px-4 py-2 text-sm text-green-600 dark:text-green-400">
@@ -169,99 +176,157 @@ export default function AdminMenuPage() {
         </p>
       )}
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <CardTitle>Категории</CardTitle>
-          <Button size="sm" variant="outline" onClick={addCategory}>
-            <Plus className="mr-2 h-4 w-4" />
-            Добавить категорию
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {categories.map((cat) => (
+      {/* Category cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {categories.map((cat) => {
+          const dishCount = menu.dishes.filter((d) => d.categoryId === cat.id).length
+          const cardImage = getCategoryImage(menu.dishes, cat.id)
+          const isOpen = openCategory === cat.id
+          return (
             <div
               key={cat.id}
-              className="rounded-lg border border-border bg-muted/20"
+              className="group overflow-hidden rounded-2xl border border-border bg-card transition-all hover:border-primary/40 hover:shadow-lg"
             >
               <div
-                className="flex cursor-pointer items-center justify-between px-4 py-3"
-                onClick={() => setOpenCategory(openCategory === cat.id ? null : cat.id)}
+                className="relative aspect-[16/10] cursor-pointer overflow-hidden bg-muted"
+                onClick={() => setOpenCategory(isOpen ? null : cat.id)}
               >
-                <div className="flex items-center gap-2">
-                  {openCategory === cat.id ? (
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                  )}
-                  <span className="font-medium">{cat.name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    ({menu.dishes.filter((d) => d.categoryId === cat.id).length} блюд)
-                  </span>
+                {cardImage ? (
+                  <Image
+                    src={cardImage}
+                    alt={cat.name}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    unoptimized={cardImage.startsWith("http")}
+                    sizes="400px"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-muted-foreground/50">
+                    <span className="text-sm uppercase tracking-widest">Нет фото</span>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between p-4">
+                  <div>
+                    <h3 className="font-sans text-lg font-semibold text-white">{cat.name}</h3>
+                    <p className="text-xs text-white/80">{dishCount} блюд</p>
+                  </div>
+                  <div className="flex items-center gap-1 rounded-full bg-white/20 p-1.5">
+                    {isOpen ? (
+                      <ChevronDown className="h-5 w-5 text-white" />
+                    ) : (
+                      <ChevronRight className="h-5 w-5 text-white" />
+                    )}
+                  </div>
                 </div>
-                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="absolute right-2 top-2 flex gap-1"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <Button
                     size="icon"
-                    variant="ghost"
-                    className="h-8 w-8"
+                    variant="secondary"
+                    className="h-8 w-8 bg-white/90 hover:bg-white"
                     onClick={() => setEditingCategory(cat)}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
                   <Button
                     size="icon"
-                    variant="ghost"
-                    className="h-8 w-8 text-destructive hover:text-destructive"
+                    variant="destructive"
+                    className="h-8 w-8"
                     onClick={() => deleteCategory(cat.id)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
-              {openCategory === cat.id && (
-                <div className="border-t border-border bg-background/50 p-4">
-                  <div className="mb-3 flex justify-end">
-                    <Button size="sm" onClick={() => addDish(cat.id)}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Добавить блюдо
-                    </Button>
+
+              {/* Expanded: dishes grid */}
+              <div
+                className={cn(
+                  "grid overflow-hidden transition-all duration-300 ease-in-out",
+                  isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                )}
+              >
+                <div className="min-h-0">
+                  <div className="border-t border-border bg-muted/20 p-4">
+                    <div className="mb-4 flex justify-end">
+                      <Button size="sm" onClick={() => addDish(cat.id)}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Добавить блюдо
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                      {menu.dishes
+                        .filter((d) => d.categoryId === cat.id)
+                        .map((d) => (
+                          <article
+                            key={d.id}
+                            className="flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition-all hover:border-primary/50"
+                          >
+                            <div className="relative aspect-[4/3] shrink-0 overflow-hidden rounded-t-2xl bg-muted">
+                              {d.image ? (
+                                <Image
+                                  src={d.image}
+                                  alt={d.name}
+                                  fill
+                                  className="object-cover"
+                                  unoptimized={d.image.startsWith("http")}
+                                  sizes="200px"
+                                />
+                              ) : (
+                                <div className="flex h-full items-center justify-center text-muted-foreground/40 text-xs uppercase">
+                                  {d.name}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex flex-1 flex-col border-t border-border p-3">
+                              <div className="flex items-start justify-between gap-1">
+                                <h4 className="line-clamp-2 text-sm font-semibold">{d.name}</h4>
+                                {d.portion && (
+                                  <span className="shrink-0 text-xs text-muted-foreground">
+                                    {d.portion}
+                                  </span>
+                                )}
+                              </div>
+                              {d.description && (
+                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                                  {d.description}
+                                </p>
+                              )}
+                              <p className="mt-2 font-sans text-base font-bold text-primary">
+                                {d.price} ₽
+                              </p>
+                              <div className="mt-2 flex gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="flex-1 text-xs"
+                                  onClick={() => setEditingDish(d)}
+                                >
+                                  <Pencil className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-destructive hover:text-destructive"
+                                  onClick={() => deleteDish(d.id)}
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          </article>
+                        ))}
+                    </div>
                   </div>
-                  <ul className="space-y-2">
-                    {menu.dishes
-                      .filter((d) => d.categoryId === cat.id)
-                      .map((d) => (
-                        <li
-                          key={d.id}
-                          className="flex items-center justify-between rounded-md border border-border px-3 py-2"
-                        >
-                          <span className="truncate">{d.name}</span>
-                          <span className="text-muted-foreground">{d.price} ₽</span>
-                          <div className="flex gap-1">
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-8 w-8"
-                              onClick={() => setEditingDish(d)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-8 w-8 text-destructive hover:text-destructive"
-                              onClick={() => deleteDish(d.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </li>
-                      ))}
-                  </ul>
                 </div>
-              )}
+              </div>
             </div>
-          ))}
-        </CardContent>
-      </Card>
+          )
+        })}
+      </div>
 
       {/* Category edit dialog */}
       <Dialog open={!!editingCategory} onOpenChange={() => setEditingCategory(null)}>
