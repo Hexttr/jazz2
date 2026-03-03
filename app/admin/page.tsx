@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { UtensilsCrossed, FileText, CalendarCheck, ExternalLink, FolderOpen, ChefHat, ClipboardList } from "lucide-react"
+import { UtensilsCrossed, FileText, CalendarCheck, ExternalLink, FolderOpen, ChefHat, ClipboardList, Bug } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
@@ -20,8 +20,20 @@ type Stats = {
   reservationsTotal: number
 }
 
+type DebugInfo = {
+  redisConfigured: boolean
+  blobConfigured: boolean
+  source: string
+  dishesCount: number
+  firstDishName: string | null
+  testVerified?: boolean
+}
+
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null)
+  const [debug, setDebug] = useState<DebugInfo | null>(null)
+  const [debugLoading, setDebugLoading] = useState(false)
+  const [debugTestLoading, setDebugTestLoading] = useState(false)
 
   useEffect(() => {
     fetch("/api/admin/stats", { credentials: "include", cache: "no-store" })
@@ -161,6 +173,72 @@ export default function AdminDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Bug className="h-4 w-4" />
+            Диагностика хранилища
+          </CardTitle>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={debugLoading}
+              onClick={async () => {
+                setDebugLoading(true)
+                try {
+                  const r = await fetch("/api/admin/content-debug", { credentials: "include", cache: "no-store" })
+                  const d = await r.json().catch(() => null)
+                  if (r.ok && d) setDebug(d)
+                } finally {
+                  setDebugLoading(false)
+                }
+              }}
+            >
+              {debugLoading ? "…" : "Проверить"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={debugTestLoading}
+              onClick={async () => {
+                setDebugTestLoading(true)
+                try {
+                  const r = await fetch("/api/admin/content-debug", {
+                    method: "POST",
+                    credentials: "include",
+                    cache: "no-store",
+                  })
+                  const d = await r.json().catch(() => ({}))
+                  if (r.ok && d.verified !== undefined) {
+                    setDebug((prev) => (prev ? { ...prev, testVerified: d.verified } : null))
+                    alert(d.verified ? "Redis: запись и чтение работают" : d.hint || d.error || "Ошибка")
+                  } else {
+                    alert(d.error || d.hint || "Ошибка теста")
+                  }
+                } finally {
+                  setDebugTestLoading(false)
+                }
+              }}
+            >
+              {debugTestLoading ? "…" : "Тест записи"}
+            </Button>
+          </div>
+        </CardHeader>
+        {debug && (
+          <CardContent className="text-sm text-muted-foreground space-y-1">
+            <p>Redis: {debug.redisConfigured ? "✓" : "✗"} · Blob: {debug.blobConfigured ? "✓" : "✗"}</p>
+            <p>Источник данных: {debug.source} · Блюд: {debug.dishesCount}</p>
+            {debug.firstDishName && <p>Первое блюдо: {debug.firstDishName}</p>}
+            {debug.testVerified !== undefined && (
+              <p className={debug.testVerified ? "text-green-600" : "text-red-600"}>
+                Тест Redis: {debug.testVerified ? "OK" : "Ошибка"}
+              </p>
+            )}
+          </CardContent>
+        )}
+      </Card>
 
       <Card>
         <CardContent className="pt-6">
