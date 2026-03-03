@@ -155,7 +155,7 @@ export default function AdminMenuPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-sans text-2xl font-bold tracking-wide">Меню и блюда</h1>
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={addCategory}>
+          <Button variant="outline" onClick={addCategory}>
             <Plus className="mr-2 h-4 w-4" />
             Категория
           </Button>
@@ -176,8 +176,8 @@ export default function AdminMenuPage() {
         </p>
       )}
 
-      {/* Category cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Category cards — компактные, до 6 в ряд */}
+      <div className="grid gap-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
         {categories.map((cat) => {
           const dishCount = menu.dishes.filter((d) => d.categoryId === cat.id).length
           const cardImage = getCategoryImage(menu.dishes, cat.id)
@@ -185,10 +185,13 @@ export default function AdminMenuPage() {
           return (
             <div
               key={cat.id}
-              className="group overflow-hidden rounded-2xl border border-border bg-card transition-all hover:border-primary/40 hover:shadow-lg"
+              className={cn(
+                "group overflow-hidden rounded-xl border bg-card transition-all hover:border-primary/40 hover:shadow-md",
+                isOpen ? "ring-2 ring-primary border-primary" : "border-border"
+              )}
             >
               <div
-                className="relative aspect-[16/10] cursor-pointer overflow-hidden bg-muted"
+                className="relative aspect-[4/3] cursor-pointer overflow-hidden bg-muted"
                 onClick={() => setOpenCategory(isOpen ? null : cat.id)}
               >
                 {cardImage ? (
@@ -198,135 +201,137 @@ export default function AdminMenuPage() {
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     unoptimized={cardImage.startsWith("http")}
-                    sizes="400px"
+                    sizes="180px"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-muted-foreground/50">
-                    <span className="text-sm uppercase tracking-widest">Нет фото</span>
+                    <span className="text-[10px] uppercase tracking-widest">Нет фото</span>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between p-4">
-                  <div>
-                    <h3 className="font-sans text-lg font-semibold text-white">{cat.name}</h3>
-                    <p className="text-xs text-white/80">{dishCount} блюд</p>
+                <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between p-2">
+                  <div className="min-w-0">
+                    <h3 className="truncate font-sans text-sm font-semibold text-white">{cat.name}</h3>
+                    <p className="text-[10px] text-white/80">{dishCount} блюд</p>
                   </div>
-                  <div className="flex items-center gap-1 rounded-full bg-white/20 p-1.5">
+                  <div className="shrink-0 rounded-full bg-white/20 p-1">
                     {isOpen ? (
-                      <ChevronDown className="h-5 w-5 text-white" />
+                      <ChevronDown className="h-4 w-4 text-white" />
                     ) : (
-                      <ChevronRight className="h-5 w-5 text-white" />
+                      <ChevronRight className="h-4 w-4 text-white" />
                     )}
                   </div>
                 </div>
                 <div
-                  className="absolute right-2 top-2 flex gap-1"
+                  className="absolute right-1 top-1 flex gap-0.5"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Button
                     size="icon"
                     variant="secondary"
-                    className="h-8 w-8 bg-white/90 hover:bg-white"
+                    className="h-6 w-6 bg-white/90 hover:bg-white"
                     onClick={() => setEditingCategory(cat)}
                   >
-                    <Pencil className="h-4 w-4" />
+                    <Pencil className="h-3 w-3" />
                   </Button>
                   <Button
                     size="icon"
                     variant="destructive"
-                    className="h-8 w-8"
+                    className="h-6 w-6"
                     onClick={() => deleteCategory(cat.id)}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3 w-3" />
                   </Button>
-                </div>
-              </div>
-
-              {/* Expanded: dishes grid */}
-              <div
-                className={cn(
-                  "grid overflow-hidden transition-all duration-300 ease-in-out",
-                  isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                )}
-              >
-                <div className="min-h-0">
-                  <div className="border-t border-border bg-muted/20 p-4">
-                    <div className="mb-4 flex justify-end">
-                      <Button size="sm" onClick={() => addDish(cat.id)}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Добавить блюдо
-                      </Button>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                      {menu.dishes
-                        .filter((d) => d.categoryId === cat.id)
-                        .map((d) => (
-                          <article
-                            key={d.id}
-                            className="flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition-all hover:border-primary/50"
-                          >
-                            <div className="relative aspect-[4/3] shrink-0 overflow-hidden rounded-t-2xl bg-muted">
-                              {d.image ? (
-                                <Image
-                                  src={d.image}
-                                  alt={d.name}
-                                  fill
-                                  className="object-cover"
-                                  unoptimized={d.image.startsWith("http")}
-                                  sizes="200px"
-                                />
-                              ) : (
-                                <div className="flex h-full items-center justify-center text-muted-foreground/40 text-xs uppercase">
-                                  {d.name}
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex flex-1 flex-col border-t border-border p-3">
-                              <div className="flex items-start justify-between gap-1">
-                                <h4 className="line-clamp-2 text-sm font-semibold">{d.name}</h4>
-                                {d.portion && (
-                                  <span className="shrink-0 text-xs text-muted-foreground">
-                                    {d.portion}
-                                  </span>
-                                )}
-                              </div>
-                              {d.description && (
-                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                                  {d.description}
-                                </p>
-                              )}
-                              <p className="mt-2 font-sans text-base font-bold text-primary">
-                                {d.price} ₽
-                              </p>
-                              <div className="mt-2 flex gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="flex-1 text-xs"
-                                  onClick={() => setEditingDish(d)}
-                                >
-                                  <Pencil className="h-3 w-3" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-destructive hover:text-destructive"
-                                  onClick={() => deleteDish(d.id)}
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            </div>
-                          </article>
-                        ))}
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
           )
         })}
       </div>
+
+      {/* Блюда выбранной категории — под карточками */}
+      {openCategory && (
+        <div className="rounded-xl border border-border bg-muted/20 p-4">
+          {(() => {
+            const cat = categories.find((c) => c.id === openCategory)
+            const dishes = menu.dishes.filter((d) => d.categoryId === openCategory)
+            return (
+              <>
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="font-sans text-lg font-semibold">
+                    Блюда: {cat?.name ?? ""}
+                  </h2>
+                  <Button size="sm" onClick={() => addDish(openCategory)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Добавить блюдо
+                  </Button>
+                </div>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                  {dishes.map((d) => (
+                    <article
+                      key={d.id}
+                      className="flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition-all hover:border-primary/50"
+                    >
+                      <div className="relative aspect-[4/3] shrink-0 overflow-hidden rounded-t-2xl bg-muted">
+                        {d.image ? (
+                          <Image
+                            src={d.image}
+                            alt={d.name}
+                            fill
+                            className="object-cover"
+                            unoptimized={d.image.startsWith("http")}
+                            sizes="200px"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-muted-foreground/40 text-xs uppercase">
+                            {d.name}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-1 flex-col border-t border-border p-3">
+                        <div className="flex items-start justify-between gap-1">
+                          <h4 className="line-clamp-2 text-sm font-semibold">{d.name}</h4>
+                          {d.portion && (
+                            <span className="shrink-0 text-xs text-muted-foreground">
+                              {d.portion}
+                            </span>
+                          )}
+                        </div>
+                        {d.description && (
+                          <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                            {d.description}
+                          </p>
+                        )}
+                        <p className="mt-2 font-sans text-base font-bold text-primary">
+                          {d.price} ₽
+                        </p>
+                        <div className="mt-2 flex gap-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1 text-xs"
+                            onClick={() => setEditingDish(d)}
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => deleteDish(d.id)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </>
+            )
+          })()}
+        </div>
+      )}
 
       {/* Category edit dialog */}
       <Dialog open={!!editingCategory} onOpenChange={() => setEditingCategory(null)}>

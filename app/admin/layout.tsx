@@ -31,13 +31,12 @@ export default function AdminLayout({
       <aside className="sticky top-0 flex h-screen w-56 flex-col border-r border-primary/20 bg-primary">
         <div className="flex h-14 items-center border-b border-white/20 px-4">
           <Link href="/admin" className="flex items-center gap-2">
-            <span className="font-sans text-2xl font-bold tracking-wide text-white">
+            <span className="font-sans text-2xl font-bold tracking-wide text-primary">
               JAZZ
             </span>
             <span className="hidden text-xs font-semibold uppercase tracking-[0.3em] text-white/90 sm:inline">
               cafe
             </span>
-            <span className="ml-1 text-[10px] uppercase tracking-wider text-white/70">admin</span>
           </Link>
         </div>
         <nav className="flex-1 space-y-0.5 p-2">
