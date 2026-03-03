@@ -7,11 +7,7 @@ import { UtensilsCrossed, FileText, CalendarCheck, ExternalLink, FolderOpen, Che
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
-const OVERVIEW_IMAGES = {
-  menu: "/placeholder.svg",
-  sections: "/placeholder.svg",
-  reservations: "/placeholder.svg",
-}
+const PLACEHOLDER = "/placeholder.svg"
 
 type Stats = {
   categoriesCount: number
@@ -20,13 +16,37 @@ type Stats = {
   reservationsTotal: number
 }
 
+type OverviewImages = { menu: string; sections: string; reservations: string }
+
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null)
+  const [overviewImages, setOverviewImages] = useState<OverviewImages>({
+    menu: PLACEHOLDER,
+    sections: PLACEHOLDER,
+    reservations: PLACEHOLDER,
+  })
 
   useEffect(() => {
     fetch("/api/admin/stats", { credentials: "include", cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((data: Stats | null) => data && setStats(data))
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    fetch("/api/content", { credentials: "include", cache: "no-store" })
+      .then((r) => r.ok ? r.json() : null)
+      .then((data: { menu?: { dishes?: { image?: string }[] }; sections?: Record<string, { image?: string; halls?: { image?: string }[] }> } | null) => {
+        if (!data) return
+        const menuImg = data.menu?.dishes?.find((d) => d.image)?.image
+        const sectionsImg = data.sections?.hero?.image || data.sections?.about?.image
+        const reservationsImg = data.sections?.events?.halls?.[0]?.image
+        setOverviewImages({
+          menu: menuImg || sectionsImg || PLACEHOLDER,
+          sections: sectionsImg || data.sections?.events?.halls?.[0]?.image || PLACEHOLDER,
+          reservations: reservationsImg || sectionsImg || PLACEHOLDER,
+        })
+      })
       .catch(() => {})
   }, [])
 
@@ -92,11 +112,12 @@ export default function AdminDashboardPage() {
         <Card className="overflow-hidden border-border transition-shadow hover:shadow-md">
           <div className="relative h-40 w-full bg-muted">
             <Image
-              src={OVERVIEW_IMAGES.menu}
+              src={overviewImages.menu}
               alt="Меню и блюда"
               fill
               className="object-cover"
               sizes="(max-width: 640px) 100vw, 33vw"
+              unoptimized={overviewImages.menu.startsWith("http")}
             />
           </div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -116,11 +137,12 @@ export default function AdminDashboardPage() {
         <Card className="overflow-hidden border-border transition-shadow hover:shadow-md">
           <div className="relative h-40 w-full bg-muted">
             <Image
-              src={OVERVIEW_IMAGES.sections}
+              src={overviewImages.sections}
               alt="Разделы сайта"
               fill
               className="object-cover"
               sizes="(max-width: 640px) 100vw, 33vw"
+              unoptimized={overviewImages.sections.startsWith("http")}
             />
           </div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -140,11 +162,12 @@ export default function AdminDashboardPage() {
         <Card className="overflow-hidden border-border transition-shadow hover:shadow-md">
           <div className="relative h-40 w-full bg-muted">
             <Image
-              src={OVERVIEW_IMAGES.reservations}
+              src={overviewImages.reservations}
               alt="Бронирование"
               fill
               className="object-cover"
               sizes="(max-width: 640px) 100vw, 33vw"
+              unoptimized={overviewImages.reservations.startsWith("http")}
             />
           </div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
