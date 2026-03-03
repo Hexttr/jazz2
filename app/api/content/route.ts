@@ -1,15 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getContent, putContent } from "@/lib/content"
 import { getSessionTokenFromRequest, verifySession } from "@/lib/auth"
-import type { AppContent, MenuContent, SectionsContent } from "@/lib/content-types"
-
-function isValidMenu(m: unknown): m is MenuContent {
-  return m != null && typeof m === "object" && Array.isArray((m as MenuContent).categories) && Array.isArray((m as MenuContent).dishes)
-}
-
-function isValidSections(s: unknown): s is SectionsContent {
-  return s != null && typeof s === "object" && !Array.isArray(s)
-}
+import type { AppContent } from "@/lib/content-types"
 
 export async function GET() {
   try {
@@ -35,8 +27,8 @@ export async function POST(request: NextRequest) {
   try {
     const current = await getContent()
     const next: AppContent = {
-      menu: (body.menu != null && isValidMenu(body.menu)) ? body.menu : current.menu,
-      sections: (body.sections != null && isValidSections(body.sections)) ? body.sections : current.sections,
+      menu: body.menu != null ? (body.menu as AppContent["menu"]) : current.menu,
+      sections: body.sections != null ? (body.sections as AppContent["sections"]) : current.sections,
     }
     const result = await putContent(next)
     if (!result.ok) {
