@@ -66,6 +66,16 @@ export async function updateReservationStatus(id: string, status: ReservationSta
   return true
 }
 
+export async function deleteReservation(id: string): Promise<boolean> {
+  const redis = getRedis()
+  if (!redis) return false
+  const list = await getReservations()
+  const next = list.filter((r) => r.id !== id)
+  if (next.length === list.length) return false
+  await redis.set(REDIS_RESERVATIONS, JSON.stringify(next))
+  return true
+}
+
 export async function getTelegramId(): Promise<string> {
   const redis = getRedis()
   if (!redis) return ""

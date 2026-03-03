@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Info, Save, RefreshCw } from "lucide-react"
+import { Info, Save, RefreshCw, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -117,8 +117,24 @@ export default function AdminReservationsPage() {
     }
   }
 
-  const filtered = filter === "all" ? reservations : reservations.filter((r) => r.status === filter)
+  const filtered =
+    filter === "all"
+      ? reservations.filter((r) => r.status !== "archived")
+      : reservations.filter((r) => r.status === filter)
   const hallName = (hall: string) => (hall === "grand" ? "Гранд" : "Амбианс")
+
+  async function deleteReservation(id: string) {
+    if (!confirm("Удалить эту заявку?")) return
+    const res = await fetch("/api/admin/reservations", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ id }),
+    })
+    if (res.ok) {
+      setReservations((prev) => prev.filter((r) => r.id !== id))
+    }
+  }
 
   if (loading) {
     return (
@@ -223,7 +239,15 @@ export default function AdminReservationsPage() {
                   value={r.status}
                   onValueChange={(v) => updateStatus(r.id, v as ReservationStatus)}
                 >
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger
+                    className={`w-[180px] ${
+                      r.status === "approved"
+                        ? "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400"
+                        : r.status === "archived"
+                          ? "border-red-500 bg-red-500/10 text-red-700 dark:text-red-400"
+                          : ""
+                    }`}
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -232,6 +256,16 @@ export default function AdminReservationsPage() {
                     <SelectItem value="archived">{STATUS_LABELS.archived}</SelectItem>
                   </SelectContent>
                 </Select>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => deleteReservation(r.id)}
+                  aria-label="Удалить заявку"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Удалить
+                </Button>
               </div>
             ))}
           </div>
