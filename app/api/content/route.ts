@@ -42,29 +42,42 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: result.error }, { status: 400 })
     }
     revalidatePath("/")
-    // Верификация: сразу читаем обратно и узнаём источник
-    const { content: readBack, source } = await getContentWithSource()
+    // Верификация: читаем обратно с повтором (eventual consistency у Blob/Redis)
+    let readBack: Awaited<ReturnType<typeof getContentWithSource>>["content"]
+    let source: "redis" | "blob" | "files"
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const res = await getContentWithSource()
+      readBack = res.content
+      source = res.source
+      const nextMenu = next.menu as { dishes?: { name?: string }[] }
+      const menuMatch =
+        body.menu == null ||
+        (readBack.menu?.dishes?.length === nextMenu?.dishes?.length &&
+          readBack.menu?.dishes?.[0]?.name === nextMenu?.dishes?.[0]?.name)
+      if (menuMatch) break
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 600))
+    }
     const nextMenu = next.menu as { dishes?: { name?: string }[] }
     const nextSections = next.sections as Record<string, { title?: string }>
     const menuVerified =
       body.menu == null ||
-      (readBack.menu?.dishes?.length === nextMenu?.dishes?.length &&
-        readBack.menu?.dishes?.[0]?.name === nextMenu?.dishes?.[0]?.name)
+      (readBack!.menu?.dishes?.length === nextMenu?.dishes?.length &&
+        readBack!.menu?.dishes?.[0]?.name === nextMenu?.dishes?.[0]?.name)
     const sectionsVerified =
       body.sections == null ||
-      readBack.sections?.hero?.title === nextSections?.hero?.title
+      readBack!.sections?.hero?.title === nextSections?.hero?.title
     const verified = menuVerified && sectionsVerified
     return NextResponse.json({
       success: true,
       verified,
       source,
-      firstDishAfterSave: readBack.menu?.dishes?.[0]?.name ?? null,
+      firstDishAfterSave: readBack!.menu?.dishes?.[0]?.name ?? null,
       ...(!verified && {
         debug: {
           menuVerified,
           sectionsVerified,
           savedFirstDish: nextMenu?.dishes?.[0]?.name,
-          readBackFirstDish: readBack.menu?.dishes?.[0]?.name,
+          readBackFirstDish: readBack!.menu?.dishes?.[0]?.name,
         },
       }),
     })
