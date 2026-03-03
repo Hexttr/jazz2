@@ -40,9 +40,6 @@ export default function AdminMenuPage() {
   const [saving, setSaving] = useState(false)
   const [saveMessage, setSaveMessage] = useState<"success" | "error" | null>(null)
   const [saveErrorText, setSaveErrorText] = useState<string>("")
-  const [saveSource, setSaveSource] = useState<string | null>(null)
-  const [saveWrittenTo, setSaveWrittenTo] = useState<string | null>(null)
-  const [saveHint, setSaveHint] = useState<string>("")
   const [openCategory, setOpenCategory] = useState<string | null>(null)
   const [editingCategory, setEditingCategory] = useState<MenuCategory | null>(null)
   const [editingDish, setEditingDish] = useState<MenuDish | null>(null)
@@ -65,9 +62,6 @@ export default function AdminMenuPage() {
     setSaving(true)
     setSaveMessage(null)
     setSaveErrorText("")
-    setSaveSource(null)
-    setSaveWrittenTo(null)
-    setSaveHint("")
     // Включаем незавершённые правки из диалогов (если пользователь нажал Сохранить без Готово)
     let dataToSave = menu
     if (editingDish) {
@@ -97,9 +91,6 @@ export default function AdminMenuPage() {
       const data = await res.json().catch(() => ({}))
       if (res.ok) {
         setSaveMessage("success")
-        setSaveSource(data.source ?? null)
-        setSaveWrittenTo(data.writtenTo ?? null)
-        setSaveHint(data.verified === false ? "Обновите страницу через минуту, если изменения не видны." : "")
         loadContent()
       } else {
         setSaveMessage("error")
@@ -205,15 +196,9 @@ export default function AdminMenuPage() {
         </div>
       </div>
       {saveMessage === "success" && (
-        <div className="rounded-md bg-green-500/10 px-4 py-2 text-sm text-green-600 dark:text-green-400">
-          <p>Изменения сохранены.</p>
-          {(saveSource || saveWrittenTo) && (
-            <p className="mt-1 text-green-600/80 dark:text-green-400/80">
-              источник: {saveSource ?? "—"}, записано в: {saveWrittenTo ?? "—"}
-            </p>
-          )}
-          {saveHint && <p className="mt-1 text-green-600/90 dark:text-green-400/90">{saveHint}</p>}
-        </div>
+        <p className="rounded-md bg-green-500/10 px-4 py-2 text-sm text-green-600 dark:text-green-400">
+          Изменения сохранены.
+        </p>
       )}
       {saveMessage === "error" && (
         <div className="rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive">
