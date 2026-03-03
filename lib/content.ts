@@ -21,9 +21,14 @@ async function readFromBlob(): Promise<AppContent | null> {
   const token = process.env.BLOB_READ_WRITE_TOKEN
   if (!token) return null
   try {
-    const { blobs } = await list({ prefix: BLOB_KEY, token })
-    if (blobs.length === 0) return null
-    const result = await get(blobs[0].pathname, { access: "private", token })
+    // useCache: false — всегда читать свежие данные из хранилища
+    let result = await get(BLOB_KEY, { access: "private", token, useCache: false })
+    if (!result) {
+      const { blobs } = await list({ prefix: BLOB_KEY, token })
+      const exact = blobs.find((b) => b.pathname === BLOB_KEY) ?? blobs[0]
+      if (!exact) return null
+      result = await get(exact.pathname, { access: "private", token, useCache: false })
+    }
     if (!result || result.statusCode !== 200 || !result.stream) return null
     const text = await new Response(result.stream).text()
     return JSON.parse(text) as AppContent

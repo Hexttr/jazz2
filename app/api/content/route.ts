@@ -6,7 +6,12 @@ import type { AppContent } from "@/lib/content-types"
 export async function GET() {
   try {
     const content = await getContent()
-    return NextResponse.json(content)
+    return NextResponse.json(content, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        "Pragma": "no-cache",
+      },
+    })
   } catch (e) {
     console.error(e)
     return NextResponse.json({ error: "Ошибка загрузки" }, { status: 500 })

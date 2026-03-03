@@ -74,7 +74,7 @@ export default function AdminSectionsPage() {
   const [openSection, setOpenSection] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch("/api/content", { credentials: "include" })
+    fetch("/api/content", { credentials: "include", cache: "no-store" })
       .then((r) => r.json())
       .then((data: AppContent) => {
         if (data.sections) setSections(data.sections)
@@ -181,6 +181,7 @@ export default function AdminSectionsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
+        cache: "no-store",
         body: JSON.stringify({ sections }),
       })
       const data = await res.json().catch(() => ({}))

@@ -45,7 +45,7 @@ export default function AdminMenuPage() {
   const [editingDish, setEditingDish] = useState<MenuDish | null>(null)
 
   useEffect(() => {
-    fetch("/api/content", { credentials: "include" })
+    fetch("/api/content", { credentials: "include", cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
         if (data.menu) setMenu(data.menu)
@@ -64,6 +64,7 @@ export default function AdminMenuPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
+        cache: "no-store",
         body: JSON.stringify({ menu }),
       })
       const data = await res.json().catch(() => ({}))
