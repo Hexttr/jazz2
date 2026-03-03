@@ -183,7 +183,7 @@ export default function AdminMenuPage() {
   return (
     <div className="space-y-6">
       {/* Sticky header */}
-      <div className="sticky top-0 z-20 -mx-4 -mt-6 border-b border-border/30 bg-background/80 px-4 py-4 backdrop-blur-xl md:-mx-8 md:-mt-8 md:px-8 md:py-5">
+      <div className="sticky top-0 z-20 -mx-4 border-b border-border/30 bg-background/80 px-4 py-4 backdrop-blur-xl md:-mx-8 md:px-8 md:py-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-2xl font-bold tracking-wide">Меню и блюда</h1>
           <div className="flex gap-2">
@@ -211,7 +211,7 @@ export default function AdminMenuPage() {
       </div>
 
       {/* Category cards */}
-      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 pt-4">
         {categories.map((cat) => {
           const dishCount = menu.dishes.filter((d) => d.categoryId === cat.id).length
           const cardImage = getCategoryImage(menu.dishes, cat.id)
