@@ -182,33 +182,36 @@ export default function AdminMenuPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-sans text-2xl font-bold tracking-wide">Меню и блюда</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={addCategory}>
-            <Plus className="mr-2 h-4 w-4" />
-            Категория
-          </Button>
-          <Button onClick={save} disabled={saving}>
-            <Save className="mr-2 h-4 w-4" />
-            {saving ? "Сохранение…" : "Сохранить"}
-          </Button>
+      {/* Sticky header */}
+      <div className="sticky top-0 z-20 -mx-4 -mt-6 border-b border-border/30 bg-background/80 px-4 py-4 backdrop-blur-xl md:-mx-8 md:-mt-8 md:px-8 md:py-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-2xl font-bold tracking-wide">Меню и блюда</h1>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={addCategory} className="border-border/60">
+              <Plus className="mr-2 h-4 w-4" />
+              Категория
+            </Button>
+            <Button size="sm" onClick={save} disabled={saving}>
+              <Save className="mr-2 h-4 w-4" />
+              {saving ? "Сохранение..." : "Сохранить"}
+            </Button>
+          </div>
         </div>
+        {saveMessage === "success" && (
+          <p className="mt-3 rounded-lg bg-green-500/10 px-3 py-2 text-sm text-green-500">
+            Изменения сохранены.
+          </p>
+        )}
+        {saveMessage === "error" && (
+          <div className="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            <p className="font-medium">Не удалось сохранить.</p>
+            {saveErrorText && <p className="mt-1 opacity-80">{saveErrorText}</p>}
+          </div>
+        )}
       </div>
-      {saveMessage === "success" && (
-        <p className="rounded-md bg-green-500/10 px-4 py-2 text-sm text-green-600 dark:text-green-400">
-          Изменения сохранены.
-        </p>
-      )}
-      {saveMessage === "error" && (
-        <div className="rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive">
-          <p className="font-medium">Не удалось сохранить.</p>
-          {saveErrorText && <p className="mt-1 text-destructive/90">{saveErrorText}</p>}
-        </div>
-      )}
 
-      {/* Category cards — компактные, до 6 в ряд */}
-      <div className="grid gap-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
+      {/* Category cards */}
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {categories.map((cat) => {
           const dishCount = menu.dishes.filter((d) => d.categoryId === cat.id).length
           const cardImage = getCategoryImage(menu.dishes, cat.id)
@@ -217,8 +220,8 @@ export default function AdminMenuPage() {
             <div
               key={cat.id}
               className={cn(
-                "group overflow-hidden rounded-xl border bg-card transition-all hover:border-primary/40 hover:shadow-md",
-                isOpen ? "ring-2 ring-primary border-primary" : "border-border"
+                "group overflow-hidden rounded-xl border bg-card/80 transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5",
+                isOpen ? "ring-2 ring-primary border-primary" : "border-border/50"
               )}
             >
               <div
@@ -281,7 +284,7 @@ export default function AdminMenuPage() {
 
       {/* Блюда выбранной категории — под карточками */}
       {openCategory && (
-        <div className="rounded-xl border-2 border-border p-4" style={{ backgroundColor: "lab(20 18.7 33.77)" }}>
+        <div className="rounded-xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm">
           {(() => {
             const cat = categories.find((c) => c.id === openCategory)
             const dishes = menu.dishes.filter((d) => d.categoryId === openCategory)
@@ -296,13 +299,13 @@ export default function AdminMenuPage() {
                     Добавить блюдо
                   </Button>
                 </div>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                   {dishes.map((d) => (
                     <article
                       key={d.id}
-                      className="flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition-all hover:border-primary/50"
+                      className="flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card/80 transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
                     >
-                      <div className="relative aspect-[4/3] shrink-0 overflow-hidden rounded-t-2xl bg-muted">
+                      <div className="relative aspect-[4/3] shrink-0 overflow-hidden bg-muted">
                         {d.image ? (
                           <Image
                             src={d.image}

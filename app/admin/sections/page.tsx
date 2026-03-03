@@ -186,14 +186,7 @@ export default function AdminSectionsPage() {
       })
       const data = await res.json().catch(() => ({}))
       if (res.ok) {
-        if (data.verified === false) {
-          setSaveMessage("error")
-          setSaveErrorText(
-            `Сохранено, но верификация не прошла. ${JSON.stringify(data.debug || "")}`
-          )
-        } else {
-          setSaveMessage("success")
-        }
+        setSaveMessage("success")
       } else {
         setSaveMessage("error")
         setSaveErrorText(typeof data.error === "string" ? data.error : "Не удалось сохранить")
@@ -218,27 +211,30 @@ export default function AdminSectionsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-sans text-2xl font-bold tracking-wide">Разделы сайта</h1>
-        <Button onClick={save} disabled={saving}>
-          <Save className="mr-2 h-4 w-4" />
-          {saving ? "Сохранение…" : "Сохранить"}
-        </Button>
-      </div>
-      {saveMessage === "success" && (
-        <p className="rounded-md bg-green-500/10 px-4 py-2 text-sm text-green-600 dark:text-green-400">
-          Изменения сохранены.
-        </p>
-      )}
-      {saveMessage === "error" && (
-        <div className="rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive">
-          <p className="font-medium">Не удалось сохранить.</p>
-          {saveErrorText && <p className="mt-1 text-destructive/90">{saveErrorText}</p>}
+      {/* Sticky header */}
+      <div className="sticky top-0 z-20 -mx-4 -mt-6 border-b border-border/30 bg-background/80 px-4 py-4 backdrop-blur-xl md:-mx-8 md:-mt-8 md:px-8 md:py-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-2xl font-bold tracking-wide">Разделы сайта</h1>
+          <Button size="sm" onClick={save} disabled={saving}>
+            <Save className="mr-2 h-4 w-4" />
+            {saving ? "Сохранение..." : "Сохранить"}
+          </Button>
         </div>
-      )}
+        {saveMessage === "success" && (
+          <p className="mt-3 rounded-lg bg-green-500/10 px-3 py-2 text-sm text-green-500">
+            Изменения сохранены.
+          </p>
+        )}
+        {saveMessage === "error" && (
+          <div className="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            <p className="font-medium">Не удалось сохранить.</p>
+            {saveErrorText && <p className="mt-1 opacity-80">{saveErrorText}</p>}
+          </div>
+        )}
+      </div>
 
-      {/* Карточки разделов — 6 в ряд, как в Меню */}
-      <div className="grid gap-2 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
+      {/* Section cards */}
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {sectionKeys.map((key) => {
           const block = (sections[key] as Record<string, unknown>) || {}
           const isOpen = openSection === key
@@ -248,8 +244,8 @@ export default function AdminSectionsPage() {
             <div
               key={key}
               className={cn(
-                "group overflow-hidden rounded-xl border bg-card transition-all hover:border-primary/40 hover:shadow-md",
-                isOpen ? "ring-2 ring-primary border-primary" : "border-border"
+                "group overflow-hidden rounded-xl border bg-card/80 transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5",
+                isOpen ? "ring-2 ring-primary border-primary" : "border-border/50"
               )}
             >
               <div
@@ -287,10 +283,7 @@ export default function AdminSectionsPage() {
         const block = (sections[openSection] as Record<string, unknown>) || {}
         const isHeroSection = openSection === "hero"
         return (
-        <div
-          className="rounded-xl border-2 border-border p-4 [&_input]:border-white [&_input]:focus-visible:border-white"
-          style={{ backgroundColor: "lab(21 0 0)" }}
-        >
+        <div className="rounded-xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm [&_input]:border-white/30 [&_input]:focus-visible:border-primary">
           <h2 className="mb-4 font-sans text-lg font-semibold">
             {SECTION_LABELS[openSection]}
           </h2>
