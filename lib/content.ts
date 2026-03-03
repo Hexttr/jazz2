@@ -1,19 +1,9 @@
 import { put, list, get } from "@vercel/blob"
-import { Redis } from "@upstash/redis"
 import type { AppContent } from "./content-types"
+import { getRedis } from "./redis"
 
 const BLOB_KEY = "jazz-content.json"
 const REDIS_KEY = "jazz:content"
-
-function getRedis(): Redis | null {
-  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
-    return new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    })
-  }
-  return null
-}
 
 async function readFromRedis(): Promise<AppContent | null> {
   const redis = getRedis()

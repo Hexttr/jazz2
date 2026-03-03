@@ -38,6 +38,7 @@ export default function AdminReservationsPage() {
   const [telegramId, setTelegramId] = useState("")
   const [loading, setLoading] = useState(true)
   const [savingTelegram, setSavingTelegram] = useState(false)
+  const [telegramError, setTelegramError] = useState<string | null>(null)
   const [filter, setFilter] = useState<ReservationStatus | "all">("all")
 
   useEffect(() => {
@@ -53,6 +54,7 @@ export default function AdminReservationsPage() {
 
   async function saveTelegramId() {
     setSavingTelegram(true)
+    setTelegramError(null)
     try {
       const res = await fetch("/api/admin/reservations/telegram", {
         method: "PUT",
@@ -60,7 +62,14 @@ export default function AdminReservationsPage() {
         credentials: "include",
         body: JSON.stringify({ telegramId: telegramId.trim() }),
       })
-      if (res.ok) setTelegramId(telegramId.trim())
+      const data = (await res.json().catch(() => ({}))) as { success?: boolean; error?: string }
+      if (res.ok && data.success !== false) {
+        setTelegramId(telegramId.trim())
+      } else {
+        setTelegramError(data.error || "Не удалось сохранить Telegram ID")
+      }
+    } catch {
+      setTelegramError("Ошибка соединения")
     } finally {
       setSavingTelegram(false)
     }
@@ -125,6 +134,9 @@ export default function AdminReservationsPage() {
             {savingTelegram ? "Сохранение…" : "Сохранить"}
           </Button>
         </div>
+        {telegramError && (
+          <p className="mt-2 text-sm text-destructive">{telegramError}</p>
+        )}
         <p className="mt-1 text-xs text-muted-foreground">
           Укажите ID, чтобы получать новые заявки в Telegram. Нужен бот с токеном (TELEGRAM_BOT_TOKEN в настройках проекта).
         </p>

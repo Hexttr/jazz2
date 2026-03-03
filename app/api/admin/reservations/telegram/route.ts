@@ -10,7 +10,16 @@ export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
     const telegramId = body?.telegramId != null ? String(body.telegramId).trim() : ""
-    await setTelegramId(telegramId)
+    const saved = await setTelegramId(telegramId)
+    if (!saved) {
+      return NextResponse.json(
+        {
+          error:
+            "Не удалось сохранить. Настройте Redis в Vercel (Storage → Upstash Redis): UPSTASH_REDIS_REST_URL и UPSTASH_REDIS_REST_TOKEN.",
+        },
+        { status: 503 }
+      )
+    }
     return NextResponse.json({ success: true })
   } catch (e) {
     console.error(e)

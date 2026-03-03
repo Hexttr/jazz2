@@ -1,4 +1,4 @@
-import { Redis } from "@upstash/redis"
+import { getRedis } from "./redis"
 
 const REDIS_RESERVATIONS = "jazz:reservations"
 const REDIS_TELEGRAM_ID = "jazz:telegram_id"
@@ -18,16 +18,6 @@ export type Reservation = {
   createdAt: string
 }
 
-function getRedis(): Redis | null {
-  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
-    return new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    })
-  }
-  return null
-}
-
 export async function getReservations(): Promise<Reservation[]> {
   const redis = getRedis()
   if (!redis) return []
@@ -44,17 +34,21 @@ export async function getReservations(): Promise<Reservation[]> {
 export async function addReservation(data: Omit<Reservation, "id" | "status" | "createdAt">): Promise<Reservation | null> {
   const redis = getRedis()
   if (!redis) return null
-  const list = await getReservations()
-  const id = Date.now().toString(36) + Math.random().toString(36).slice(2)
-  const reservation: Reservation = {
-    ...data,
-    id,
-    status: "pending",
-    createdAt: new Date().toISOString(),
+  try {
+    const list = await getReservations()
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2)
+    const reservation: Reservation = {
+      ...data,
+      id,
+      status: "pending",
+      createdAt: new Date().toISOString(),
+    }
+    list.unshift(reservation)
+    await redis.set(REDIS_RESERVATIONS, JSON.stringify(list))
+    return reservation
+  } catch {
+    return null
   }
-  list.unshift(reservation)
-  await redis.set(REDIS_RESERVATIONS, JSON.stringify(list))
-  return reservation
 }
 
 export async function updateReservationStatus(id: string, status: ReservationStatus): Promise<boolean> {
@@ -79,10 +73,16 @@ export async function getTelegramId(): Promise<string> {
   }
 }
 
-export async function setTelegramId(telegramId: string): Promise<void> {
+/** Returns true if saved, false if Redis not configured or error. */
+export async function setTelegramId(telegramId: string): Promise<boolean> {
   const redis = getRedis()
-  if (!redis) return
-  await redis.set(REDIS_TELEGRAM_ID, telegramId.trim())
+  if (!redis) return false
+  try {
+    await redis.set(REDIS_TELEGRAM_ID, telegramId.trim())
+    return true
+  } catch {
+    return false
+  }
 }
 
 export async function sendTelegramNotification(reservation: Reservation, telegramId: string): Promise<boolean> {
@@ -111,7 +111,6 @@ export async function sendTelegramNotification(reservation: Reservation, telegra
         body: JSON.stringify({
           chat_id: telegramId.trim(),
           text,
-          parse_mode: "HTML",
         }),
       }
     )
