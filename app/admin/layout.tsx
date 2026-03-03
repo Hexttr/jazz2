@@ -27,8 +27,8 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-muted/30">
-      <aside className="sticky top-0 flex h-screen w-56 flex-col border-r border-primary/20 bg-primary">
+    <div className="flex min-h-screen bg-muted/30 font-sans">
+      <aside className="sticky top-0 flex h-screen w-56 flex-col border-r border-white/10 bg-black">
         <div className="flex h-14 items-center border-b border-white/20 px-4">
           <Link href="/admin" className="flex items-center gap-2">
             <span className="font-sans text-2xl font-bold tracking-wide text-primary">
@@ -71,7 +71,7 @@ export default function AdminLayout({
           </Button>
         </div>
       </aside>
-      <main className="flex-1 overflow-auto p-6 md:p-8">
+      <main className="flex-1 overflow-auto p-6 md:p-8" style={{ fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
         {children}
       </main>
     </div>

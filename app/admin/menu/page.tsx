@@ -31,7 +31,7 @@ function newId() {
 function getCategoryImage(dishes: MenuDish[], categoryId: string): string | undefined {
   const withImage = dishes.filter((d) => d.categoryId === categoryId && d.image)
   if (withImage.length === 0) return undefined
-  return withImage[Math.floor(Math.random() * withImage.length)].image
+  return withImage[0].image
 }
 
 export default function AdminMenuPage() {
@@ -48,7 +48,6 @@ export default function AdminMenuPage() {
       .then((r) => r.json())
       .then((data) => {
         if (data.menu) setMenu(data.menu)
-        if (data.menu?.categories?.length) setOpenCategory(data.menu.categories[0].id)
       })
       .catch(() => setMenu({ categories: [], dishes: [] }))
       .finally(() => setLoading(false))
@@ -251,7 +250,7 @@ export default function AdminMenuPage() {
 
       {/* Блюда выбранной категории — под карточками */}
       {openCategory && (
-        <div className="rounded-xl border border-border bg-muted/20 p-4">
+        <div className="rounded-xl border-2 border-border bg-slate-100 p-4 dark:bg-slate-800/80">
           {(() => {
             const cat = categories.find((c) => c.id === openCategory)
             const dishes = menu.dishes.filter((d) => d.categoryId === openCategory)
@@ -309,7 +308,7 @@ export default function AdminMenuPage() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="flex-1 text-xs"
+                            className="flex-1 text-xs text-black hover:text-black dark:text-neutral-100 dark:hover:text-neutral-100"
                             onClick={() => setEditingDish(d)}
                           >
                             <Pencil className="h-3 w-3" />
