@@ -41,6 +41,7 @@ export default function AdminMenuPage() {
   const [saveMessage, setSaveMessage] = useState<"success" | "error" | null>(null)
   const [saveErrorText, setSaveErrorText] = useState<string>("")
   const [saveSource, setSaveSource] = useState<string | null>(null)
+  const [saveWrittenTo, setSaveWrittenTo] = useState<string | null>(null)
   const [saveHint, setSaveHint] = useState<string>("")
   const [openCategory, setOpenCategory] = useState<string | null>(null)
   const [editingCategory, setEditingCategory] = useState<MenuCategory | null>(null)
@@ -65,6 +66,7 @@ export default function AdminMenuPage() {
     setSaveMessage(null)
     setSaveErrorText("")
     setSaveSource(null)
+    setSaveWrittenTo(null)
     setSaveHint("")
     // Включаем незавершённые правки из диалогов (если пользователь нажал Сохранить без Готово)
     let dataToSave = menu
@@ -96,6 +98,7 @@ export default function AdminMenuPage() {
       if (res.ok) {
         setSaveMessage("success")
         setSaveSource(data.source ?? null)
+        setSaveWrittenTo(data.writtenTo ?? null)
         setSaveHint(data.verified === false ? "Обновите страницу через минуту, если изменения не видны." : "")
         loadContent()
       } else {
@@ -204,8 +207,10 @@ export default function AdminMenuPage() {
       {saveMessage === "success" && (
         <div className="rounded-md bg-green-500/10 px-4 py-2 text-sm text-green-600 dark:text-green-400">
           <p>Изменения сохранены.</p>
-          {saveSource && (
-            <span className="text-green-600/80 dark:text-green-400/80">(источник: {saveSource})</span>
+          {(saveSource || saveWrittenTo) && (
+            <p className="mt-1 text-green-600/80 dark:text-green-400/80">
+              источник: {saveSource ?? "—"}, записано в: {saveWrittenTo ?? "—"}
+            </p>
           )}
           {saveHint && <p className="mt-1 text-green-600/90 dark:text-green-400/90">{saveHint}</p>}
         </div>

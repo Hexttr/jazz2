@@ -62,37 +62,50 @@ export async function getContentWithSource(): Promise<{ content: AppContent; sou
   return { content: fromFiles, source: "files" }
 }
 
-export async function putContent(content: AppContent): Promise<{ ok: boolean; error?: string }> {
+export async function putContent(content: AppContent): Promise<{ ok: boolean; writtenTo?: "redis" | "blob" | "both"; error?: string }> {
   const redis = getRedis()
+  const json = JSON.stringify(content)
+  let wroteRedis = false
+  let wroteBlob = false
+
   if (redis) {
     try {
-      await redis.set(REDIS_KEY, JSON.stringify(content))
-      return { ok: true }
+      await redis.set(REDIS_KEY, json)
+      wroteRedis = true
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e)
-      return { ok: false, error: msg }
+      return { ok: false, error: `Redis: ${msg}` }
     }
   }
 
   const token = process.env.BLOB_READ_WRITE_TOKEN
-  if (!token) {
+  if (token) {
+    try {
+      await put(BLOB_KEY, JSON.stringify(content, null, 2), {
+        access: "private",
+        contentType: "application/json",
+        allowOverwrite: true,
+        cacheControlMaxAge: 60,
+        token,
+      })
+      wroteBlob = true
+    } catch (e) {
+      if (!wroteRedis) {
+        const msg = e instanceof Error ? e.message : String(e)
+        return { ok: false, error: `Blob: ${msg}` }
+      }
+    }
+  }
+
+  if (!wroteRedis && !wroteBlob) {
     return {
       ok: false,
       error:
-        "Настройте хранилище: в Vercel добавьте Redis (Storage → Connect Store → Upstash Redis) или задайте BLOB_READ_WRITE_TOKEN.",
+        "Настройте хранилище: UPSTASH_REDIS_REST_URL/TOKEN или BLOB_READ_WRITE_TOKEN в Vercel.",
     }
   }
-  try {
-    await put(BLOB_KEY, JSON.stringify(content, null, 2), {
-      access: "private",
-      contentType: "application/json",
-      allowOverwrite: true,
-      cacheControlMaxAge: 60,
-      token,
-    })
-    return { ok: true }
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e)
-    return { ok: false, error: msg }
+  return {
+    ok: true,
+    writtenTo: wroteRedis && wroteBlob ? "both" : wroteRedis ? "redis" : "blob",
   }
 }
