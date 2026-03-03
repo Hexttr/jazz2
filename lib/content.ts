@@ -1,4 +1,4 @@
-import { put, list, get } from "@vercel/blob"
+import { put, get } from "@vercel/blob"
 import type { AppContent } from "./content-types"
 import { getRedis } from "./redis"
 
@@ -21,9 +21,7 @@ async function readFromBlob(): Promise<AppContent | null> {
   const token = process.env.BLOB_READ_WRITE_TOKEN
   if (!token) return null
   try {
-    const { blobs } = await list({ prefix: BLOB_KEY, token })
-    if (blobs.length === 0) return null
-    const result = await get(blobs[0].pathname, { access: "private", token })
+    const result = await get(BLOB_KEY, { access: "private", useCache: false, token })
     if (!result || result.statusCode !== 200 || !result.stream) return null
     const text = await new Response(result.stream).text()
     return JSON.parse(text) as AppContent
@@ -89,6 +87,7 @@ export async function putContent(content: AppContent): Promise<{ ok: boolean; er
       access: "private",
       contentType: "application/json",
       allowOverwrite: true,
+      cacheControlMaxAge: 60,
       token,
     })
     return { ok: true }
