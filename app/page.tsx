@@ -1,3 +1,4 @@
+import { unstable_noStore } from "next/cache"
 import { getContent } from "@/lib/content"
 import { Navigation } from "@/components/navigation"
 import { Hero } from "@/components/hero"
@@ -13,6 +14,7 @@ import { Footer } from "@/components/footer"
 export const dynamic = "force-dynamic"
 
 export default async function Home() {
+  unstable_noStore()
   const content = await getContent()
   return (
     <main>

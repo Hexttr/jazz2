@@ -1,15 +1,17 @@
+import { revalidatePath } from "next/cache"
 import { NextRequest, NextResponse } from "next/server"
-import { getContent, putContent } from "@/lib/content"
+import { getContent, getContentWithSource, putContent } from "@/lib/content"
 import { getSessionTokenFromRequest, verifySession } from "@/lib/auth"
 import type { AppContent } from "@/lib/content-types"
 
 export async function GET() {
   try {
-    const content = await getContent()
+    const { content, source } = await getContentWithSource()
     return NextResponse.json(content, {
       headers: {
         "Cache-Control": "no-store, no-cache, must-revalidate",
         "Pragma": "no-cache",
+        "X-Content-Source": source,
       },
     })
   } catch (e) {
@@ -39,8 +41,9 @@ export async function POST(request: NextRequest) {
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: 400 })
     }
-    // Верификация: сразу читаем обратно
-    const readBack = await getContent()
+    revalidatePath("/")
+    // Верификация: сразу читаем обратно и узнаём источник
+    const { content: readBack, source } = await getContentWithSource()
     const nextMenu = next.menu as { dishes?: { name?: string }[] }
     const nextSections = next.sections as Record<string, { title?: string }>
     const menuVerified =
@@ -54,6 +57,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       verified,
+      source,
+      firstDishAfterSave: readBack.menu?.dishes?.[0]?.name ?? null,
       ...(!verified && {
         debug: {
           menuVerified,

@@ -2,7 +2,6 @@ import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import { getSessionTokenFromRequest, verifySession } from "@/lib/auth"
 import { getRedis } from "@/lib/redis"
-import { getContent } from "@/lib/content"
 
 /**
  * Отладочный endpoint: проверка хранилища контента.
@@ -26,14 +25,7 @@ export async function GET(request: NextRequest) {
   const redisConfigured = redis !== null
   const blobConfigured = !!process.env.BLOB_READ_WRITE_TOKEN
 
-  let source: "redis" | "blob" | "files" = "files"
-  if (redisConfigured) {
-    const raw = await redis!.get<string>("jazz:content")
-    if (typeof raw === "string") source = "redis"
-  }
-  if (source === "files" && blobConfigured) source = "blob"
-
-  const content = await getContent()
+  const { content, source } = await import("@/lib/content").then((m) => m.getContentWithSource())
   const firstDish = content.menu?.dishes?.[0]
   return NextResponse.json({
     redisConfigured,

@@ -55,6 +55,15 @@ export async function getContent(): Promise<AppContent> {
   return await readFromFiles()
 }
 
+export async function getContentWithSource(): Promise<{ content: AppContent; source: "redis" | "blob" | "files" }> {
+  const fromRedis = await readFromRedis()
+  if (fromRedis) return { content: fromRedis, source: "redis" }
+  const fromBlob = await readFromBlob()
+  if (fromBlob) return { content: fromBlob, source: "blob" }
+  const fromFiles = await readFromFiles()
+  return { content: fromFiles, source: "files" }
+}
+
 export async function putContent(content: AppContent): Promise<{ ok: boolean; error?: string }> {
   const redis = getRedis()
   if (redis) {
