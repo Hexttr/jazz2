@@ -59,13 +59,31 @@ export default function AdminMenuPage() {
     setSaving(true)
     setSaveMessage(null)
     setSaveErrorText("")
+    // Включаем незавершённые правки из диалогов (если пользователь нажал Сохранить без Готово)
+    let dataToSave = menu
+    if (editingDish) {
+      dataToSave = {
+        ...dataToSave,
+        dishes: dataToSave.dishes.map((d) =>
+          d.id === editingDish.id ? { ...d, ...editingDish } : d
+        ),
+      }
+    }
+    if (editingCategory) {
+      dataToSave = {
+        ...dataToSave,
+        categories: dataToSave.categories.map((c) =>
+          c.id === editingCategory.id ? { ...c, ...editingCategory } : c
+        ),
+      }
+    }
     try {
       const res = await fetch("/api/content", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         cache: "no-store",
-        body: JSON.stringify({ menu }),
+        body: JSON.stringify({ menu: dataToSave }),
       })
       const data = await res.json().catch(() => ({}))
       if (res.ok) {
