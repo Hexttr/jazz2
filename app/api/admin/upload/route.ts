@@ -28,10 +28,13 @@ export async function POST(request: NextRequest) {
   const ext = name.includes(".") ? name.slice(name.lastIndexOf(".")).toLowerCase() : ".jpg"
   const safeExt = [".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(ext) ? ext : ".jpg"
   const filename = `jazz/${Date.now()}-${Math.random().toString(36).slice(2)}${safeExt}`
+  const blobToken = process.env.BLOB_READ_WRITE_TOKEN
   try {
-    const blob = await put(filename, file, {
+    const buffer = Buffer.from(await file.arrayBuffer())
+    const blob = await put(filename, buffer, {
       access: "public",
       contentType: file.type || "image/jpeg",
+      token: blobToken,
     })
     return NextResponse.json({ url: blob.url })
   } catch (e) {
