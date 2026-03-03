@@ -27,9 +27,25 @@ export async function GET(request: NextRequest) {
 
   const { content, source } = await import("@/lib/content").then((m) => m.getContentWithSource())
   const firstDish = content.menu?.dishes?.[0]
+  let redisFirstDish: string | null = null
+  let redisKeyExists = false
+  if (redis) {
+    try {
+      const raw = await redis.get<string>("jazz:content")
+      redisKeyExists = typeof raw === "string"
+      if (redisKeyExists && raw) {
+        const parsed = JSON.parse(raw) as { menu?: { dishes?: { name?: string }[] } }
+        redisFirstDish = parsed?.menu?.dishes?.[0]?.name ?? null
+      }
+    } catch {
+      /* ignore */
+    }
+  }
   return NextResponse.json({
     redisConfigured,
     blobConfigured,
+    redisKeyExists,
+    redisFirstDish,
     source,
     dishesCount: content.menu?.dishes?.length ?? 0,
     categoriesCount: content.menu?.categories?.length ?? 0,

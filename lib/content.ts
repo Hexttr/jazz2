@@ -10,12 +10,8 @@ async function readFromRedis(): Promise<AppContent | null> {
   if (!redis) return null
   try {
     const raw = await redis.get<string>(REDIS_KEY)
-    if (typeof raw === "string") return JSON.parse(raw) as AppContent
-    // Redis пуст — мигрируем из Blob/files в Redis
-    const fromBlob = await readFromBlob()
-    const content = fromBlob ?? (await readFromFiles())
-    await redis.set(REDIS_KEY, JSON.stringify(content))
-    return content
+    if (typeof raw !== "string") return null
+    return JSON.parse(raw) as AppContent
   } catch {
     return null
   }

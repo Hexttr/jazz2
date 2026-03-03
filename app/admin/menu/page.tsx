@@ -47,7 +47,7 @@ export default function AdminMenuPage() {
   const [editingDish, setEditingDish] = useState<MenuDish | null>(null)
 
   function loadContent() {
-    return fetch("/api/content", { credentials: "include", cache: "no-store" })
+    return fetch(`/api/content?_=${Date.now()}`, { credentials: "include", cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
         if (data.menu) setMenu(data.menu)
