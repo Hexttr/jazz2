@@ -25,12 +25,36 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
     comment: "",
   })
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 3000)
-    setFormState({ name: "", phone: "", hall: "", date: "", time: "", guests: "", comment: "" })
+    setSubmitError(null)
+    try {
+      const res = await fetch("/api/reservations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formState.name,
+          phone: formState.phone,
+          hall: formState.hall,
+          date: formState.date,
+          time: formState.time,
+          guests: formState.guests,
+          comment: formState.comment,
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (res.ok) {
+        setSubmitted(true)
+        setTimeout(() => setSubmitted(false), 3000)
+        setFormState({ name: "", phone: "", hall: "", date: "", time: "", guests: "", comment: "" })
+      } else {
+        setSubmitError((data.error as string) || "Не удалось отправить заявку")
+      }
+    } catch {
+      setSubmitError("Ошибка соединения")
+    }
   }
 
   return (
@@ -137,6 +161,11 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                {submitError && (
+                  <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                    {submitError}
+                  </p>
+                )}
                 <h3 className="mb-2 font-sans text-2xl font-semibold">
                   Заполните форму
                 </h3>

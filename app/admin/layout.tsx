@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, UtensilsCrossed, FileText, LogOut } from "lucide-react"
+import { LayoutDashboard, UtensilsCrossed, FileText, CalendarCheck, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -10,6 +10,7 @@ const nav = [
   { href: "/admin", label: "Обзор", icon: LayoutDashboard },
   { href: "/admin/menu", label: "Меню и блюда", icon: UtensilsCrossed },
   { href: "/admin/sections", label: "Разделы сайта", icon: FileText },
+  { href: "/admin/reservations", label: "Бронирование", icon: CalendarCheck },
 ]
 
 export default function AdminLayout({
