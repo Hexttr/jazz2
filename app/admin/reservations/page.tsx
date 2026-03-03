@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Info, Save } from "lucide-react"
+import { useState, useEffect, useCallback } from "react"
+import { Info, Save, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -40,24 +40,35 @@ export default function AdminReservationsPage() {
   const [savingTelegram, setSavingTelegram] = useState(false)
   const [telegramError, setTelegramError] = useState<string | null>(null)
   const [filter, setFilter] = useState<ReservationStatus | "all">("all")
+  const [refreshing, setRefreshing] = useState(false)
+
+  const loadData = useCallback(async (showRefreshing = false) => {
+    if (showRefreshing) setRefreshing(true)
+    try {
+      const res = await fetch(
+        `/api/admin/reservations?_=${Date.now()}`,
+        { credentials: "include", cache: "no-store" }
+      )
+      if (res.status === 401) {
+        window.location.href = "/admin/login"
+        return
+      }
+      const data = (await res.json()) as { reservations?: Reservation[]; telegramId?: string }
+      if (Array.isArray(data.reservations)) setReservations(data.reservations)
+      if (data.telegramId != null) setTelegramId(String(data.telegramId))
+    } catch {
+      // ignore
+    } finally {
+      if (showRefreshing) setRefreshing(false)
+    }
+  }, [])
 
   useEffect(() => {
-    fetch("/api/admin/reservations", { credentials: "include", cache: "no-store" })
-      .then((r) => {
-        if (r.status === 401) {
-          window.location.href = "/admin/login"
-          return null
-        }
-        return r.json()
-      })
-      .then((data: { reservations?: Reservation[]; telegramId?: string } | null) => {
-        if (!data) return
-        if (Array.isArray(data.reservations)) setReservations(data.reservations)
-        if (data.telegramId != null) setTelegramId(String(data.telegramId))
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [])
+    let cancelled = false
+    setLoading(true)
+    loadData().finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [loadData])
 
   async function saveTelegramId() {
     setSavingTelegram(true)
@@ -70,13 +81,18 @@ export default function AdminReservationsPage() {
         cache: "no-store",
         body: JSON.stringify({ telegramId: telegramId.trim() }),
       })
-      const data = (await res.json().catch(() => ({}))) as { success?: boolean; error?: string }
+      const data = (await res.json().catch(() => ({}))) as {
+        success?: boolean
+        error?: string
+        telegramId?: string
+      }
       if (res.status === 401) {
         window.location.href = "/admin/login"
         return
       }
       if (res.ok && data.error == null) {
-        setTelegramId(telegramId.trim())
+        const saved = data.telegramId != null ? String(data.telegramId) : telegramId.trim()
+        setTelegramId(saved)
       } else {
         setTelegramError(data.error || "Не удалось сохранить Telegram ID")
       }
@@ -168,6 +184,16 @@ export default function AdminReservationsPage() {
               <SelectItem value="archived">{STATUS_LABELS.archived}</SelectItem>
             </SelectContent>
           </Select>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => loadData(true)}
+            disabled={refreshing}
+          >
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            {refreshing ? "Обновление…" : "Обновить"}
+          </Button>
         </div>
 
         {filtered.length === 0 ? (

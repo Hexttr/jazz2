@@ -22,10 +22,14 @@ export async function getReservations(): Promise<Reservation[]> {
   const redis = getRedis()
   if (!redis) return []
   try {
-    const raw = await redis.get<string>(REDIS_RESERVATIONS)
-    if (typeof raw !== "string") return []
-    const list = JSON.parse(raw) as Reservation[]
-    return Array.isArray(list) ? list : []
+    const raw = await redis.get<string | Reservation[]>(REDIS_RESERVATIONS)
+    if (raw == null) return []
+    if (Array.isArray(raw)) return raw
+    if (typeof raw === "string") {
+      const list = JSON.parse(raw) as Reservation[]
+      return Array.isArray(list) ? list : []
+    }
+    return []
   } catch {
     return []
   }
@@ -66,8 +70,9 @@ export async function getTelegramId(): Promise<string> {
   const redis = getRedis()
   if (!redis) return ""
   try {
-    const id = await redis.get<string>(REDIS_TELEGRAM_ID)
-    return typeof id === "string" ? id : ""
+    const id = await redis.get<string | number>(REDIS_TELEGRAM_ID)
+    if (id == null || id === "") return ""
+    return String(id).trim()
   } catch {
     return ""
   }

@@ -22,7 +22,7 @@ export async function PUT(request: NextRequest) {
         { status: 503 }
       )
     }
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true, telegramId })
   } catch (e) {
     console.error(e)
     return NextResponse.json({ error: "Ошибка сохранения" }, { status: 500 })
