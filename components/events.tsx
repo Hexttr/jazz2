@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { getImageUrl } from "@/lib/utils"
 import { Users, Sparkles, Wine } from "lucide-react"
 
 const banquetHalls = [
@@ -64,7 +65,7 @@ export function Events({ content }: { content?: Record<string, unknown> | null }
               {/* Image block */}
               <div className="relative aspect-[16/10] overflow-hidden">
                 <Image
-                  src={hall.image}
+                  src={getImageUrl(hall.image)}
                   alt={hall.name}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"

@@ -4,7 +4,7 @@ import { useState, useRef } from "react"
 import Image from "next/image"
 import { Upload, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { cn, getImageUrl } from "@/lib/utils"
 
 type Props = {
   value?: string
@@ -91,11 +91,11 @@ export function ImageDropzone({ value, onChange, alt = "", className, disabled }
           <>
             <div className="relative h-[160px] w-full overflow-hidden rounded-lg">
               <Image
-                src={value}
+                src={getImageUrl(value)}
                 alt={alt}
                 fill
                 className="object-contain p-2"
-                unoptimized={value.startsWith("http")}
+                unoptimized={value.startsWith("http") || value.startsWith("/api/blob")}
                 sizes="320px"
               />
             </div>

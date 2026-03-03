@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react"
 import Image from "next/image"
 import type { MenuContent } from "@/lib/content-types"
+import { getImageUrl } from "@/lib/utils"
 
 const defaultCategories = [
   { id: "cuts", label: "Нарезки и закуски" },
@@ -179,7 +180,7 @@ export function MenuSection({ menu, sectionContent }: { menu?: MenuContent | nul
               <div className="relative aspect-[4/3] shrink-0 overflow-hidden rounded-t-2xl bg-muted">
                 {item.image ? (
                   <Image
-                    src={item.image}
+                    src={getImageUrl(item.image)}
                     alt={item.name}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"

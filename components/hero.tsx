@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { getImageUrl } from "@/lib/utils"
 
 type HeroContent = {
   label?: string
@@ -21,26 +22,26 @@ export function Hero({ content }: { content?: Record<string, unknown> | null }) 
   return (
     <section id="hero" className="relative h-screen w-full overflow-hidden">
       <Image
-        src={c.image ?? "/images/hero.jpg"}
+        src={getImageUrl(c.image ?? "/images/hero.jpg") || "/images/hero.jpg"}
         alt="Интерьер Кафе JAZZ"
         fill
         className="object-cover"
         priority
         quality={90}
-        unoptimized={(c.image ?? "").startsWith("http")}
+        unoptimized={(c.image ?? "").startsWith("http") || (c.image ?? "").startsWith("/api/blob")}
       />
       <div className="absolute inset-0 bg-black/60" />
 
       <div className="relative z-10 flex h-full flex-col items-center justify-end pb-24 px-6 text-center">
         <div className="relative mb-6 flex justify-center">
           <Image
-            src={c.logo ?? "/images/logo.png"}
+            src={getImageUrl(c.logo ?? "/images/logo.png") || "/images/logo.png"}
             alt="Логотип Кафе JAZZ"
             width={200}
             height={200}
             className="object-contain"
             priority
-            unoptimized={(c.logo ?? "").startsWith("http")}
+            unoptimized={(c.logo ?? "").startsWith("http") || (c.logo ?? "").startsWith("/api/blob")}
           />
         </div>
         <p

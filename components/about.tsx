@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { getImageUrl } from "@/lib/utils"
 import {
   Music,
   Utensils,
@@ -69,11 +70,11 @@ export function About({ content }: { content?: Record<string, unknown> | null })
           {/* Image */}
           <div className="relative aspect-[4/5] overflow-hidden">
             <Image
-              src={image}
+              src={getImageUrl(image)}
               alt={imageAlt}
               fill
               className="object-cover"
-              unoptimized={image.startsWith("http")}
+              unoptimized={image.startsWith("http") || image.startsWith("/api/blob")}
             />
             <div className="absolute inset-0 bg-black/20" />
           </div>

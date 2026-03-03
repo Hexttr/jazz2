@@ -21,6 +21,7 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "@/components/ui/collapsible"
+import { getImageUrl } from "@/lib/utils"
 
 const OVERVIEW_IMAGES = {
   menu: "/admin/overview-menu.jpg",
@@ -142,7 +143,7 @@ export default function AdminDashboardPage() {
               <Card className="h-full overflow-hidden border-border/50 bg-card/80 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
                 <div className="relative h-40 w-full overflow-hidden bg-muted">
                   <Image
-                    src={card.image}
+                    src={getImageUrl(card.image)}
                     alt={card.title}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"

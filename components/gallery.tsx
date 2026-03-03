@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import { getImageUrl } from "@/lib/utils"
 import { X } from "lucide-react"
 
 const defaultImages = [
@@ -46,7 +47,7 @@ export function Gallery({ content }: { content?: Record<string, unknown> | null 
               aria-label={`Открыть ${image.alt}`}
             >
               <Image
-                src={image.src}
+                src={getImageUrl(image.src)}
                 alt={image.alt}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -82,7 +83,7 @@ export function Gallery({ content }: { content?: Record<string, unknown> | null 
           </button>
           <div className="relative h-[80vh] w-full max-w-5xl">
             <Image
-              src={images[lightbox].src}
+              src={getImageUrl(images[lightbox].src)}
               alt={images[lightbox].alt}
               fill
               className="object-contain"
