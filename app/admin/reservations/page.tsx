@@ -183,7 +183,7 @@ export default function AdminReservationsPage() {
 
       {/* Telegram settings — collapsible */}
       <Collapsible open={telegramOpen} onOpenChange={setTelegramOpen}>
-        <div className="rounded-xl border border-border/50 bg-card/80">
+        <div className="rounded-xl border border-white/20 bg-card/80">
           <CollapsibleTrigger asChild>
             <div className="flex cursor-pointer items-center justify-between px-5 py-4 transition-colors hover:bg-white/[0.02]">
               <div className="flex items-center gap-3">
@@ -274,7 +274,7 @@ export default function AdminReservationsPage() {
 
       {/* Reservations list */}
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/50 py-16">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/20 py-16">
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted/50">
             <Clock className="h-6 w-6 text-muted-foreground/50" />
           </div>
@@ -285,7 +285,7 @@ export default function AdminReservationsPage() {
           {filtered.map((r) => (
             <div
               key={r.id}
-              className="group rounded-xl border border-border/50 bg-card/80 p-4 transition-all duration-200 hover:border-border hover:shadow-sm"
+              className="group rounded-xl border border-white/20 bg-card/80 p-4 transition-all duration-200 hover:border-white/40 hover:shadow-sm"
             >
               <div className="flex flex-wrap items-start gap-4">
                 <div className="min-w-0 flex-1">

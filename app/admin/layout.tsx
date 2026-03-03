@@ -11,6 +11,7 @@ import {
   LogOut,
   Menu,
   ExternalLink,
+  Bug,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -25,6 +26,7 @@ const nav = [
   { href: "/admin/menu", label: "Меню и блюда", icon: UtensilsCrossed },
   { href: "/admin/sections", label: "Разделы сайта", icon: FileText },
   { href: "/admin/reservations", label: "Бронирование", icon: CalendarCheck, badge: true },
+  { href: "/admin/debug", label: "Диагностика", icon: Bug },
 ]
 
 function SidebarNav({

@@ -187,11 +187,11 @@ export default function AdminMenuPage() {
   return (
     <div className="space-y-6">
       {/* Sticky header */}
-      <div className="sticky top-0 z-20 -mx-4 border-b border-border/30 bg-background/80 px-4 py-4 backdrop-blur-xl md:-mx-8 md:px-8 md:py-5">
+      <div className="sticky top-0 z-20 -mx-4 border-b border-white/15 bg-background/80 px-4 py-4 backdrop-blur-xl md:-mx-8 md:px-8 md:py-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-2xl font-bold tracking-wide">Меню и блюда</h1>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={addCategory} className="border-border/60">
+            <Button variant="outline" size="sm" onClick={addCategory} className="border-white/30">
               <Plus className="mr-2 h-4 w-4" />
               Категория
             </Button>
@@ -225,7 +225,7 @@ export default function AdminMenuPage() {
               key={cat.id}
               className={cn(
                 "group overflow-hidden rounded-xl border bg-card/80 transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5",
-                isOpen ? "ring-2 ring-primary border-primary" : "border-border/50"
+                isOpen ? "ring-2 ring-primary border-primary" : "border-white/20"
               )}
             >
               <div
@@ -288,7 +288,7 @@ export default function AdminMenuPage() {
 
       {/* Блюда выбранной категории — под карточками */}
       {openCategory && (
-        <div className="rounded-xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm">
+        <div className="rounded-xl border border-white/20 bg-card/60 p-5 backdrop-blur-sm">
           {(() => {
             const cat = categories.find((c) => c.id === openCategory)
             const dishes = menu.dishes.filter((d) => d.categoryId === openCategory)
@@ -307,7 +307,7 @@ export default function AdminMenuPage() {
                   {dishes.map((d) => (
                     <article
                       key={d.id}
-                      className="flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card/80 transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
+                      className="flex flex-col overflow-hidden rounded-xl border border-white/20 bg-card/80 transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
                     >
                       <div className="relative aspect-[4/3] shrink-0 overflow-hidden bg-muted">
                         {d.image ? (

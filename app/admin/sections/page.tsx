@@ -219,7 +219,7 @@ export default function AdminSectionsPage() {
   return (
     <div className="space-y-6">
       {/* Sticky header */}
-      <div className="sticky top-0 z-20 -mx-4 -mt-6 border-b border-border/30 bg-background/80 px-4 py-4 backdrop-blur-xl md:-mx-8 md:-mt-8 md:px-8 md:py-5">
+      <div className="sticky top-0 z-20 -mx-4 -mt-6 border-b border-white/15 bg-background/80 px-4 py-4 backdrop-blur-xl md:-mx-8 md:-mt-8 md:px-8 md:py-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-2xl font-bold tracking-wide">Разделы сайта</h1>
           <Button size="sm" onClick={save} disabled={saving}>
@@ -252,7 +252,7 @@ export default function AdminSectionsPage() {
               key={key}
               className={cn(
                 "group overflow-hidden rounded-xl border bg-card/80 transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5",
-                isOpen ? "ring-2 ring-primary border-primary" : "border-border/50"
+                isOpen ? "ring-2 ring-primary border-primary" : "border-white/20"
               )}
             >
               <div
@@ -290,7 +290,7 @@ export default function AdminSectionsPage() {
         const block = (sections[openSection] as Record<string, unknown>) || {}
         const isHeroSection = openSection === "hero"
         return (
-        <div className="rounded-xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm [&_input]:border-white/30 [&_input]:focus-visible:border-primary">
+        <div className="rounded-xl border border-white/20 bg-card/60 p-5 backdrop-blur-sm [&_input]:border-white/30 [&_input]:focus-visible:border-primary">
           <h2 className="mb-4 font-sans text-lg font-semibold">
             {SECTION_LABELS[openSection]}
           </h2>
