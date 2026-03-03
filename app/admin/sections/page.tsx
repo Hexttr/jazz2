@@ -11,22 +11,26 @@ import { IconPicker } from "@/components/admin/icon-picker"
 import type { SectionsContent, AppContent } from "@/lib/content-types"
 import { cn } from "@/lib/utils"
 
+const DEFAULT_LABEL_COLOR = "#d97706"
+
 function ColorInput({
   value,
   onChange,
   title = "Цвет текста",
+  defaultValue = DEFAULT_LABEL_COLOR,
 }: {
   value?: string
   onChange: (v: string) => void
   title?: string
+  defaultValue?: string
 }) {
   return (
     <input
       type="color"
       title={title}
-      value={value || "#ffffff"}
+      value={value || defaultValue}
       onChange={(e) => onChange(e.target.value)}
-      className="h-9 w-10 shrink-0 cursor-pointer rounded border border-white bg-transparent"
+      className="h-9 min-h-[2.25rem] w-10 shrink-0 cursor-pointer self-center rounded border border-white bg-transparent p-0"
     />
   )
 }
