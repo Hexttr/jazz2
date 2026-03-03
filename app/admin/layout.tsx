@@ -142,7 +142,7 @@ export default function AdminLayout({
   )
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div data-admin className="flex min-h-screen bg-background">
       {/* Desktop sidebar */}
       <aside className="sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col border-r border-white/[0.06] bg-[oklch(0.1_0.005_60)] md:flex">
         {sidebarContent}

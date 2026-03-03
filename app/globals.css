@@ -92,4 +92,8 @@
   body {
     @apply bg-background text-foreground;
   }
+  [data-admin] {
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "tnum";
+  }
 }
