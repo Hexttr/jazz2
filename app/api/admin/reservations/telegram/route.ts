@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { getSessionTokenFromRequest, verifySession } from "@/lib/auth"
 import { setTelegramId } from "@/lib/reservations"
 
+export const dynamic = "force-dynamic"
+
 export async function PUT(request: NextRequest) {
   const token = getSessionTokenFromRequest(request)
   if (!token || !(await verifySession(token))) {

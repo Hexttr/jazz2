@@ -42,11 +42,18 @@ export default function AdminReservationsPage() {
   const [filter, setFilter] = useState<ReservationStatus | "all">("all")
 
   useEffect(() => {
-    fetch("/api/admin/reservations", { credentials: "include" })
-      .then((r) => r.json())
-      .then((data: { reservations?: Reservation[]; telegramId?: string }) => {
-        if (data.reservations) setReservations(data.reservations)
-        if (data.telegramId != null) setTelegramId(data.telegramId)
+    fetch("/api/admin/reservations", { credentials: "include", cache: "no-store" })
+      .then((r) => {
+        if (r.status === 401) {
+          window.location.href = "/admin/login"
+          return null
+        }
+        return r.json()
+      })
+      .then((data: { reservations?: Reservation[]; telegramId?: string } | null) => {
+        if (!data) return
+        if (Array.isArray(data.reservations)) setReservations(data.reservations)
+        if (data.telegramId != null) setTelegramId(String(data.telegramId))
       })
       .catch(() => {})
       .finally(() => setLoading(false))
@@ -60,10 +67,15 @@ export default function AdminReservationsPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
+        cache: "no-store",
         body: JSON.stringify({ telegramId: telegramId.trim() }),
       })
       const data = (await res.json().catch(() => ({}))) as { success?: boolean; error?: string }
-      if (res.ok && data.success !== false) {
+      if (res.status === 401) {
+        window.location.href = "/admin/login"
+        return
+      }
+      if (res.ok && data.error == null) {
         setTelegramId(telegramId.trim())
       } else {
         setTelegramError(data.error || "Не удалось сохранить Telegram ID")

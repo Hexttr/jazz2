@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { addReservation, getTelegramId, sendTelegramNotification } from "@/lib/reservations"
 import { isRedisConfigured } from "@/lib/redis"
 
+export const dynamic = "force-dynamic"
+
 export async function POST(request: NextRequest) {
   try {
     if (!isRedisConfigured()) {

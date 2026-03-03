@@ -249,12 +249,14 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
                       id="date"
                       type="date"
                       required
+                      min={new Date().toISOString().slice(0, 10)}
                       value={formState.date}
                       onChange={(e) =>
                         setFormState({ ...formState, date: e.target.value })
                       }
-                      className="border border-border bg-transparent px-4 py-3 text-foreground outline-none transition-colors focus:border-primary"
+                      className="cursor-pointer border border-border bg-background px-4 py-3 text-foreground outline-none transition-colors focus:border-primary [color-scheme:light]"
                       style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                      aria-label="Выберите дату"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -273,8 +275,9 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
                       onChange={(e) =>
                         setFormState({ ...formState, time: e.target.value })
                       }
-                      className="border border-border bg-transparent px-4 py-3 text-foreground outline-none transition-colors focus:border-primary"
+                      className="cursor-pointer border border-border bg-background px-4 py-3 text-foreground outline-none transition-colors focus:border-primary [color-scheme:light]"
                       style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                      aria-label="Выберите время"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">

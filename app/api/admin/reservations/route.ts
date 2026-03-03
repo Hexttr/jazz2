@@ -3,6 +3,8 @@ import { getSessionTokenFromRequest, verifySession } from "@/lib/auth"
 import { getReservations, updateReservationStatus, getTelegramId } from "@/lib/reservations"
 import type { ReservationStatus } from "@/lib/reservations"
 
+export const dynamic = "force-dynamic"
+
 export async function GET(request: NextRequest) {
   const token = getSessionTokenFromRequest(request)
   if (!token || !(await verifySession(token))) {
@@ -10,7 +12,15 @@ export async function GET(request: NextRequest) {
   }
   try {
     const [reservations, telegramId] = await Promise.all([getReservations(), getTelegramId()])
-    return NextResponse.json({ reservations, telegramId })
+    return NextResponse.json(
+      { reservations, telegramId },
+      {
+        headers: {
+          "Cache-Control": "no-store, max-age=0",
+          "CDN-Cache-Control": "no-store",
+        },
+      }
+    )
   } catch (e) {
     console.error(e)
     return NextResponse.json({ error: "Ошибка загрузки" }, { status: 500 })
