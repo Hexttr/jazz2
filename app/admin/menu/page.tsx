@@ -39,6 +39,7 @@ export default function AdminMenuPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveMessage, setSaveMessage] = useState<"success" | "error" | null>(null)
+  const [saveErrorText, setSaveErrorText] = useState<string>("")
   const [openCategory, setOpenCategory] = useState<string | null>(null)
   const [editingCategory, setEditingCategory] = useState<MenuCategory | null>(null)
   const [editingDish, setEditingDish] = useState<MenuDish | null>(null)
@@ -57,6 +58,7 @@ export default function AdminMenuPage() {
     if (!menu) return
     setSaving(true)
     setSaveMessage(null)
+    setSaveErrorText("")
     try {
       const res = await fetch("/api/content", {
         method: "POST",
@@ -64,10 +66,16 @@ export default function AdminMenuPage() {
         credentials: "include",
         body: JSON.stringify({ menu }),
       })
-      if (res.ok) setSaveMessage("success")
-      else setSaveMessage("error")
+      const data = await res.json().catch(() => ({}))
+      if (res.ok) {
+        setSaveMessage("success")
+      } else {
+        setSaveMessage("error")
+        setSaveErrorText(typeof data.error === "string" ? data.error : "Не удалось сохранить")
+      }
     } catch {
       setSaveMessage("error")
+      setSaveErrorText("Ошибка сети или сервера")
     } finally {
       setSaving(false)
     }
@@ -170,9 +178,10 @@ export default function AdminMenuPage() {
         </p>
       )}
       {saveMessage === "error" && (
-        <p className="rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive">
-          Не удалось сохранить. Проверьте настройки (Vercel Blob).
-        </p>
+        <div className="rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive">
+          <p className="font-medium">Не удалось сохранить.</p>
+          {saveErrorText && <p className="mt-1 text-destructive/90">{saveErrorText}</p>}
+        </div>
       )}
 
       {/* Category cards — компактные, до 6 в ряд */}

@@ -38,6 +38,7 @@ export default function AdminSectionsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveMessage, setSaveMessage] = useState<"success" | "error" | null>(null)
+  const [saveErrorText, setSaveErrorText] = useState<string>("")
   const [openSection, setOpenSection] = useState<string | null>(null)
 
   useEffect(() => {
@@ -87,6 +88,7 @@ export default function AdminSectionsPage() {
     if (!sections) return
     setSaving(true)
     setSaveMessage(null)
+    setSaveErrorText("")
     try {
       const res = await fetch("/api/content", {
         method: "POST",
@@ -94,10 +96,16 @@ export default function AdminSectionsPage() {
         credentials: "include",
         body: JSON.stringify({ sections }),
       })
-      if (res.ok) setSaveMessage("success")
-      else setSaveMessage("error")
+      const data = await res.json().catch(() => ({}))
+      if (res.ok) {
+        setSaveMessage("success")
+      } else {
+        setSaveMessage("error")
+        setSaveErrorText(typeof data.error === "string" ? data.error : "Не удалось сохранить")
+      }
     } catch {
       setSaveMessage("error")
+      setSaveErrorText("Ошибка сети или сервера")
     } finally {
       setSaving(false)
     }
@@ -128,9 +136,10 @@ export default function AdminSectionsPage() {
         </p>
       )}
       {saveMessage === "error" && (
-        <p className="rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive">
-          Не удалось сохранить. Проверьте настройки (Vercel Blob).
-        </p>
+        <div className="rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive">
+          <p className="font-medium">Не удалось сохранить.</p>
+          {saveErrorText && <p className="mt-1 text-destructive/90">{saveErrorText}</p>}
+        </div>
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

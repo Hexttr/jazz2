@@ -1,4 +1,4 @@
-import { put, list, del } from "@vercel/blob"
+import { put, list } from "@vercel/blob"
 import type { AppContent } from "./content-types"
 
 const BLOB_KEY = "jazz-content.json"
@@ -38,18 +38,23 @@ export async function getContent(): Promise<AppContent> {
 }
 
 export async function putContent(content: AppContent): Promise<{ ok: boolean; error?: string }> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return { ok: false, error: "BLOB_READ_WRITE_TOKEN не задан. Добавьте в Vercel или экспортируйте JSON вручную." }
+  const token = process.env.BLOB_READ_WRITE_TOKEN
+  if (!token) {
+    return {
+      ok: false,
+      error: "BLOB_READ_WRITE_TOKEN не задан. В Vercel: Settings → Environment Variables → добавьте BLOB_READ_WRITE_TOKEN (токен из Storage → Blob).",
+    }
   }
   try {
-    const { blobs } = await list({ prefix: BLOB_KEY })
-    for (const b of blobs) await del(b.url)
     await put(BLOB_KEY, JSON.stringify(content, null, 2), {
       access: "public",
       contentType: "application/json",
+      allowOverwrite: true,
+      token,
     })
     return { ok: true }
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Ошибка сохранения" }
+    const msg = e instanceof Error ? e.message : String(e)
+    return { ok: false, error: msg }
   }
 }

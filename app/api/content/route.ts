@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true })
   } catch (e) {
     console.error(e)
-    return NextResponse.json({ error: "Ошибка сохранения" }, { status: 500 })
+    const msg = e instanceof Error ? e.message : "Ошибка сохранения"
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }
