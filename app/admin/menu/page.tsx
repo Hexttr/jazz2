@@ -57,13 +57,14 @@ export default function AdminMenuPage() {
     loadContent().finally(() => setLoading(false))
   }, [])
 
-  async function save() {
-    if (!menu) return
+  async function save(menuOverride?: MenuContent) {
+    const baseMenu = menuOverride ?? menu
+    if (!baseMenu) return
     setSaving(true)
     setSaveMessage(null)
     setSaveErrorText("")
     // Включаем незавершённые правки из диалогов (если пользователь нажал Сохранить без Готово)
-    let dataToSave = menu
+    let dataToSave = baseMenu
     if (editingDish) {
       dataToSave = {
         ...dataToSave,
@@ -106,17 +107,16 @@ export default function AdminMenuPage() {
 
   function addCategory() {
     const id = "cat-" + newId()
-    setMenu((m) =>
-      m
-        ? {
-            ...m,
-            categories: [...m.categories, { id, name: "Новая категория", order: m.categories.length }],
-            dishes: m.dishes,
-          }
-        : m
-    )
-    setOpenCategory(id)
-    setEditingCategory({ id, name: "Новая категория", order: 0 })
+    const newCat = { id, name: "Новая категория", order: menu?.categories.length ?? 0 }
+    const newMenu = menu
+      ? { ...menu, categories: [...menu.categories, newCat], dishes: menu.dishes }
+      : null
+    if (newMenu) {
+      setMenu(newMenu)
+      setOpenCategory(id)
+      setEditingCategory(newCat)
+      save(newMenu)
+    }
   }
 
   function updateCategory(id: string, patch: Partial<MenuCategory>) {
@@ -153,8 +153,12 @@ export default function AdminMenuPage() {
       description: "",
       price: "",
     }
-    setMenu((m) => (m ? { ...m, dishes: [...m.dishes, dish] } : m))
-    setEditingDish(dish)
+    const newMenu = menu ? { ...menu, dishes: [...menu.dishes, dish] } : null
+    if (newMenu) {
+      setMenu(newMenu)
+      setEditingDish(dish)
+      save(newMenu)
+    }
   }
 
   function updateDish(id: string, patch: Partial<MenuDish>) {
@@ -191,7 +195,7 @@ export default function AdminMenuPage() {
               <Plus className="mr-2 h-4 w-4" />
               Категория
             </Button>
-            <Button size="sm" onClick={save} disabled={saving}>
+            <Button size="sm" onClick={() => save()} disabled={saving}>
               <Save className="mr-2 h-4 w-4" />
               {saving ? "Сохранение..." : "Сохранить"}
             </Button>
