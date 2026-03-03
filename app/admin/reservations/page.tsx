@@ -166,7 +166,7 @@ export default function AdminReservationsPage() {
           <p className="mt-2 text-sm text-destructive">{telegramError}</p>
         )}
         <p className="mt-1 text-xs text-muted-foreground">
-          Укажите ID, чтобы получать новые заявки в Telegram. Нужен бот с токеном (TELEGRAM_BOT_TOKEN в настройках проекта).
+          Укажите ID и сохраните. Чтобы получать сообщения, сначала напишите боту в Telegram команду /start — иначе бот не сможет отправить вам уведомление. Токен бота: TELEGRAM_BOT_TOKEN в настройках проекта.
         </p>
       </div>
 

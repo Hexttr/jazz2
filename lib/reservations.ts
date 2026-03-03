@@ -108,19 +108,25 @@ export async function sendTelegramNotification(reservation: Reservation, telegra
     .filter(Boolean)
     .join("\n")
   try {
+    const chatId = telegramId.trim()
     const res = await fetch(
       `https://api.telegram.org/bot${token}/sendMessage`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          chat_id: telegramId.trim(),
+          chat_id: chatId,
           text,
         }),
       }
     )
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({})) as { description?: string }
+      console.error("[Telegram] sendMessage failed:", res.status, err.description || res.statusText)
+    }
     return res.ok
-  } catch {
+  } catch (e) {
+    console.error("[Telegram] sendMessage error:", e)
     return false
   }
 }

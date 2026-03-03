@@ -27,8 +27,17 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
   const [submitted, setSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const dateInputRef = useRef<HTMLInputElement>(null)
+  const timeInputRef = useRef<HTMLInputElement>(null)
   const openDatePicker = () => {
     const el = dateInputRef.current
+    if (el && "showPicker" in el && typeof (el as HTMLInputElement).showPicker === "function") {
+      (el as HTMLInputElement).showPicker()
+    } else {
+      el?.focus()
+    }
+  }
+  const openTimePicker = () => {
+    const el = timeInputRef.current
     if (el && "showPicker" in el && typeof (el as HTMLInputElement).showPicker === "function") {
       (el as HTMLInputElement).showPicker()
     } else {
@@ -274,12 +283,14 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
                   <div className="flex flex-col gap-1.5">
                     <label
                       htmlFor="time"
-                      className="text-xs uppercase tracking-wider text-muted-foreground"
+                      className="cursor-pointer text-xs uppercase tracking-wider text-muted-foreground"
                       style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                      onClick={(e) => { e.preventDefault(); openTimePicker(); }}
                     >
                       Время
                     </label>
                     <input
+                      ref={timeInputRef}
                       id="time"
                       type="time"
                       required
@@ -287,6 +298,7 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
                       onChange={(e) =>
                         setFormState({ ...formState, time: e.target.value })
                       }
+                      onClick={openTimePicker}
                       className="cursor-pointer border border-border bg-background px-4 py-3 text-foreground outline-none transition-colors focus:border-primary [color-scheme:light]"
                       style={{ fontFamily: "var(--font-inter), sans-serif" }}
                       aria-label="Выберите время"
