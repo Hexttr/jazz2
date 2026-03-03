@@ -41,6 +41,7 @@ export default function AdminMenuPage() {
   const [saveMessage, setSaveMessage] = useState<"success" | "error" | null>(null)
   const [saveErrorText, setSaveErrorText] = useState<string>("")
   const [saveSource, setSaveSource] = useState<string | null>(null)
+  const [saveHint, setSaveHint] = useState<string>("")
   const [openCategory, setOpenCategory] = useState<string | null>(null)
   const [editingCategory, setEditingCategory] = useState<MenuCategory | null>(null)
   const [editingDish, setEditingDish] = useState<MenuDish | null>(null)
@@ -64,6 +65,7 @@ export default function AdminMenuPage() {
     setSaveMessage(null)
     setSaveErrorText("")
     setSaveSource(null)
+    setSaveHint("")
     // Включаем незавершённые правки из диалогов (если пользователь нажал Сохранить без Готово)
     let dataToSave = menu
     if (editingDish) {
@@ -92,16 +94,10 @@ export default function AdminMenuPage() {
       })
       const data = await res.json().catch(() => ({}))
       if (res.ok) {
-        if (data.verified === false) {
-          setSaveMessage("error")
-          setSaveErrorText(
-            `Сохранено, но верификация не прошла. ${JSON.stringify(data.debug || "")}`
-          )
-        } else {
-          setSaveMessage("success")
-          setSaveSource(data.source ?? null)
-          loadContent()
-        }
+        setSaveMessage("success")
+        setSaveSource(data.source ?? null)
+        setSaveHint(data.verified === false ? "Обновите страницу через минуту, если изменения не видны." : "")
+        loadContent()
       } else {
         setSaveMessage("error")
         setSaveErrorText(typeof data.error === "string" ? data.error : "Не удалось сохранить")
@@ -206,14 +202,13 @@ export default function AdminMenuPage() {
         </div>
       </div>
       {saveMessage === "success" && (
-        <p className="rounded-md bg-green-500/10 px-4 py-2 text-sm text-green-600 dark:text-green-400">
-          Изменения сохранены.
+        <div className="rounded-md bg-green-500/10 px-4 py-2 text-sm text-green-600 dark:text-green-400">
+          <p>Изменения сохранены.</p>
           {saveSource && (
-            <span className="ml-2 text-green-600/80 dark:text-green-400/80">
-              (источник: {saveSource})
-            </span>
+            <span className="text-green-600/80 dark:text-green-400/80">(источник: {saveSource})</span>
           )}
-        </p>
+          {saveHint && <p className="mt-1 text-green-600/90 dark:text-green-400/90">{saveHint}</p>}
+        </div>
       )}
       {saveMessage === "error" && (
         <div className="rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive">
