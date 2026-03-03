@@ -186,7 +186,14 @@ export default function AdminSectionsPage() {
       })
       const data = await res.json().catch(() => ({}))
       if (res.ok) {
-        setSaveMessage("success")
+        if (data.verified === false) {
+          setSaveMessage("error")
+          setSaveErrorText(
+            `Сохранено, но верификация не прошла. ${JSON.stringify(data.debug || "")}`
+          )
+        } else {
+          setSaveMessage("success")
+        }
       } else {
         setSaveMessage("error")
         setSaveErrorText(typeof data.error === "string" ? data.error : "Не удалось сохранить")
