@@ -96,14 +96,14 @@ export default function AdminDashboardPage() {
                   <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                     {label}
                   </p>
-                  <p className="mt-1 text-3xl font-bold tabular-nums text-foreground">
+                  <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-3xl font-bold tabular-nums text-foreground">
                     {stats ? stats[key] : "—"}
+                    {key === "reservationsTotal" && stats && stats.reservationsPending > 0 && (
+                      <span className="text-xs font-medium text-amber-500">
+                        ({stats.reservationsPending} на рассмотрении)
+                      </span>
+                    )}
                   </p>
-                  {key === "reservationsTotal" && stats && stats.reservationsPending > 0 && (
-                    <p className="mt-0.5 text-xs font-medium text-amber-500">
-                      {stats.reservationsPending} на рассмотрении
-                    </p>
-                  )}
                 </div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
                   <Icon className="h-6 w-6" />
