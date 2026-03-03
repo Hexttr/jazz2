@@ -227,8 +227,7 @@ export default function AdminMenuPage() {
                 >
                   <Button
                     size="icon"
-                    variant="secondary"
-                    className="h-6 w-6 bg-white/90 hover:bg-white"
+                    className="h-6 w-6 bg-primary text-black hover:bg-primary/90 hover:text-black"
                     onClick={() => setEditingCategory(cat)}
                   >
                     <Pencil className="h-3 w-3" />
@@ -236,7 +235,7 @@ export default function AdminMenuPage() {
                   <Button
                     size="icon"
                     variant="destructive"
-                    className="h-6 w-6"
+                    className="h-6 w-6 text-white"
                     onClick={() => deleteCategory(cat.id)}
                   >
                     <Trash2 className="h-3 w-3" />
@@ -250,7 +249,7 @@ export default function AdminMenuPage() {
 
       {/* Блюда выбранной категории — под карточками */}
       {openCategory && (
-        <div className="rounded-xl border-2 border-border bg-slate-100 p-4 dark:bg-slate-800/80">
+        <div className="rounded-xl border-2 border-border p-4" style={{ backgroundColor: "lab(20 18.7 33.77)" }}>
           {(() => {
             const cat = categories.find((c) => c.id === openCategory)
             const dishes = menu.dishes.filter((d) => d.categoryId === openCategory)
@@ -301,26 +300,27 @@ export default function AdminMenuPage() {
                             {d.description}
                           </p>
                         )}
-                        <p className="mt-2 font-sans text-base font-bold text-primary">
-                          {d.price} ₽
-                        </p>
-                        <div className="mt-2 flex gap-1">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="flex-1 text-xs text-black hover:text-black dark:text-neutral-100 dark:hover:text-neutral-100"
-                            onClick={() => setEditingDish(d)}
-                          >
-                            <Pencil className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-destructive hover:text-destructive"
-                            onClick={() => deleteDish(d.id)}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
+                        <div className="mt-2 flex items-center justify-between gap-2">
+                          <p className="font-sans text-base font-bold text-primary shrink-0">
+                            {d.price} ₽
+                          </p>
+                          <div className="flex gap-0.5 shrink-0">
+                            <Button
+                              size="icon"
+                              className="h-6 w-6 bg-primary text-black hover:bg-primary/90 hover:text-black"
+                              onClick={() => setEditingDish(d)}
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="destructive"
+                              className="h-6 w-6 text-white"
+                              onClick={() => deleteDish(d.id)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </article>
