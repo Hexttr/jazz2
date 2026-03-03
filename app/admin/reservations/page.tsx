@@ -182,7 +182,7 @@ export default function AdminReservationsPage() {
           <p className="mt-2 text-sm text-destructive">{telegramError}</p>
         )}
         <p className="mt-1 text-xs text-muted-foreground">
-          Укажите ID и сохраните. Чтобы получать сообщения, сначала напишите боту в Telegram команду /start — иначе бот не сможет отправить вам уведомление. Токен бота: TELEGRAM_BOT_TOKEN в настройках проекта.
+          Укажите ID и сохраните. Чтобы получать сообщения, сначала напишите боту @jazz_68_bot в Telegram команду /start. Токен бота (jazz_68_bot) в настройках проекта: TELEGRAM_BOT_TOKEN.
         </p>
       </div>
 
@@ -259,12 +259,11 @@ export default function AdminReservationsPage() {
                 <Button
                   type="button"
                   variant="destructive"
-                  size="sm"
+                  size="icon"
                   onClick={() => deleteReservation(r.id)}
                   aria-label="Удалить заявку"
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Удалить
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             ))}

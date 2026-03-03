@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 import { LayoutDashboard, UtensilsCrossed, FileText, CalendarCheck, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -10,7 +11,7 @@ const nav = [
   { href: "/admin", label: "Обзор", icon: LayoutDashboard },
   { href: "/admin/menu", label: "Меню и блюда", icon: UtensilsCrossed },
   { href: "/admin/sections", label: "Разделы сайта", icon: FileText },
-  { href: "/admin/reservations", label: "Бронирование", icon: CalendarCheck },
+  { href: "/admin/reservations", label: "Бронирование", icon: CalendarCheck, badge: true },
 ]
 
 export default function AdminLayout({
@@ -20,6 +21,16 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname()
   const router = useRouter()
+  const [pendingCount, setPendingCount] = useState<number>(0)
+
+  useEffect(() => {
+    fetch("/api/admin/stats", { credentials: "include", cache: "no-store" })
+      .then((r) => r.ok ? r.json() : null)
+      .then((data: { reservationsPending?: number } | null) => {
+        if (data && typeof data.reservationsPending === "number") setPendingCount(data.reservationsPending)
+      })
+      .catch(() => {})
+  }, [])
 
   async function handleLogout() {
     await fetch("/api/admin/logout", { method: "POST", credentials: "include" })
@@ -44,6 +55,7 @@ export default function AdminLayout({
           {nav.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
+            const showBadge = "badge" in item && item.badge && pendingCount > 0
             return (
               <Link
                 key={item.href}
@@ -56,7 +68,12 @@ export default function AdminLayout({
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {showBadge && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-semibold text-white">
+                    {pendingCount > 99 ? "99+" : pendingCount}
+                  </span>
+                )}
               </Link>
             )
           })}
