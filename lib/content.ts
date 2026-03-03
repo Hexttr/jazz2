@@ -37,13 +37,21 @@ async function readFromFiles(): Promise<AppContent> {
   const fs = await import("fs/promises")
   const menuPath = path.join(process.cwd(), "data", "menu.json")
   const sectionsPath = path.join(process.cwd(), "data", "sections.json")
-  const [menuBuf, sectionsBuf] = await Promise.all([
-    fs.readFile(menuPath, "utf-8"),
-    fs.readFile(sectionsPath, "utf-8"),
-  ])
-  return {
-    menu: JSON.parse(menuBuf),
-    sections: JSON.parse(sectionsBuf),
+  try {
+    const [menuBuf, sectionsBuf] = await Promise.all([
+      fs.readFile(menuPath, "utf-8"),
+      fs.readFile(sectionsPath, "utf-8"),
+    ])
+    return {
+      menu: JSON.parse(menuBuf) as AppContent["menu"],
+      sections: JSON.parse(sectionsBuf) as AppContent["sections"],
+    }
+  } catch (e) {
+    console.error("[content] readFromFiles failed:", e)
+    return {
+      menu: { categories: [], dishes: [] },
+      sections: {},
+    }
   }
 }
 

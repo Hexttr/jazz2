@@ -44,7 +44,7 @@ export function Contacts({ content }: { content?: Record<string, unknown> | null
         <div className="mb-16 flex flex-col items-center text-center">
           <span
             className="mb-4 text-sm uppercase tracking-[0.3em] text-primary"
-            style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.labelColor && { color: content.labelColor as string }) }}
+            style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.labelColor ? { color: content.labelColor as string } : {}) }}
           >
             {label}
           </span>

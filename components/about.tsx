@@ -55,7 +55,7 @@ export function About({ content }: { content?: Record<string, unknown> | null })
         <div className="mb-16 flex flex-col items-center text-center">
           <span
             className="mb-4 text-sm uppercase tracking-[0.3em] text-primary"
-            style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.labelColor && { color: content.labelColor as string }) }}
+            style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.labelColor ? { color: content.labelColor as string } : {}) }}
           >
             {label}
           </span>
@@ -82,13 +82,13 @@ export function About({ content }: { content?: Record<string, unknown> | null })
           <div>
             <p
               className="mb-8 text-lg leading-relaxed text-foreground/70"
-              style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.textColor && { color: content.textColor as string }) }}
+              style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.textColor ? { color: content.textColor as string } : {}) }}
             >
               {text}
             </p>
             <p
               className="mb-12 text-lg leading-relaxed text-foreground/70"
-              style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.text2Color && { color: content.text2Color as string }) }}
+              style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.text2Color ? { color: content.text2Color as string } : {}) }}
             >
               {text2}
             </p>

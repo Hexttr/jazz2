@@ -83,7 +83,7 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
           <div className="flex flex-col justify-center">
             <span
               className="mb-4 text-sm uppercase tracking-[0.3em] text-primary"
-              style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.labelColor && { color: content.labelColor as string }) }}
+              style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.labelColor ? { color: content.labelColor as string } : {}) }}
             >
               {label}
             </span>
@@ -93,7 +93,7 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
             <div className="mb-8 h-px w-16 bg-primary" />
             <p
               className="mb-8 text-lg leading-relaxed text-foreground/70"
-              style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.textColor && { color: content.textColor as string }) }}
+              style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.textColor ? { color: content.textColor as string } : {}) }}
             >
               {text}
             </p>
@@ -323,11 +323,16 @@ export function Reservation({ content }: { content?: Record<string, unknown> | n
                       style={{ fontFamily: "var(--font-inter), sans-serif" }}
                     >
                       <option value="" className="bg-card">Выбрать</option>
-                      {Array.from({ length: 66 }, (_, i) => i + 15).map((n) => (
-                        <option key={n} value={String(n)} className="bg-card">
-                          {n} {n === 1 ? "гость" : n < 5 ? "гостя" : "гостей"}
-                        </option>
-                      ))}
+                      {Array.from({ length: 66 }, (_, i) => i + 15).map((n) => {
+                        const n10 = n % 10
+                        const n100 = n % 100
+                        const plural = n10 === 1 && n100 !== 11 ? "гость" : n10 >= 2 && n10 <= 4 && (n100 < 10 || n100 >= 20) ? "гостя" : "гостей"
+                        return (
+                          <option key={n} value={String(n)} className="bg-card">
+                            {n} {plural}
+                          </option>
+                        )
+                      })}
                     </select>
                   </div>
                 </div>

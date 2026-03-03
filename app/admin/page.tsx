@@ -8,9 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 
 const OVERVIEW_IMAGES = {
-  menu: "/admin/overview-menu.jpg",
-  sections: "/admin/overview-sections.jpg",
-  reservations: "/admin/overview-reservations.jpg",
+  menu: "/placeholder.svg",
+  sections: "/placeholder.svg",
+  reservations: "/placeholder.svg",
 }
 
 type Stats = {

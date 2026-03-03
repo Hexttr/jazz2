@@ -54,15 +54,16 @@ const SECTION_LABELS: Record<string, string> = {
   footer: "Подвал",
 }
 
+const SECTION_PREVIEW_PLACEHOLDER = "/placeholder.svg"
 const SECTION_PREVIEW_IMAGES: Record<string, string> = {
-  hero: "/admin/sections/section-hero.jpg",
-  about: "/admin/sections/section-about.jpg",
-  menu: "/admin/sections/section-menu.jpg",
-  events: "/admin/sections/section-events.jpg",
-  gallery: "/admin/sections/section-gallery.jpg",
-  reservation: "/admin/sections/section-reservation.jpg",
-  contacts: "/admin/sections/section-contacts.jpg",
-  footer: "/admin/sections/section-footer.jpg",
+  hero: SECTION_PREVIEW_PLACEHOLDER,
+  about: SECTION_PREVIEW_PLACEHOLDER,
+  menu: SECTION_PREVIEW_PLACEHOLDER,
+  events: SECTION_PREVIEW_PLACEHOLDER,
+  gallery: SECTION_PREVIEW_PLACEHOLDER,
+  reservation: SECTION_PREVIEW_PLACEHOLDER,
+  contacts: SECTION_PREVIEW_PLACEHOLDER,
+  footer: SECTION_PREVIEW_PLACEHOLDER,
 }
 
 export default function AdminSectionsPage() {
@@ -86,7 +87,7 @@ export default function AdminSectionsPage() {
   function updateSection(
     key: string,
     field: string,
-    value: string | number | Record<string, unknown>[] | undefined
+    value: string | string[] | number | Record<string, unknown>[] | undefined
   ) {
     setSections((s) => {
       if (!s) return s
@@ -277,6 +278,7 @@ export default function AdminSectionsPage() {
       {/* Редактирование выбранного раздела — ниже карточек */}
       {openSection && (() => {
         const block = (sections[openSection] as Record<string, unknown>) || {}
+        const isHeroSection = openSection === "hero"
         return (
         <div
           className="rounded-xl border-2 border-border p-4 [&_input]:border-white [&_input]:focus-visible:border-white"
@@ -301,7 +303,7 @@ export default function AdminSectionsPage() {
                               <Label>Заголовок</Label>
                               <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={openSection === "hero" ? DEFAULTS.white : DEFAULTS.foreground} />
+                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
                         <div className="flex gap-2 items-stretch">
@@ -309,7 +311,7 @@ export default function AdminSectionsPage() {
                             <Label>Текст под заголовком</Label>
                             <Input value={(block.text as string) ?? ""} onChange={(e) => updateSection(openSection, "text", e.target.value)} />
                           </div>
-                          <ColorInput value={block.textColor as string} onChange={(v) => updateSection(openSection, "textColor", v)} defaultValue={openSection === "hero" ? DEFAULTS.white70 : DEFAULTS.foreground} />
+                          <ColorInput value={block.textColor as string} onChange={(v) => updateSection(openSection, "textColor", v)} defaultValue={isHeroSection ? DEFAULTS.white70 : DEFAULTS.foreground} />
                         </div>
                         <div className="grid gap-4 sm:grid-cols-2">
                           <div className="space-y-2">
@@ -344,7 +346,7 @@ export default function AdminSectionsPage() {
                               <Label>Заголовок</Label>
                               <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={openSection === "hero" ? DEFAULTS.white : DEFAULTS.foreground} />
+                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
                         <div className="flex gap-2 items-stretch">
@@ -352,7 +354,7 @@ export default function AdminSectionsPage() {
                             <Label>Первый абзац</Label>
                             <Input value={(block.text as string) ?? ""} onChange={(e) => updateSection(openSection, "text", e.target.value)} className="h-auto min-h-[80px]" />
                           </div>
-                          <ColorInput value={block.textColor as string} onChange={(v) => updateSection(openSection, "textColor", v)} defaultValue={openSection === "hero" ? DEFAULTS.white70 : DEFAULTS.foreground} />
+                          <ColorInput value={block.textColor as string} onChange={(v) => updateSection(openSection, "textColor", v)} defaultValue={isHeroSection ? DEFAULTS.white70 : DEFAULTS.foreground} />
                         </div>
                         <div className="flex gap-2 items-stretch">
                           <div className="flex-1 space-y-2">
@@ -411,7 +413,7 @@ export default function AdminSectionsPage() {
                               <Label>Заголовок</Label>
                               <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={openSection === "hero" ? DEFAULTS.white : DEFAULTS.foreground} />
+                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
                         <div className="flex gap-2 items-stretch">
@@ -438,7 +440,7 @@ export default function AdminSectionsPage() {
                               <Label>Заголовок</Label>
                               <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={openSection === "hero" ? DEFAULTS.white : DEFAULTS.foreground} />
+                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
                         <div className="flex gap-2 items-stretch">
@@ -503,7 +505,7 @@ export default function AdminSectionsPage() {
                               <Label>Заголовок</Label>
                               <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={openSection === "hero" ? DEFAULTS.white : DEFAULTS.foreground} />
+                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
                         <div className="border-t border-white/20 pt-4">
@@ -555,7 +557,7 @@ export default function AdminSectionsPage() {
                               <Label>Заголовок</Label>
                               <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={openSection === "hero" ? DEFAULTS.white : DEFAULTS.foreground} />
+                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
                         <div className="flex gap-2 items-stretch">
@@ -563,7 +565,7 @@ export default function AdminSectionsPage() {
                             <Label>Текст (основной)</Label>
                             <Input value={(block.text as string) ?? ""} onChange={(e) => updateSection(openSection, "text", e.target.value)} className="h-auto min-h-[60px]" />
                           </div>
-                          <ColorInput value={block.textColor as string} onChange={(v) => updateSection(openSection, "textColor", v)} defaultValue={openSection === "hero" ? DEFAULTS.white70 : DEFAULTS.foreground} />
+                          <ColorInput value={block.textColor as string} onChange={(v) => updateSection(openSection, "textColor", v)} defaultValue={isHeroSection ? DEFAULTS.white70 : DEFAULTS.foreground} />
                         </div>
                         <div className="border-t border-white/20 pt-4 space-y-4">
                           <Label className="text-base">Блоки под текстом</Label>
@@ -609,7 +611,7 @@ export default function AdminSectionsPage() {
                               <Label>Заголовок</Label>
                               <Input value={(block.title as string) ?? ""} onChange={(e) => updateSection(openSection, "title", e.target.value)} />
                             </div>
-                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={openSection === "hero" ? DEFAULTS.white : DEFAULTS.foreground} />
+                            <ColorInput value={block.titleColor as string} onChange={(v) => updateSection(openSection, "titleColor", v)} defaultValue={isHeroSection ? DEFAULTS.white : DEFAULTS.foreground} />
                           </div>
                         </div>
                         <div className="space-y-2">
