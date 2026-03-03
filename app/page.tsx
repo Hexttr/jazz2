@@ -9,6 +9,9 @@ import { Reservation } from "@/components/reservation"
 import { Contacts } from "@/components/contacts"
 import { Footer } from "@/components/footer"
 
+// Контент из Redis/Blob — всегда актуальный при каждом заходе
+export const dynamic = "force-dynamic"
+
 export default async function Home() {
   const content = await getContent()
   return (
