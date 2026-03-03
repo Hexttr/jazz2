@@ -6,12 +6,7 @@ import type { AppContent } from "@/lib/content-types"
 export async function GET() {
   try {
     const content = await getContent()
-    return NextResponse.json(content, {
-      headers: {
-        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-        "Pragma": "no-cache",
-      },
-    })
+    return NextResponse.json(content)
   } catch (e) {
     console.error(e)
     return NextResponse.json({ error: "Ошибка загрузки" }, { status: 500 })
@@ -31,10 +26,10 @@ export async function POST(request: NextRequest) {
   }
   try {
     const current = await getContent()
-    const next: AppContent = {
-      menu: body.menu != null ? (body.menu as AppContent["menu"]) : current.menu,
-      sections: body.sections != null ? (body.sections as AppContent["sections"]) : current.sections,
-    }
+    const next = {
+      menu: body.menu ?? current.menu,
+      sections: body.sections ?? current.sections,
+    } as AppContent
     const result = await putContent(next)
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: 400 })
