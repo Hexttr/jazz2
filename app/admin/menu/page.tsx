@@ -9,6 +9,7 @@ import {
   Save,
   ChevronDown,
   ChevronRight,
+  UtensilsCrossed,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -189,7 +190,10 @@ export default function AdminMenuPage() {
       {/* Sticky header */}
       <div className="sticky top-0 z-20 -mx-4 border-b border-white/15 bg-background/80 px-4 py-4 backdrop-blur-xl md:-mx-8 md:px-8 md:py-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold tracking-wide">Меню и блюда</h1>
+          <h1 className="flex items-center gap-2 text-2xl font-bold uppercase tracking-wide">
+            <UtensilsCrossed className="h-6 w-6 text-primary" />
+            Меню и блюда
+          </h1>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={addCategory} className="border-white/30">
               <Plus className="mr-2 h-4 w-4" />

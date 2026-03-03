@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { Save, ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react"
+import { Save, ChevronDown, ChevronRight, Plus, Trash2, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -219,9 +219,12 @@ export default function AdminSectionsPage() {
   return (
     <div className="space-y-6">
       {/* Sticky header */}
-      <div className="sticky top-0 z-20 -mx-4 -mt-6 border-b border-white/15 bg-background/80 px-4 py-4 backdrop-blur-xl md:-mx-8 md:-mt-8 md:px-8 md:py-5">
+      <div className="sticky top-0 z-20 -mx-4 border-b border-white/15 bg-background/80 px-4 py-4 backdrop-blur-xl md:-mx-8 md:px-8 md:py-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold tracking-wide">Разделы сайта</h1>
+          <h1 className="flex items-center gap-2 text-2xl font-bold uppercase tracking-wide">
+            <FileText className="h-6 w-6 text-primary" />
+            Разделы сайта
+          </h1>
           <Button size="sm" onClick={save} disabled={saving}>
             <Save className="mr-2 h-4 w-4" />
             {saving ? "Сохранение..." : "Сохранить"}
@@ -241,7 +244,7 @@ export default function AdminSectionsPage() {
       </div>
 
       {/* Section cards */}
-      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 pt-4">
         {sectionKeys.map((key) => {
           const block = (sections[key] as Record<string, unknown>) || {}
           const isOpen = openSection === key

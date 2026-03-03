@@ -11,6 +11,7 @@ import {
   ChefHat,
   ClipboardList,
   ArrowRight,
+  LayoutDashboard,
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { getImageUrl } from "@/lib/utils"
@@ -74,8 +75,9 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-wide text-foreground md:text-3xl">
+      <div className="border-b border-white/15 pb-6">
+        <h1 className="flex items-center gap-2 text-2xl font-bold uppercase tracking-wide text-foreground md:text-3xl">
+          <LayoutDashboard className="h-6 w-6 text-primary" />
           Панель управления
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
