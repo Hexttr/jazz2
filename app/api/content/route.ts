@@ -43,8 +43,8 @@ export async function POST(request: NextRequest) {
     }
     revalidatePath("/")
     // Верификация: читаем обратно с повтором (eventual consistency у Blob/Redis)
-    let readBack: Awaited<ReturnType<typeof getContentWithSource>>["content"]
-    let source: "redis" | "blob" | "files"
+    let readBack: Awaited<ReturnType<typeof getContentWithSource>>["content"] | null = null
+    let source: "redis" | "blob" | "files" = "files"
     for (let attempt = 0; attempt < 3; attempt++) {
       const res = await getContentWithSource()
       readBack = res.content
@@ -61,23 +61,23 @@ export async function POST(request: NextRequest) {
     const nextSections = next.sections as Record<string, { title?: string }>
     const menuVerified =
       body.menu == null ||
-      (readBack!.menu?.dishes?.length === nextMenu?.dishes?.length &&
-        readBack!.menu?.dishes?.[0]?.name === nextMenu?.dishes?.[0]?.name)
+      (readBack?.menu?.dishes?.length === nextMenu?.dishes?.length &&
+        readBack?.menu?.dishes?.[0]?.name === nextMenu?.dishes?.[0]?.name)
     const sectionsVerified =
       body.sections == null ||
-      readBack!.sections?.hero?.title === nextSections?.hero?.title
+      readBack?.sections?.hero?.title === nextSections?.hero?.title
     const verified = menuVerified && sectionsVerified
     return NextResponse.json({
       success: true,
       verified,
       source,
-      firstDishAfterSave: readBack!.menu?.dishes?.[0]?.name ?? null,
+      firstDishAfterSave: readBack?.menu?.dishes?.[0]?.name ?? null,
       ...(!verified && {
         debug: {
           menuVerified,
           sectionsVerified,
           savedFirstDish: nextMenu?.dishes?.[0]?.name,
-          readBackFirstDish: readBack!.menu?.dishes?.[0]?.name,
+          readBackFirstDish: readBack?.menu?.dishes?.[0]?.name,
         },
       }),
     })
