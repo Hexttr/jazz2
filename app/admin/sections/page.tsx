@@ -54,26 +54,15 @@ const SECTION_LABELS: Record<string, string> = {
   footer: "Подвал",
 }
 
-const SECTION_PREVIEW_PLACEHOLDER = "/placeholder.svg"
-
-function getSectionPreviewImage(key: string, sections: SectionsContent | null): string {
-  if (!sections) return SECTION_PREVIEW_PLACEHOLDER
-  const block = sections[key] as Record<string, unknown> | undefined
-  if (!block) return SECTION_PREVIEW_PLACEHOLDER
-  if (key === "hero" && block.image) return block.image as string
-  if (key === "about" && block.image) return block.image as string
-  const galleryImages = sections.gallery as { images?: { src?: string }[] } | undefined
-  if (key === "menu") return galleryImages?.images?.[0]?.src || SECTION_PREVIEW_PLACEHOLDER
-  const halls = block.halls as { image?: string }[] | undefined
-  if (key === "events") return halls?.[0]?.image || SECTION_PREVIEW_PLACEHOLDER
-  const images = block.images as { src?: string }[] | undefined
-  if (key === "gallery") return images?.[0]?.src || SECTION_PREVIEW_PLACEHOLDER
-  const eventsHalls = (sections.events as { halls?: { image?: string }[] })?.halls
-  if (key === "reservation") return eventsHalls?.[0]?.image || SECTION_PREVIEW_PLACEHOLDER
-  const aboutBlock = sections.about as { image?: string } | undefined
-  if (key === "contacts") return aboutBlock?.image || SECTION_PREVIEW_PLACEHOLDER
-  if (key === "footer") return galleryImages?.images?.[0]?.src || SECTION_PREVIEW_PLACEHOLDER
-  return SECTION_PREVIEW_PLACEHOLDER
+const SECTION_PREVIEW_IMAGES: Record<string, string> = {
+  hero: "/admin/sections/section-hero.jpg",
+  about: "/admin/sections/section-about.jpg",
+  menu: "/admin/sections/section-menu.jpg",
+  events: "/admin/sections/section-events.jpg",
+  gallery: "/admin/sections/section-gallery.jpg",
+  reservation: "/admin/sections/section-reservation.jpg",
+  contacts: "/admin/sections/section-contacts.jpg",
+  footer: "/admin/sections/section-footer.jpg",
 }
 
 export default function AdminSectionsPage() {
@@ -245,7 +234,7 @@ export default function AdminSectionsPage() {
         {sectionKeys.map((key) => {
           const block = (sections[key] as Record<string, unknown>) || {}
           const isOpen = openSection === key
-          const cardImage = getSectionPreviewImage(key, sections)
+          const cardImage = SECTION_PREVIEW_IMAGES[key]
 
           return (
             <div
@@ -265,7 +254,6 @@ export default function AdminSectionsPage() {
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                   sizes="180px"
-                  unoptimized={cardImage.startsWith("http")}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between p-2">
