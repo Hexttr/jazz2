@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import Image from "next/image"
+import { upload } from "@vercel/blob/client"
 import { Upload, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -25,24 +26,28 @@ export function ImageDropzone({ value, onChange, alt = "", className, disabled }
       setError("Выберите изображение (JPG, PNG, WebP)")
       return
     }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Размер файла не должен превышать 5 МБ")
+      return
+    }
     setError("")
     setUploading(true)
     try {
-      const form = new FormData()
-      form.set("file", file)
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: form,
-        credentials: "include",
+      const ext = file.name.includes(".")
+        ? file.name.slice(file.name.lastIndexOf(".")).toLowerCase()
+        : ".jpg"
+      const safeExt = [".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(ext) ? ext : ".jpg"
+      const pathname = `jazz/${Date.now()}-${Math.random().toString(36).slice(2)}${safeExt}`
+
+      const blob = await upload(pathname, file, {
+        access: "public",
+        handleUploadUrl: "/api/admin/upload",
+        clientPayload: undefined,
       })
-      const data = await res.json().catch(() => ({}))
-      if (!res.ok) {
-        setError(data.error || "Ошибка загрузки")
-        return
-      }
-      if (data.url) onChange(data.url)
-    } catch {
-      setError("Ошибка загрузки")
+      onChange(blob.url)
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Ошибка загрузки"
+      setError(msg)
     } finally {
       setUploading(false)
     }

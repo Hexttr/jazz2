@@ -1,44 +1,54 @@
 import { NextRequest, NextResponse } from "next/server"
-import { put } from "@vercel/blob"
+import { handleUpload, type HandleUploadBody } from "@vercel/blob/client"
 import { getSessionTokenFromRequest, verifySession } from "@/lib/auth"
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
 const MAX_SIZE_BYTES = 5 * 1024 * 1024 // 5 MB
 
 export async function POST(request: NextRequest) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return NextResponse.json(
+      { error: "Загрузка файлов не настроена (BLOB_READ_WRITE_TOKEN)" },
+      { status: 503 }
+    )
+  }
+
   const token = getSessionTokenFromRequest(request)
   if (!token || !(await verifySession(token))) {
     return NextResponse.json({ error: "Необходима авторизация" }, { status: 401 })
   }
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json({ error: "Загрузка файлов не настроена (BLOB_READ_WRITE_TOKEN)" }, { status: 503 })
-  }
-  const formData = await request.formData()
-  const file = formData.get("file") as File | null
-  if (!file || !(file instanceof Blob)) {
-    return NextResponse.json({ error: "Нет файла" }, { status: 400 })
-  }
-  if (!ALLOWED_TYPES.includes(file.type)) {
-    return NextResponse.json({ error: "Разрешены только изображения (JPEG, PNG, WebP, GIF)" }, { status: 400 })
-  }
-  if (file.size > MAX_SIZE_BYTES) {
-    return NextResponse.json({ error: "Размер файла не должен превышать 5 МБ" }, { status: 400 })
-  }
-  const name = file.name || "image"
-  const ext = name.includes(".") ? name.slice(name.lastIndexOf(".")).toLowerCase() : ".jpg"
-  const safeExt = [".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(ext) ? ext : ".jpg"
-  const filename = `jazz/${Date.now()}-${Math.random().toString(36).slice(2)}${safeExt}`
-  const blobToken = process.env.BLOB_READ_WRITE_TOKEN
+
+  let body: HandleUploadBody
   try {
-    const buffer = Buffer.from(await file.arrayBuffer())
-    const blob = await put(filename, buffer, {
-      access: "public",
-      contentType: file.type || "image/jpeg",
-      token: blobToken,
+    body = (await request.json()) as HandleUploadBody
+  } catch {
+    return NextResponse.json({ error: "Неверный формат запроса" }, { status: 400 })
+  }
+
+  try {
+    const jsonResponse = await handleUpload({
+      body,
+      request,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+      onBeforeGenerateToken: async (pathname) => {
+        const ext = pathname.includes(".")
+          ? pathname.slice(pathname.lastIndexOf(".")).toLowerCase()
+          : ".jpg"
+        if (![".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(ext)) {
+          throw new Error("Разрешены только изображения (JPEG, PNG, WebP, GIF)")
+        }
+        return {
+          allowedContentTypes: ALLOWED_TYPES,
+          maximumSizeInBytes: MAX_SIZE_BYTES,
+          addRandomSuffix: true,
+        }
+      },
     })
-    return NextResponse.json({ url: blob.url })
-  } catch (e) {
-    console.error(e)
-    return NextResponse.json({ error: "Ошибка загрузки" }, { status: 500 })
+
+    return NextResponse.json(jsonResponse)
+  } catch (error) {
+    console.error("Blob upload error:", error)
+    const message = error instanceof Error ? error.message : "Ошибка загрузки"
+    return NextResponse.json({ error: message }, { status: 400 })
   }
 }
