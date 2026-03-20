@@ -2,7 +2,23 @@
 
 import Image from "next/image"
 import { getImageUrl } from "@/lib/utils"
-import { Users, Sparkles, Wine } from "lucide-react"
+import { Users, Sparkles, Wine, Palette, Flower2, Cake, Music2, Mic2 } from "lucide-react"
+
+const defaultExtras = [
+  { title: "Индивидуальное оформление и стильная сервировка", note: "Учтём ваши предпочтения", icon: "Palette" },
+  { title: "Цветочное оформление зала", note: "Подберём композицию под концепцию праздника", icon: "Flower2" },
+  { title: "Авторский праздничный торт", note: "Создадим по вашим пожеланиям", icon: "Cake" },
+  { title: "Музыкальное сопровождение", note: "Составим плейлист", icon: "Music2" },
+  { title: "Ведущий", note: "Порекомендуем специалиста под формат вашего мероприятия", icon: "Mic2" },
+]
+
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Palette,
+  Flower2,
+  Cake,
+  Music2,
+  Mic2,
+}
 
 const banquetHalls = [
   {
@@ -32,6 +48,8 @@ export function Events({ content }: { content?: Record<string, unknown> | null }
   const title = (content?.title as string) ?? "Банкеты"
   const subtitle = (content?.subtitle as string) ?? "Два зала — от камерного ужина до масштабного торжества"
   const halls = (content?.halls as typeof banquetHalls) ?? banquetHalls
+  const extrasTitle = (content?.extrasTitle as string) ?? "Дополнительные возможности"
+  const extras = (content?.extras as { title: string; note: string }[]) ?? defaultExtras
   return (
     <section id="banquets" className="py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -140,6 +158,42 @@ export function Events({ content }: { content?: Record<string, unknown> | null }
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Дополнительные возможности */}
+        <div className="mt-20 lg:mt-24">
+          <div className="mb-10 flex flex-col items-center text-center">
+            <span
+              className="mb-2 text-xs uppercase tracking-[0.3em] text-primary/80"
+              style={{ fontFamily: "var(--font-inter), sans-serif" }}
+            >
+              Дополнительно
+            </span>
+            <h3 className="font-sans text-2xl font-bold tracking-wide md:text-3xl" style={content?.titleColor ? { color: content.titleColor as string } : undefined}>
+              {extrasTitle}
+            </h3>
+            <div className="mt-4 h-px w-12 bg-primary/60" />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {extras.map((item, i) => {
+              const iconKey = defaultExtras[i]?.icon ?? "Palette"
+              const Icon = iconMap[iconKey] ?? Palette
+              return (
+                <div
+                  key={i}
+                  className="group flex flex-col border border-border/60 bg-card/50 p-5 transition-all hover:border-primary/40 hover:bg-card/70"
+                  style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                >
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h4 className="mb-1 font-semibold text-foreground">{item.title}</h4>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{item.note}</p>
+                </div>
+              )
+            })}
+          </div>
         </div>
       </div>
     </section>
