@@ -2,7 +2,8 @@
 
 import Image from "next/image"
 import { getImageUrl } from "@/lib/utils"
-import { Users, Sparkles, Wine, Palette, Flower2, Cake, Music2, Mic2 } from "lucide-react"
+import { getIconById } from "@/lib/admin-icons"
+import { Users, Sparkles, Wine, Palette } from "lucide-react"
 
 const defaultExtras = [
   { title: "Индивидуальное оформление и стильная сервировка", note: "Учтём ваши предпочтения", icon: "Palette" },
@@ -11,14 +12,6 @@ const defaultExtras = [
   { title: "Музыкальное сопровождение", note: "Составим плейлист", icon: "Music2" },
   { title: "Ведущий", note: "Порекомендуем специалиста под формат вашего мероприятия", icon: "Mic2" },
 ]
-
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Palette,
-  Flower2,
-  Cake,
-  Music2,
-  Mic2,
-}
 
 const banquetHalls = [
   {
@@ -49,7 +42,7 @@ export function Events({ content }: { content?: Record<string, unknown> | null }
   const subtitle = (content?.subtitle as string) ?? "Два зала — от камерного ужина до масштабного торжества"
   const halls = (content?.halls as typeof banquetHalls) ?? banquetHalls
   const extrasTitle = (content?.extrasTitle as string) ?? "Дополнительные возможности"
-  const extras = (content?.extras as { title: string; note: string }[]) ?? defaultExtras
+  const extras = (content?.extras as { title: string; note: string; icon?: string }[]) ?? defaultExtras
   return (
     <section id="banquets" className="py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -177,8 +170,8 @@ export function Events({ content }: { content?: Record<string, unknown> | null }
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {extras.map((item, i) => {
-              const iconKey = defaultExtras[i]?.icon ?? "Palette"
-              const Icon = iconMap[iconKey] ?? Palette
+              const iconId = item.icon ?? defaultExtras[i]?.icon ?? "Palette"
+              const Icon = getIconById(iconId) ?? Palette
               return (
                 <div
                   key={i}

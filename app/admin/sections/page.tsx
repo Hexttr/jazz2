@@ -148,6 +148,36 @@ export default function AdminSectionsPage() {
     })
   }
 
+  function updateEventsExtrasItem(index: number, field: string, value: string) {
+    setSections((s) => {
+      if (!s?.events) return s
+      const events = s.events as Record<string, unknown>
+      const extras = [...((events.extras as Record<string, unknown>[]) || [])]
+      if (!extras[index]) return s
+      extras[index] = { ...extras[index], [field]: value }
+      return { ...s, events: { ...events, extras } }
+    })
+  }
+
+  function addEventsExtras() {
+    setSections((s) => {
+      if (!s?.events) return s
+      const events = s.events as Record<string, unknown>
+      const extras = [...((events.extras as Record<string, unknown>[]) || [])]
+      extras.push({ title: "", note: "", icon: "Palette" })
+      return { ...s, events: { ...events, extras } }
+    })
+  }
+
+  function removeEventsExtras(index: number) {
+    setSections((s) => {
+      if (!s?.events) return s
+      const events = s.events as Record<string, unknown>
+      const extras = ((events.extras as Record<string, unknown>[]) || []).filter((_, i) => i !== index)
+      return { ...s, events: { ...events, extras } }
+    })
+  }
+
   function updateGalleryImage(index: number, field: string, value: string) {
     setSections((s) => {
       if (!s?.gallery) return s
@@ -497,6 +527,41 @@ export default function AdminSectionsPage() {
                               </div>
                             </div>
                           ))}
+                        </div>
+                        <div className="border-t border-white/20 pt-4 space-y-4">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-base">Дополнительные возможности</Label>
+                            <Button type="button" size="sm" variant="outline" onClick={addEventsExtras} className="border-white/50 text-white hover:bg-white/10"><Plus className="mr-1 h-4 w-4" />Добавить</Button>
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-xs">Заголовок блока</Label>
+                            <Input value={(block.extrasTitle as string) ?? "Дополнительные возможности"} onChange={(e) => updateSection(openSection, "extrasTitle", e.target.value)} />
+                          </div>
+                          <div className="space-y-3">
+                            {((block.extras as { title?: string; note?: string; icon?: string }[]) || []).map((extra, ei) => (
+                              <div key={ei} className="rounded-lg border border-white/30 bg-black/20 p-4 space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <h4 className="font-sans font-semibold text-white/90">Пункт {ei + 1}</h4>
+                                  <Button type="button" size="icon" variant="destructive" className="h-8 w-8 shrink-0" onClick={() => removeEventsExtras(ei)}><Trash2 className="h-4 w-4" /></Button>
+                                </div>
+                                <IconPicker
+                                  label="Иконка"
+                                  value={extra.icon}
+                                  onChange={(iconId) => updateEventsExtrasItem(ei, "icon", iconId)}
+                                />
+                                <div className="grid gap-2 sm:grid-cols-2">
+                                  <div className="space-y-1 sm:col-span-2">
+                                    <Label className="text-xs">Заголовок</Label>
+                                    <Input value={extra.title ?? ""} onChange={(e) => updateEventsExtrasItem(ei, "title", e.target.value)} placeholder="Например: Индивидуальное оформление" />
+                                  </div>
+                                  <div className="space-y-1 sm:col-span-2">
+                                    <Label className="text-xs">Подпись</Label>
+                                    <Input value={extra.note ?? ""} onChange={(e) => updateEventsExtrasItem(ei, "note", e.target.value)} placeholder="Например: Учтём ваши предпочтения" />
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     )}

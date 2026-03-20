@@ -14,6 +14,11 @@ import {
   Mail,
   UtensilsCrossed,
   Building2,
+  Palette,
+  Flower2,
+  Cake,
+  Music2,
+  Mic2,
 } from "lucide-react"
 
 export const LANDING_ICONS: { id: string; name: string; Icon: LucideIcon }[] = [
@@ -29,6 +34,11 @@ export const LANDING_ICONS: { id: string; name: string; Icon: LucideIcon }[] = [
   { id: "Mail", name: "Почта", Icon: Mail },
   { id: "UtensilsCrossed", name: "Кухня (скрещённые)", Icon: UtensilsCrossed },
   { id: "Building2", name: "Здание / зал", Icon: Building2 },
+  { id: "Palette", name: "Оформление / палитра", Icon: Palette },
+  { id: "Flower2", name: "Цветы", Icon: Flower2 },
+  { id: "Cake", name: "Торт", Icon: Cake },
+  { id: "Music2", name: "Музыка (альт)", Icon: Music2 },
+  { id: "Mic2", name: "Микрофон / ведущий", Icon: Mic2 },
 ]
 
 export function getIconById(id: string): LucideIcon | null {
