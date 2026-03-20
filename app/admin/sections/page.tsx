@@ -50,6 +50,14 @@ function ColorInput({
   )
 }
 
+const DEFAULT_EVENTS_EXTRAS: { title: string; note: string; icon: string }[] = [
+  { title: "Индивидуальное оформление и стильная сервировка", note: "Учтём ваши предпочтения", icon: "Palette" },
+  { title: "Цветочное оформление зала", note: "Подберём композицию под концепцию праздника", icon: "Flower2" },
+  { title: "Авторский праздничный торт", note: "Создадим по вашим пожеланиям", icon: "Cake" },
+  { title: "Музыкальное сопровождение", note: "Составим плейлист", icon: "Music2" },
+  { title: "Ведущий", note: "Порекомендуем специалиста под формат вашего мероприятия", icon: "Mic2" },
+]
+
 const SECTION_LABELS: Record<string, string> = {
   hero: "Hero (главный экран)",
   about: "О нас",
@@ -84,7 +92,16 @@ export default function AdminSectionsPage() {
     fetch("/api/content", { credentials: "include", cache: "no-store" })
       .then((r) => r.json())
       .then((data: AppContent) => {
-        if (data.sections) setSections(data.sections)
+        if (!data.sections) return
+        const s = { ...data.sections }
+        const events = s.events as Record<string, unknown> | undefined
+        if (events) {
+          const extras = (events.extras as { title?: string; note?: string; icon?: string }[]) ?? []
+          if (extras.length === 0) {
+            s.events = { ...events, extrasTitle: events.extrasTitle ?? "Дополнительные возможности", extras: [...DEFAULT_EVENTS_EXTRAS] }
+          }
+        }
+        setSections(s)
       })
       .catch(() => setSections({}))
       .finally(() => setLoading(false))
