@@ -9,8 +9,8 @@ import { Reservation } from "@/components/reservation"
 import { Contacts } from "@/components/contacts"
 import { Footer } from "@/components/footer"
 
-// ISR: кэш 60 сек. При сохранении в админке revalidatePath("/") инвалидирует кэш.
-export const revalidate = 60
+// ISR: кэш 5 мин. При сохранении в админке revalidatePath("/") инвалидирует кэш.
+export const revalidate = 300
 
 export default async function Home() {
   const content = await getContent()
