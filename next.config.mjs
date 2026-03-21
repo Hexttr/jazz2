@@ -5,6 +5,7 @@ const nextConfig = {
   },
   images: {
     unoptimized: false,
+    localPatterns: [{ pathname: "/api/blob" }],
     remotePatterns: [
       { protocol: "https", hostname: "blob.vercel-storage.com", pathname: "/**" },
       { protocol: "https", hostname: "picsum.photos", pathname: "/**" },
