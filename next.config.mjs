@@ -4,8 +4,7 @@ const nextConfig = {
     ignoreBuildErrors: false, // Включено для продакшена — исправляйте ошибки TS
   },
   images: {
-    unoptimized: false,
-    localPatterns: [{ pathname: "/api/blob" }],
+    unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: "blob.vercel-storage.com", pathname: "/**" },
       { protocol: "https", hostname: "picsum.photos", pathname: "/**" },
