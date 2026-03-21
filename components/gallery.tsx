@@ -37,13 +37,13 @@ export function Gallery({ content }: { content?: Record<string, unknown> | null 
           <div className="h-px w-16 bg-primary" />
         </div>
 
-        {/* Gallery grid */}
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-[repeat(3,1fr)] md:aspect-[4/3] md:gap-4 md:w-full">
+        {/* Gallery grid — масштабируется под любое количество фото */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
           {images.map((image, index) => (
             <button
-              key={image.src}
+              key={`${image.src}-${index}`}
               onClick={() => setLightbox(index)}
-              className={`group relative aspect-square overflow-hidden ${image.span}`}
+              className="group relative aspect-square overflow-hidden"
               aria-label={`Открыть ${image.alt}`}
             >
               <Image
