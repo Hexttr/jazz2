@@ -21,7 +21,7 @@ async function readFromBlob(): Promise<AppContent | null> {
   const token = process.env.BLOB_READ_WRITE_TOKEN
   if (!token) return null
   try {
-    const result = await get(BLOB_KEY, { access: "private", useCache: false, token })
+    const result = await get(BLOB_KEY, { access: "private", token })
     if (!result || result.statusCode !== 200 || !result.stream) return null
     const text = await new Response(result.stream).text()
     return JSON.parse(text) as AppContent

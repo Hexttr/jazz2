@@ -1,4 +1,3 @@
-import { unstable_noStore } from "next/cache"
 import { getContent } from "@/lib/content"
 import { Navigation } from "@/components/navigation"
 import { Hero } from "@/components/hero"
@@ -10,11 +9,10 @@ import { Reservation } from "@/components/reservation"
 import { Contacts } from "@/components/contacts"
 import { Footer } from "@/components/footer"
 
-// Контент из Redis/Blob — всегда актуальный при каждом заходе
-export const dynamic = "force-dynamic"
+// ISR: кэш 60 сек. При сохранении в админке revalidatePath("/") инвалидирует кэш.
+export const revalidate = 60
 
 export default async function Home() {
-  unstable_noStore()
   const content = await getContent()
   return (
     <main>
