@@ -7,7 +7,9 @@ export async function middleware(request: NextRequest) {
   if (!pathname.startsWith("/admin")) {
     return NextResponse.next()
   }
-  if (pathname === "/admin/login") {
+  const isLoginPath =
+    pathname === "/admin/login" || pathname === "/admin/login/"
+  if (isLoginPath) {
     const token = request.cookies.get(getSessionCookieName())?.value
     if (token && (await verifySession(token))) {
       return NextResponse.redirect(new URL("/admin", request.url))
