@@ -116,7 +116,7 @@ if [ ! -f "$APP/.env" ] && [ -f "$APP/.env.example" ]; then cp "$APP/.env.exampl
 rm -f /tmp/jazz2.env.save
 
 cd "$APP"
-export NODE_ENV=production
+# Не задавать NODE_ENV=production до сборки — иначе npm ci не ставит devDependencies (@tailwindcss/postcss и др.).
 npm ci
 npm run build
 npm prune --omit=dev
@@ -142,17 +142,20 @@ echo OK
         out = stdout.read().decode()
         err = stderr.read().decode()
         code = stdout.channel.recv_exit_status()
-        print(out)
+        sys.stdout.buffer.write((out + "\n").encode("utf-8", errors="replace"))
+        sys.stdout.buffer.flush()
         if err:
-            print(err, file=sys.stderr)
+            sys.stderr.buffer.write((err + "\n").encode("utf-8", errors="replace"))
+            sys.stderr.buffer.flush()
         if code != 0:
             sys.exit(code)
     finally:
         client.close()
         tmp_path.unlink(missing_ok=True)
 
-    print(f"\nOpen: http://{host}:8080/")
-    print("Ensure .env on server has UPSTASH_REDIS_* and BLOB_READ_WRITE_TOKEN for admin/sync.")
+    msg = f"\nOpen: http://{host}:8080/\nEnsure .env has UPSTASH_REDIS_* and BLOB_READ_WRITE_TOKEN for admin.\n"
+    sys.stdout.buffer.write(msg.encode("utf-8", errors="replace"))
+    sys.stdout.buffer.flush()
 
 
 if __name__ == "__main__":
