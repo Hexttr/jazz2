@@ -1,30 +1,37 @@
 #!/usr/bin/env python3
 """
-Деплой статики `out/` на Ubuntu-сервер через Paramiko (SFTP + SSH).
-Секреты только из окружения: DEPLOY_HOST, DEPLOY_USER, DEPLOY_PASSWORD.
+Деплой полноценного Next.js-приложения на Ubuntu: git archive → npm ci → build → systemd + nginx.
+Секреты: DEPLOY_HOST, DEPLOY_PASSWORD; опционально DEPLOY_DOTENV — путь к локальному .env для загрузки на сервер.
 
-Пример (PowerShell):
+PowerShell:
   $env:DEPLOY_HOST="212.108.83.176"
   $env:DEPLOY_USER="root"
   $env:DEPLOY_PASSWORD="..."
+  $env:DEPLOY_DOTENV="C:\\path\\.env"   # опционально
   python scripts/deploy_ubuntu.py
+
+Приложение: /var/www/jazz2-app, порт 127.0.0.1:3001, снаружи http://HOST:8080/
 """
 
 from __future__ import annotations
 
 import os
-import posixpath
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import paramiko
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "out"
-REMOTE_ROOT = "/var/www/jazz2/out"
+REMOTE_APP = "/var/www/jazz2-app"
+REMOTE_TAR = "/tmp/jazz2-deploy.tgz"
+REMOTE_ENV_IN = "/tmp/jazz2-env-from-local"
 NGINX_AVAILABLE = "/etc/nginx/sites-available/jazz2"
 NGINX_ENABLED = "/etc/nginx/sites-enabled/jazz2"
+SYSTEMD_UNIT = "/etc/systemd/system/jazz2.service"
 LOCAL_NGINX = ROOT / "deploy" / "nginx-jazz2.conf"
+LOCAL_SYSTEMD = ROOT / "deploy" / "jazz2.service"
 
 
 def getenv_required(name: str) -> str:
@@ -35,42 +42,30 @@ def getenv_required(name: str) -> str:
     return v
 
 
-def sftp_mkdirs(sftp: paramiko.SFTPClient, remote_dir: str) -> None:
-    parts = remote_dir.strip("/").split("/")
-    cur = ""
-    for p in parts:
-        cur = f"{cur}/{p}" if cur else f"/{p}"
-        try:
-            sftp.stat(cur)
-        except OSError:
-            sftp.mkdir(cur)
-
-
-def upload_tree(sftp: paramiko.SFTPClient, local: Path, remote: str) -> None:
-    for path in sorted(local.rglob("*")):
-        rel = path.relative_to(local)
-        rpath = posixpath.join(remote, *rel.parts)
-        if path.is_dir():
-            try:
-                sftp.mkdir(rpath)
-            except OSError:
-                pass
-        else:
-            parent = posixpath.dirname(rpath)
-            sftp_mkdirs(sftp, parent)
-            sftp.put(str(path), rpath)
+def make_archive(path: Path) -> None:
+    subprocess.run(
+        ["git", "-C", str(ROOT), "archive", "--format=tar.gz", "HEAD", "-o", str(path)],
+        check=True,
+    )
 
 
 def main() -> None:
     host = getenv_required("DEPLOY_HOST")
     user = os.environ.get("DEPLOY_USER", "root")
     password = getenv_required("DEPLOY_PASSWORD")
+    dotenv_local = os.environ.get("DEPLOY_DOTENV", "").strip()
 
-    if not OUT.is_dir():
-        print(f"Нет каталога сборки: {OUT}\nСначала: npm run build", file=sys.stderr)
-        sys.exit(1)
-    if not LOCAL_NGINX.is_file():
-        print(f"Нет {LOCAL_NGINX}", file=sys.stderr)
+    for p in (LOCAL_NGINX, LOCAL_SYSTEMD):
+        if not p.is_file():
+            print(f"Missing {p}", file=sys.stderr)
+            sys.exit(1)
+
+    with tempfile.NamedTemporaryFile(suffix=".tar.gz", delete=False) as tmp:
+        tmp_path = Path(tmp.name)
+    try:
+        make_archive(tmp_path)
+    except subprocess.CalledProcessError:
+        print("git archive failed — commit your changes or fix git state.", file=sys.stderr)
         sys.exit(1)
 
     client = paramiko.SSHClient()
@@ -79,59 +74,85 @@ def main() -> None:
         host,
         username=user,
         password=password,
-        timeout=30,
+        timeout=120,
         allow_agent=False,
         look_for_keys=False,
     )
 
     try:
-        stdin, stdout, stderr = client.exec_command(
-            "mkdir -p /var/www/jazz2 && rm -rf /var/www/jazz2/out && mkdir -p /var/www/jazz2/out"
-        )
-        stdout.channel.recv_exit_status()
-        err = stderr.read().decode()
-        if err:
-            print(err, file=sys.stderr)
-
         sftp = client.open_sftp()
         try:
-            upload_tree(sftp, OUT, REMOTE_ROOT)
+            sftp.put(str(tmp_path), REMOTE_TAR)
+            with LOCAL_NGINX.open("rb") as f:
+                with sftp.file(NGINX_AVAILABLE, "wb") as rf:
+                    rf.write(f.read())
+            with LOCAL_SYSTEMD.open("rb") as f:
+                with sftp.file(SYSTEMD_UNIT, "wb") as rf:
+                    rf.write(f.read())
+            if dotenv_local:
+                lp = Path(dotenv_local)
+                if lp.is_file():
+                    with lp.open("rb") as f:
+                        with sftp.file(REMOTE_ENV_IN, "wb") as rf:
+                            rf.write(f.read())
+                else:
+                    print(f"DEPLOY_DOTENV not a file: {dotenv_local}", file=sys.stderr)
         finally:
             sftp.close()
 
-        # nginx config
-        with LOCAL_NGINX.open("rb") as f:
-            data = f.read()
-        sftp = client.open_sftp()
-        try:
-            with sftp.file(NGINX_AVAILABLE, "wb") as rf:
-                rf.write(data)
-        finally:
-            sftp.close()
-
-        cmds = f"""
+        remote_script = """
 set -e
-ln -sf {NGINX_AVAILABLE} {NGINX_ENABLED}
-chown -R root:root /var/www/jazz2
-find /var/www/jazz2 -type d -exec chmod 755 {{}} \\;
-find /var/www/jazz2 -type f -exec chmod 644 {{}} \\;
+APP="{app}"
+TAR="{tar}"
+ENVIN="{envin}"
+if [ -f "$APP/.env" ]; then cp "$APP/.env" /tmp/jazz2.env.save; fi
+rm -rf "$APP"
+mkdir -p "$APP"
+tar -xzf "$TAR" -C "$APP"
+rm -f "$TAR"
+if [ -f "$ENVIN" ]; then cp "$ENVIN" "$APP/.env" && rm -f "$ENVIN"; fi
+if [ ! -f "$APP/.env" ] && [ -f /tmp/jazz2.env.save ]; then cp /tmp/jazz2.env.save "$APP/.env"; fi
+if [ ! -f "$APP/.env" ] && [ -f "$APP/.env.example" ]; then cp "$APP/.env.example" "$APP/.env"; fi
+rm -f /tmp/jazz2.env.save
+
+cd "$APP"
+export NODE_ENV=production
+npm ci
+npm run build
+npm prune --omit=dev
+
+chown -R www-data:www-data "$APP"
+
+ln -sf {nginx_av} {nginx_en}
+systemctl daemon-reload
+systemctl enable jazz2
+systemctl restart jazz2
 nginx -t
 systemctl reload nginx
 echo OK
-"""
-        stdin, stdout, stderr = client.exec_command(cmds)
+""".format(
+            app=REMOTE_APP,
+            tar=REMOTE_TAR,
+            envin=REMOTE_ENV_IN,
+            nginx_av=NGINX_AVAILABLE,
+            nginx_en=NGINX_ENABLED,
+        )
+
+        stdin, stdout, stderr = client.exec_command(remote_script)
         out = stdout.read().decode()
-        e = stderr.read().decode()
+        err = stderr.read().decode()
         code = stdout.channel.recv_exit_status()
         print(out)
-        if e:
-            print(e, file=sys.stderr)
+        if err:
+            print(err, file=sys.stderr)
         if code != 0:
             sys.exit(code)
     finally:
         client.close()
+        tmp_path.unlink(missing_ok=True)
 
-    print(f"\nГотово. Откройте: http://{host}:8080/")
+    print(f"\nOpen: http://{host}:8080/")
+    print("Ensure .env on server has UPSTASH_REDIS_* and BLOB_READ_WRITE_TOKEN for admin/sync.")
 
 
 if __name__ == "__main__":
