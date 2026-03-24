@@ -21,9 +21,10 @@ if len(SESSION) < 32:
     SESSION = secrets.token_hex(32)
 
 ENV = "/var/www/jazz2-app/.env"
+# В .env символы $ в bcrypt иначе подставляются как переменные — значение в кавычках.
 body = f"""# Пароль админки: 513277
-ADMIN_PASSWORD_HASH={HASH}
-SESSION_SECRET={SESSION}
+ADMIN_PASSWORD_HASH="{HASH}"
+SESSION_SECRET="{SESSION}"
 COOKIE_SECURE=true
 """
 
