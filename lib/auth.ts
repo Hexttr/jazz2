@@ -42,9 +42,15 @@ export function getSessionCookieName(): string {
 }
 
 export function getSessionCookieOpts() {
+  // На http:// (свой сервер без TLS) браузер не сохранит cookie с Secure=true.
+  // На Vercel задаётся VERCEL=1 — включаем Secure. Иначе: COOKIE_SECURE=true вручную.
+  const secure =
+    process.env.COOKIE_SECURE === "true" ||
+    process.env.VERCEL === "1" ||
+    process.env.VERCEL_ENV === "production"
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure,
     sameSite: "lax" as const,
     maxAge: SESSION_MAX_AGE,
     path: "/",
