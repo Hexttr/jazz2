@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
       { status: 429, headers: limit.retryAfter ? { "Retry-After": String(limit.retryAfter) } : undefined }
     )
   }
-  const hash = process.env.ADMIN_PASSWORD_HASH
+  const hash = process.env.ADMIN_PASSWORD_HASH?.trim()
   if (!hash) {
     return NextResponse.json({ error: "Сервер не настроен" }, { status: 500 })
   }
