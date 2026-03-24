@@ -11,7 +11,6 @@ import os
 import secrets as pysecrets
 import shlex
 import sys
-from io import BytesIO
 from pathlib import Path
 
 import paramiko
@@ -21,7 +20,7 @@ if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 from deploy_env import apply_deploy_local_env  # noqa: E402
 
-HASH = "$2b$12$yyJQYSpagXTVUTDbfED8g.f0369N5Bi1hS8p8MDhGFmc992Z5.TpK"
+HASH = "$2b$12$9V4hnzIOmQWlVyMNcajmUeC.qVJPhV97xVaVjSSX/pfWS0jmy6hZa"
 ENV = "/var/www/jazz2-app/.env"
 
 
