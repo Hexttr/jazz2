@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { getSessionCookieName, verifySession } from "@/lib/admin-session"
+import { getSessionCookieName, verifyAdminJwtEdge } from "@/lib/edge-admin-middleware"
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -11,13 +11,13 @@ export async function middleware(request: NextRequest) {
     pathname === "/admin/login" || pathname === "/admin/login/"
   if (isLoginPath) {
     const token = request.cookies.get(getSessionCookieName())?.value
-    if (token && (await verifySession(token))) {
+    if (token && (await verifyAdminJwtEdge(token))) {
       return NextResponse.redirect(new URL("/admin", request.url))
     }
     return NextResponse.next()
   }
   const token = request.cookies.get(getSessionCookieName())?.value
-  if (!token || !(await verifySession(token))) {
+  if (!token || !(await verifyAdminJwtEdge(token))) {
     return NextResponse.redirect(new URL("/admin/login", request.url))
   }
   return NextResponse.next()
