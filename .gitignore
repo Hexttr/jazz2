@@ -8,3 +8,10 @@ node_modules/
 .next/
 .env*.local
 .DS_Store
+
+# Runtime data (сервер)
+data/app-content.json
+data/reservations.json
+data/telegram.json
+public/uploads/*
+!public/uploads/.gitkeep

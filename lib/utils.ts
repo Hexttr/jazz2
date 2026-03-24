@@ -5,11 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-/** Преобразует приватный Blob URL в прокси-URL для отображения */
+/** Внешние URL и загрузки в /uploads — без оптимизатора Next Image. */
 export function getImageUrl(url: string | undefined | null): string {
-  if (!url?.startsWith("http")) return url ?? ""
-  if (url.includes("private.blob.vercel-storage.com")) {
-    return `/api/blob?url=${encodeURIComponent(url)}`
-  }
-  return url
+  return url ?? ""
+}
+
+export function imageUnoptimized(src: string): boolean {
+  return src.startsWith("http") || src.startsWith("/uploads")
 }

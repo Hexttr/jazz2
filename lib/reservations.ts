@@ -1,7 +1,5 @@
-import { getRedis } from "./redis"
-
-const REDIS_RESERVATIONS = "jazz:reservations"
-const REDIS_TELEGRAM_ID = "jazz:telegram_id"
+import { RESERVATIONS_FILE, TELEGRAM_SETTINGS_FILE } from "./data-paths"
+import { readJsonFile, writeJsonAtomic } from "./fs-json"
 
 export type ReservationStatus = "pending" | "approved" | "archived"
 
@@ -18,26 +16,16 @@ export type Reservation = {
   createdAt: string
 }
 
+type TelegramSettings = { telegramId: string }
+
 export async function getReservations(): Promise<Reservation[]> {
-  const redis = getRedis()
-  if (!redis) return []
-  try {
-    const raw = await redis.get<string | Reservation[]>(REDIS_RESERVATIONS)
-    if (raw == null) return []
-    if (Array.isArray(raw)) return raw
-    if (typeof raw === "string") {
-      const list = JSON.parse(raw) as Reservation[]
-      return Array.isArray(list) ? list : []
-    }
-    return []
-  } catch {
-    return []
-  }
+  const data = await readJsonFile<Reservation[]>(RESERVATIONS_FILE)
+  return Array.isArray(data) ? data : []
 }
 
-export async function addReservation(data: Omit<Reservation, "id" | "status" | "createdAt">): Promise<Reservation | null> {
-  const redis = getRedis()
-  if (!redis) return null
+export async function addReservation(
+  data: Omit<Reservation, "id" | "status" | "createdAt">
+): Promise<Reservation | null> {
   try {
     const list = await getReservations()
     const id = Date.now().toString(36) + Math.random().toString(36).slice(2)
@@ -48,7 +36,7 @@ export async function addReservation(data: Omit<Reservation, "id" | "status" | "
       createdAt: new Date().toISOString(),
     }
     list.unshift(reservation)
-    await redis.set(REDIS_RESERVATIONS, JSON.stringify(list))
+    await writeJsonAtomic(RESERVATIONS_FILE, list)
     return reservation
   } catch {
     return null
@@ -56,44 +44,39 @@ export async function addReservation(data: Omit<Reservation, "id" | "status" | "
 }
 
 export async function updateReservationStatus(id: string, status: ReservationStatus): Promise<boolean> {
-  const redis = getRedis()
-  if (!redis) return false
-  const list = await getReservations()
-  const index = list.findIndex((r) => r.id === id)
-  if (index === -1) return false
-  list[index] = { ...list[index], status }
-  await redis.set(REDIS_RESERVATIONS, JSON.stringify(list))
-  return true
-}
-
-export async function deleteReservation(id: string): Promise<boolean> {
-  const redis = getRedis()
-  if (!redis) return false
-  const list = await getReservations()
-  const next = list.filter((r) => r.id !== id)
-  if (next.length === list.length) return false
-  await redis.set(REDIS_RESERVATIONS, JSON.stringify(next))
-  return true
-}
-
-export async function getTelegramId(): Promise<string> {
-  const redis = getRedis()
-  if (!redis) return ""
   try {
-    const id = await redis.get<string | number>(REDIS_TELEGRAM_ID)
-    if (id == null || id === "") return ""
-    return String(id).trim()
+    const list = await getReservations()
+    const index = list.findIndex((r) => r.id === id)
+    if (index === -1) return false
+    list[index] = { ...list[index], status }
+    await writeJsonAtomic(RESERVATIONS_FILE, list)
+    return true
   } catch {
-    return ""
+    return false
   }
 }
 
-/** Returns true if saved, false if Redis not configured or error. */
-export async function setTelegramId(telegramId: string): Promise<boolean> {
-  const redis = getRedis()
-  if (!redis) return false
+export async function deleteReservation(id: string): Promise<boolean> {
   try {
-    await redis.set(REDIS_TELEGRAM_ID, telegramId.trim())
+    const list = await getReservations()
+    const next = list.filter((r) => r.id !== id)
+    if (next.length === list.length) return false
+    await writeJsonAtomic(RESERVATIONS_FILE, next)
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function getTelegramId(): Promise<string> {
+  const data = await readJsonFile<TelegramSettings>(TELEGRAM_SETTINGS_FILE)
+  if (!data || typeof data.telegramId !== "string") return ""
+  return data.telegramId.trim()
+}
+
+export async function setTelegramId(telegramId: string): Promise<boolean> {
+  try {
+    await writeJsonAtomic(TELEGRAM_SETTINGS_FILE, { telegramId: telegramId.trim() })
     return true
   } catch {
     return false
@@ -119,19 +102,16 @@ export async function sendTelegramNotification(reservation: Reservation, telegra
     .join("\n")
   try {
     const chatId = telegramId.trim()
-    const res = await fetch(
-      `https://api.telegram.org/bot${token}/sendMessage`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text,
-        }),
-      }
-    )
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+      }),
+    })
     if (!res.ok) {
-      const err = await res.json().catch(() => ({})) as { description?: string }
+      const err = (await res.json().catch(() => ({}))) as { description?: string }
       console.error("[Telegram] sendMessage failed:", res.status, err.description || res.statusText)
     }
     return res.ok

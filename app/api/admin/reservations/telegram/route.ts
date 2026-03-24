@@ -16,8 +16,7 @@ export async function PUT(request: NextRequest) {
     if (!saved) {
       return NextResponse.json(
         {
-          error:
-            "Не удалось сохранить. Настройте Redis в Vercel (Storage → Upstash Redis): UPSTASH_REDIS_REST_URL и UPSTASH_REDIS_REST_TOKEN.",
+          error: "Не удалось сохранить настройки (проверьте права на каталог data/).",
         },
         { status: 503 }
       )

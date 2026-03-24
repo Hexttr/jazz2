@@ -153,7 +153,7 @@ echo OK
         client.close()
         tmp_path.unlink(missing_ok=True)
 
-    msg = f"\nOpen: http://{host}:8080/\nEnsure .env has UPSTASH_REDIS_* and BLOB_READ_WRITE_TOKEN for admin.\n"
+    msg = f"\nOpen: http://{host}:8080/\nData: app writes to data/*.json and public/uploads/ on the server.\n"
     sys.stdout.buffer.write(msg.encode("utf-8", errors="replace"))
     sys.stdout.buffer.flush()
 

@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { getImageUrl } from "@/lib/utils"
+import { getImageUrl, imageUnoptimized } from "@/lib/utils"
 
 type HeroContent = {
   label?: string
@@ -28,7 +28,7 @@ export function Hero({ content }: { content?: Record<string, unknown> | null }) 
         className="object-cover"
         priority
         quality={90}
-        unoptimized={(c.image ?? "").startsWith("http") || (c.image ?? "").startsWith("/api/blob")}
+        unoptimized={imageUnoptimized(c.image ?? "")}
       />
       <div className="absolute inset-0 bg-black/60" />
 
@@ -41,7 +41,7 @@ export function Hero({ content }: { content?: Record<string, unknown> | null }) 
             height={200}
             className="object-contain"
             priority
-            unoptimized={(c.logo ?? "").startsWith("http") || (c.logo ?? "").startsWith("/api/blob")}
+            unoptimized={imageUnoptimized(c.logo ?? "")}
           />
         </div>
         <p

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { addReservation, getTelegramId, sendTelegramNotification } from "@/lib/reservations"
-import { isRedisConfigured } from "@/lib/redis"
 
 export const dynamic = "force-dynamic"
 
@@ -34,7 +33,10 @@ const MAX_COMMENT = 1000
 
 export async function POST(request: NextRequest) {
   try {
-    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "127.0.0.1"
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip") ||
+      "127.0.0.1"
     const limit = checkReservationRateLimit(ip)
     if (!limit.allowed) {
       return NextResponse.json(
@@ -43,15 +45,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!isRedisConfigured()) {
-      return NextResponse.json(
-        {
-          error:
-            "Хранилище заявок не настроено. В Vercel добавьте Upstash Redis (Storage → Connect Store) и задайте UPSTASH_REDIS_REST_URL и UPSTASH_REDIS_REST_TOKEN (или KV_REST_API_URL и KV_REST_API_TOKEN).",
-        },
-        { status: 503 }
-      )
-    }
     const body = await request.json()
     const { name, phone, hall, date, time, guests, comment } = body
     if (!name || !phone || !hall || !date || !time || !guests) {

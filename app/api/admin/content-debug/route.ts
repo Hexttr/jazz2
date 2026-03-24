@@ -1,13 +1,12 @@
+import fs from "fs/promises"
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import { getSessionTokenFromRequest, verifySession } from "@/lib/auth"
-import { getRedis } from "@/lib/redis"
+import { APP_CONTENT_FILE, DATA_DIR } from "@/lib/data-paths"
+import { readJsonFile, writeJsonAtomic } from "@/lib/fs-json"
 
 /**
- * Отладочный endpoint: проверка хранилища контента.
- * Только для авторизованных админов.
- * GET — показать источник данных
- * POST — выполнить тест записи и чтения
+ * Диагностика локального хранилища (data/*.json).
  */
 export const dynamic = "force-dynamic"
 
@@ -21,31 +20,20 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Необходима авторизация" }, { status: 401 })
   }
 
-  const redis = getRedis()
-  const redisConfigured = redis !== null
-  const blobConfigured = !!process.env.BLOB_READ_WRITE_TOKEN
-
   const { content, source } = await import("@/lib/content").then((m) => m.getContentWithSource())
   const firstDish = content.menu?.dishes?.[0]
-  let redisFirstDish: string | null = null
-  let redisKeyExists = false
-  if (redis) {
-    try {
-      const raw = await redis.get<string>("jazz:content")
-      redisKeyExists = typeof raw === "string"
-      if (redisKeyExists && raw) {
-        const parsed = JSON.parse(raw) as { menu?: { dishes?: { name?: string }[] } }
-        redisFirstDish = parsed?.menu?.dishes?.[0]?.name ?? null
-      }
-    } catch {
-      /* ignore */
-    }
+  let mergedFileExists = false
+  try {
+    await fs.access(APP_CONTENT_FILE)
+    mergedFileExists = true
+  } catch {
+    mergedFileExists = false
   }
   return NextResponse.json({
-    redisConfigured,
-    blobConfigured,
-    redisKeyExists,
-    redisFirstDish,
+    storage: "filesystem",
+    dataDir: DATA_DIR,
+    mergedContentFile: APP_CONTENT_FILE,
+    mergedFileExists,
     source,
     dishesCount: content.menu?.dishes?.length ?? 0,
     categoriesCount: content.menu?.categories?.length ?? 0,
@@ -58,25 +46,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Необходима авторизация" }, { status: 401 })
   }
 
-  const redis = getRedis()
-  if (!redis) {
-    return NextResponse.json({
-      error: "Redis не настроен", saved: false,
-      hint: "Проверьте UPSTASH_REDIS_REST_URL и UPSTASH_REDIS_REST_TOKEN в Vercel",
-    }, { status: 400 })
-  }
-
-  const testKey = "jazz:debug:test"
-  const testValue = `test-${Date.now()}`
+  const testPath = `${DATA_DIR}/.write-test-${Date.now()}.tmp`
+  const testValue = `ok-${Date.now()}`
   try {
-    await redis.set(testKey, testValue)
-    const read = await redis.get<string>(testKey)
-    await redis.del(testKey)
-    const verified = read === testValue
+    await writeJsonAtomic(testPath, { v: testValue })
+    const read = await readJsonFile<{ v: string }>(testPath)
+    await fs.unlink(testPath).catch(() => {})
+    const verified = read?.v === testValue
     return NextResponse.json({
       saved: true,
       verified,
-      hint: verified ? "Redis write/read работает" : "Redis записал, но прочитал другое значение",
+      hint: verified ? "Запись и чтение в data/ работают" : "Файл записан, но прочитано другое значение",
     })
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)

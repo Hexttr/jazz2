@@ -4,7 +4,7 @@ import { useState, useRef } from "react"
 import Image from "next/image"
 import { Upload, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { cn, getImageUrl } from "@/lib/utils"
+import { cn, getImageUrl, imageUnoptimized } from "@/lib/utils"
 
 type Props = {
   value?: string
@@ -25,8 +25,8 @@ export function ImageDropzone({ value, onChange, alt = "", className, disabled }
       setError("Выберите изображение (JPG, PNG, WebP)")
       return
     }
-    if (file.size > 4 * 1024 * 1024) {
-      setError("Размер файла не должен превышать 4 МБ")
+    if (file.size > 8 * 1024 * 1024) {
+      setError("Размер файла не должен превышать 8 МБ")
       return
     }
     setError("")
@@ -95,7 +95,7 @@ export function ImageDropzone({ value, onChange, alt = "", className, disabled }
                 alt={alt}
                 fill
                 className="object-contain p-2"
-                unoptimized={value.startsWith("http") || value.startsWith("/api/blob")}
+                unoptimized={imageUnoptimized(value)}
                 sizes="320px"
               />
             </div>

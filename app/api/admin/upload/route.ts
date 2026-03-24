@@ -1,21 +1,17 @@
+import path from "path"
+import fs from "fs/promises"
 import { NextRequest, NextResponse } from "next/server"
-import { put } from "@vercel/blob"
 import { getSessionTokenFromRequest, verifySession } from "@/lib/auth"
+import { UPLOADS_DIR } from "@/lib/data-paths"
+import { ensureDir } from "@/lib/fs-json"
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
-// Vercel serverless limit 4.5MB — оставляем запас
-const MAX_SIZE_BYTES = 4 * 1024 * 1024 // 4 MB
+const MAX_SIZE_BYTES = 8 * 1024 * 1024 // 8 MB (свой сервер)
 
 export async function POST(request: NextRequest) {
   const token = getSessionTokenFromRequest(request)
   if (!token || !(await verifySession(token))) {
     return NextResponse.json({ error: "Необходима авторизация" }, { status: 401 })
-  }
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json(
-      { error: "Загрузка файлов не настроена (BLOB_READ_WRITE_TOKEN)" },
-      { status: 503 }
-    )
   }
   const formData = await request.formData()
   const file = formData.get("file") as File | null
@@ -30,25 +26,22 @@ export async function POST(request: NextRequest) {
   }
   if (file.size > MAX_SIZE_BYTES) {
     return NextResponse.json(
-      { error: "Размер файла не должен превышать 4 МБ" },
+      { error: "Размер файла не должен превышать 8 МБ" },
       { status: 400 }
     )
   }
   const name = file.name || "image"
   const ext = name.includes(".") ? name.slice(name.lastIndexOf(".")).toLowerCase() : ".jpg"
   const safeExt = [".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(ext) ? ext : ".jpg"
-  const filename = `jazz/${Date.now()}-${Math.random().toString(36).slice(2)}${safeExt}`
-  const blobToken = process.env.BLOB_READ_WRITE_TOKEN
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}${safeExt}`
   try {
+    await ensureDir(UPLOADS_DIR)
     const buffer = Buffer.from(await file.arrayBuffer())
-    const blob = await put(filename, buffer, {
-      access: "private",
-      contentType: file.type || "image/jpeg",
-      token: blobToken,
-    })
-    return NextResponse.json({ url: blob.url })
+    const diskPath = path.join(UPLOADS_DIR, filename)
+    await fs.writeFile(diskPath, buffer)
+    return NextResponse.json({ url: `/uploads/${filename}` })
   } catch (e) {
-    console.error("Blob upload error:", e)
+    console.error("Upload error:", e)
     return NextResponse.json({ error: "Ошибка загрузки" }, { status: 500 })
   }
 }

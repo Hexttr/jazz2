@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog"
 import { ImageDropzone } from "@/components/admin/image-dropzone"
 import type { MenuCategory, MenuDish, MenuContent } from "@/lib/content-types"
-import { cn, getImageUrl } from "@/lib/utils"
+import { cn, getImageUrl, imageUnoptimized } from "@/lib/utils"
 
 function newId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2)
@@ -242,7 +242,7 @@ export default function AdminMenuPage() {
                     alt={cat.name}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    unoptimized={cardImage.startsWith("http") || cardImage.startsWith("/api/blob")}
+                    unoptimized={imageUnoptimized(cardImage)}
                     sizes="180px"
                   />
                 ) : (
@@ -320,7 +320,7 @@ export default function AdminMenuPage() {
                             alt={d.name}
                             fill
                             className="object-cover"
-                            unoptimized={d.image.startsWith("http") || d.image.startsWith("/api/blob")}
+                            unoptimized={imageUnoptimized(d.image)}
                             sizes="200px"
                           />
                         ) : (

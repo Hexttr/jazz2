@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { ImageDropzone } from "@/components/admin/image-dropzone"
 import { IconPicker } from "@/components/admin/icon-picker"
 import type { SectionsContent, AppContent } from "@/lib/content-types"
-import { cn, getImageUrl } from "@/lib/utils"
+import { cn, getImageUrl, imageUnoptimized } from "@/lib/utils"
 
 const DEFAULTS = {
   primary: "#d4a574",
@@ -610,7 +610,7 @@ export default function AdminSectionsPage() {
                               <div key={gi} className="flex flex-wrap items-end gap-3 rounded-lg border border-white/30 bg-black/20 p-3">
                                 <div className="w-24 shrink-0">
                                   <Label className="text-xs">Превью</Label>
-                                  {img.src ? <Image src={getImageUrl(img.src)} alt={img.alt || ""} width={96} height={72} className="mt-1 rounded object-cover" unoptimized={img.src.startsWith("http") || img.src.startsWith("/api/blob")} /> : <div className="mt-1 h-[72px] rounded bg-white/10 flex items-center justify-center text-xs text-white/50">Нет</div>}
+                                  {img.src ? <Image src={getImageUrl(img.src)} alt={img.alt || ""} width={96} height={72} className="mt-1 rounded object-cover" unoptimized={imageUnoptimized(img.src)} /> : <div className="mt-1 h-[72px] rounded bg-white/10 flex items-center justify-center text-xs text-white/50">Нет</div>}
                                 </div>
                                 <div className="flex-1 min-w-[200px] space-y-1">
                                   <Label className="text-xs">URL изображения</Label>

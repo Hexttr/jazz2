@@ -6,8 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
 type DebugInfo = {
-  redisConfigured: boolean
-  blobConfigured: boolean
+  storage: string
+  dataDir: string
+  mergedContentFile: string
+  mergedFileExists: boolean
   source: string
   dishesCount: number
   firstDishName: string | null
@@ -27,7 +29,7 @@ export default function AdminDebugPage() {
           Диагностика хранилища
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Проверка Redis и Blob
+          Локальные файлы в каталоге <code className="text-xs">data/</code> на сервере
         </p>
       </div>
 
@@ -79,7 +81,7 @@ export default function AdminDebugPage() {
                     )
                     alert(
                       d.verified
-                        ? "Redis: запись и чтение работают"
+                        ? "Запись и чтение в data/ работают"
                         : d.hint || d.error || "Ошибка"
                     )
                   } else {
@@ -95,9 +97,10 @@ export default function AdminDebugPage() {
           </div>
           {debug && (
             <div className="space-y-1 rounded-lg bg-muted/30 p-3 font-mono text-xs text-muted-foreground">
+              <p>Хранилище: {debug.storage}</p>
+              <p>data/: {debug.dataDir}</p>
               <p>
-                Redis: {debug.redisConfigured ? "✓" : "✗"} · Blob:{" "}
-                {debug.blobConfigured ? "✓" : "✗"}
+                app-content.json: {debug.mergedFileExists ? "есть" : "нет (используются menu.json + sections.json)"}
               </p>
               <p>
                 Источник: {debug.source} · Блюд: {debug.dishesCount}
@@ -105,7 +108,7 @@ export default function AdminDebugPage() {
               {debug.firstDishName && <p>Первое блюдо: {debug.firstDishName}</p>}
               {debug.testVerified !== undefined && (
                 <p className={debug.testVerified ? "text-green-500" : "text-red-500"}>
-                  Тест Redis: {debug.testVerified ? "OK" : "Ошибка"}
+                  Тест записи: {debug.testVerified ? "OK" : "Ошибка"}
                 </p>
               )}
             </div>

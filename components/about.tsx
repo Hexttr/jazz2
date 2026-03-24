@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { getImageUrl } from "@/lib/utils"
+import { getImageUrl, imageUnoptimized } from "@/lib/utils"
 import {
   Music,
   Utensils,
@@ -74,7 +74,7 @@ export function About({ content }: { content?: Record<string, unknown> | null })
               alt={imageAlt}
               fill
               className="object-cover"
-              unoptimized={image.startsWith("http") || image.startsWith("/api/blob")}
+              unoptimized={imageUnoptimized(image)}
             />
             <div className="absolute inset-0 bg-black/20" />
           </div>
