@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { verifyPassword, createSession, getSessionCookieName, getSessionCookieOpts, checkRateLimit, clearRateLimit } from "@/lib/auth"
+import { getAdminPasswordHash } from "@/lib/admin-env"
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "127.0.0.1"
@@ -10,8 +11,7 @@ export async function POST(request: NextRequest) {
       { status: 429, headers: limit.retryAfter ? { "Retry-After": String(limit.retryAfter) } : undefined }
     )
   }
-  const raw = process.env.ADMIN_PASSWORD_HASH?.trim() ?? ""
-  const hash = raw.replace(/^["']|["']$/g, "")
+  const hash = getAdminPasswordHash()
   if (!hash) {
     return NextResponse.json({ error: "Сервер не настроен" }, { status: 500 })
   }

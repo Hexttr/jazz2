@@ -3,7 +3,10 @@
 Деплой полноценного Next.js-приложения на Ubuntu: git archive → npm ci → build → systemd + nginx.
 Секреты: DEPLOY_HOST, DEPLOY_PASSWORD; опционально DEPLOY_DOTENV — путь к локальному .env для загрузки на сервер.
 
-PowerShell:
+Без терминала: скопируйте deploy.local.env.example → deploy.local.env в корне репозитория,
+заполните пароль и запустите из Cursor: npm run deploy:ubuntu (или задача VS Code «Deploy Ubuntu»).
+
+PowerShell (альтернатива):
   $env:DEPLOY_HOST="212.108.83.176"
   $env:DEPLOY_USER="root"
   $env:DEPLOY_PASSWORD="..."
@@ -24,6 +27,10 @@ from pathlib import Path
 import paramiko
 
 ROOT = Path(__file__).resolve().parents[1]
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from deploy_env import apply_deploy_local_env  # noqa: E402
 REMOTE_APP = "/var/www/jazz2-app"
 REMOTE_TAR = "/tmp/jazz2-deploy.tgz"
 REMOTE_ENV_IN = "/tmp/jazz2-env-from-local"
@@ -50,6 +57,7 @@ def make_archive(path: Path) -> None:
 
 
 def main() -> None:
+    apply_deploy_local_env()
     host = getenv_required("DEPLOY_HOST")
     user = os.environ.get("DEPLOY_USER", "root")
     password = getenv_required("DEPLOY_PASSWORD")

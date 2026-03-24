@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "deploy:install": "pip install -r scripts/requirements-deploy.txt",
+    "deploy:ubuntu": "python scripts/deploy_ubuntu.py",
+    "deploy:fix-env": "python scripts/fix-server-env.py"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
