@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { getImageUrl } from "@/lib/utils"
+import { getImageUrl, imageUnoptimized } from "@/lib/utils"
 import { X } from "lucide-react"
 
 const defaultImages = [
@@ -51,6 +51,8 @@ export function Gallery({ content }: { content?: Record<string, unknown> | null 
                 alt={image.alt}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
+                unoptimized={imageUnoptimized(image.src)}
+                sizes="(max-width: 640px) 50vw, 25vw"
               />
               <div className="absolute inset-0 bg-black/0 transition-all duration-500 group-hover:bg-black/40" />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-500 group-hover:opacity-100">
@@ -87,6 +89,8 @@ export function Gallery({ content }: { content?: Record<string, unknown> | null 
               alt={images[lightbox].alt}
               fill
               className="object-contain"
+              unoptimized={imageUnoptimized(images[lightbox].src)}
+              sizes="100vw"
             />
           </div>
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">

@@ -44,7 +44,7 @@ export function ImageDropzone({ value, onChange, alt = "", className, disabled }
         setError(data.error || "Ошибка загрузки")
         return
       }
-      if (data.url) onChange(data.url)
+      if (data.url) onChange(getImageUrl(data.url))
     } catch {
       setError("Ошибка загрузки")
     } finally {
