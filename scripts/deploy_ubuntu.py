@@ -114,10 +114,33 @@ APP="{app}"
 TAR="{tar}"
 ENVIN="{envin}"
 if [ -f "$APP/.env" ]; then cp "$APP/.env" /tmp/jazz2.env.save; fi
+UPLOADS_BAK=""
+if [ -d "$APP/storage/uploads" ]; then
+  UPLOADS_BAK=/tmp/jazz2-uploads-$$
+  cp -a "$APP/storage/uploads" "$UPLOADS_BAK"
+elif [ -d "$APP/public/uploads" ]; then
+  UPLOADS_BAK=/tmp/jazz2-uploads-$$
+  cp -a "$APP/public/uploads" "$UPLOADS_BAK"
+fi
+DATA_BAK=""
+if [ -d "$APP/data" ]; then
+  DATA_BAK=/tmp/jazz2-data-$$
+  cp -a "$APP/data" "$DATA_BAK"
+fi
 rm -rf "$APP"
 mkdir -p "$APP"
 tar -xzf "$TAR" -C "$APP"
 rm -f "$TAR"
+if [ -n "$UPLOADS_BAK" ] && [ -d "$UPLOADS_BAK" ]; then
+  mkdir -p "$APP/storage/uploads"
+  cp -a "$UPLOADS_BAK"/. "$APP/storage/uploads/"
+  rm -rf "$UPLOADS_BAK"
+fi
+if [ -n "$DATA_BAK" ] && [ -d "$DATA_BAK" ]; then
+  mkdir -p "$APP/data"
+  cp -a "$DATA_BAK"/. "$APP/data/"
+  rm -rf "$DATA_BAK"
+fi
 if [ -f "$ENVIN" ]; then cp "$ENVIN" "$APP/.env" && rm -f "$ENVIN"; fi
 if [ ! -f "$APP/.env" ] && [ -f /tmp/jazz2.env.save ]; then cp /tmp/jazz2.env.save "$APP/.env"; fi
 if [ ! -f "$APP/.env" ] && [ -f "$APP/.env.example" ]; then cp "$APP/.env.example" "$APP/.env"; fi
@@ -130,8 +153,8 @@ npm run build
 npm prune --omit=dev
 
 chown -R www-data:www-data "$APP"
-mkdir -p "$APP/public/uploads"
-chown -R www-data:www-data "$APP/public/uploads"
+mkdir -p "$APP/public/uploads" "$APP/storage/uploads"
+chown -R www-data:www-data "$APP/public/uploads" "$APP/storage/uploads"
 
 # Лимит по умолчанию в nginx — 1m; без этого загрузка картинок даёт 413 за прокси.
 cat > /etc/nginx/conf.d/jazz2-uploads.conf <<'JAZZ2UP'
@@ -169,7 +192,7 @@ echo OK
         client.close()
         tmp_path.unlink(missing_ok=True)
 
-    msg = f"\nOpen: http://{host}:8080/\nData: app writes to data/*.json and public/uploads/ on the server.\n"
+    msg = f"\nOpen: http://{host}:8080/\nData: data/*.json and storage/uploads/ (preserved across deploys).\n"
     sys.stdout.buffer.write(msg.encode("utf-8", errors="replace"))
     sys.stdout.buffer.flush()
 

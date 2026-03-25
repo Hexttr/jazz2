@@ -7,4 +7,5 @@ export const APP_CONTENT_FILE = path.join(DATA_DIR, "app-content.json")
 export const RESERVATIONS_FILE = path.join(DATA_DIR, "reservations.json")
 export const TELEGRAM_SETTINGS_FILE = path.join(DATA_DIR, "telegram.json")
 
-export const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads")
+/** Вне public: так файлы, загруженные после сборки, гарантированно отдаются через app/uploads/.../route.ts */
+export const UPLOADS_DIR = path.join(process.cwd(), "storage", "uploads")
