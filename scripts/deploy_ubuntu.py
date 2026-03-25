@@ -130,6 +130,14 @@ npm run build
 npm prune --omit=dev
 
 chown -R www-data:www-data "$APP"
+mkdir -p "$APP/public/uploads"
+chown -R www-data:www-data "$APP/public/uploads"
+
+# Лимит по умолчанию в nginx — 1m; без этого загрузка картинок даёт 413 за прокси.
+cat > /etc/nginx/conf.d/jazz2-uploads.conf <<'JAZZ2UP'
+# jazz2: лимит тела запроса (админка — загрузка изображений)
+client_max_body_size 25m;
+JAZZ2UP
 
 ln -sf {nginx_av} {nginx_en}
 systemctl daemon-reload

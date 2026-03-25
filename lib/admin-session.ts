@@ -45,7 +45,13 @@ export function getSessionCookieOpts() {
 }
 
 export function getSessionTokenFromRequest(request: Request): string | null {
-  const cookie = request.headers.get("cookie") || ""
-  const match = cookie.match(new RegExp(`${SESSION_COOKIE}=([^;]+)`))
-  return match ? decodeURIComponent(match[1].trim()) : null
+  const withCookies = request as Request & {
+    cookies?: { get: (name: string) => { value: string } | undefined }
+  }
+  const parsed = withCookies.cookies?.get(SESSION_COOKIE)?.value
+  if (parsed) return parsed
+
+  const raw = request.headers.get("cookie") || ""
+  const match = raw.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE}=([^;]*)`))
+  return match?.[1] ? decodeURIComponent(match[1].trim()) : null
 }
