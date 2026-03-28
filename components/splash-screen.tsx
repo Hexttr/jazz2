@@ -6,13 +6,32 @@ const STORAGE_KEY = "jazz-splash-v1"
 /** Конец сплеша после exit-анимации (2.45s задержка + 0.85s fade). */
 const SHOW_MS = 3400
 
+function isInstalledPwa(): boolean {
+  if (typeof window === "undefined") return false
+  const mq = (q: string) => window.matchMedia(q).matches
+  if (
+    mq("(display-mode: fullscreen)") ||
+    mq("(display-mode: standalone)") ||
+    mq("(display-mode: minimal-ui)") ||
+    mq("(display-mode: window-controls-overlay)")
+  ) {
+    return true
+  }
+  const nav = window.navigator as Navigator & { standalone?: boolean }
+  return nav.standalone === true
+}
+
 /**
- * Однократный за сессию сплеш на главной: тёмный фон, золотой логотип, лёгкое свечение.
+ * Сплэш только в установленном PWA (с главного экрана). В обычной вкладке браузера не показывается.
  */
 export function SplashScreen() {
   const [mode, setMode] = useState<"check" | "run" | "done">("check")
 
   useEffect(() => {
+    if (!isInstalledPwa()) {
+      setMode("done")
+      return
+    }
     try {
       if (sessionStorage.getItem(STORAGE_KEY)) {
         setMode("done")

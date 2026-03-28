@@ -9,8 +9,9 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Изысканная кухня, банкеты, живая музыка. Кафе JAZZ в Тамбове.",
     start_url: "/",
     scope: "/",
-    display: "standalone",
-    display_override: ["standalone", "fullscreen"],
+    /** fullscreen — без UI браузера; при отсутствии поддержки — standalone. */
+    display: "fullscreen",
+    display_override: ["fullscreen", "standalone", "minimal-ui"],
     background_color: "#1a1410",
     theme_color: "#1a1410",
     orientation: "portrait-primary",
