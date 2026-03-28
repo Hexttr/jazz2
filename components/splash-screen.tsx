@@ -2,23 +2,33 @@
 
 import { useEffect, useState } from "react"
 
-const STORAGE_KEY = "jazz-splash-v1"
+/** Смена версии — один раз показать сплэш снова после обновления логики PWA. */
+const STORAGE_KEY = "jazz-splash-v2"
 /** Конец сплеша после exit-анимации (2.45s задержка + 0.85s fade). */
 const SHOW_MS = 3400
 
+/**
+ * iOS «На экран Домой»: в первую очередь navigator.standalone.
+ * Android / Chrome: display-mode.
+ */
 function isInstalledPwa(): boolean {
   if (typeof window === "undefined") return false
-  const mq = (q: string) => window.matchMedia(q).matches
-  if (
-    mq("(display-mode: fullscreen)") ||
-    mq("(display-mode: standalone)") ||
-    mq("(display-mode: minimal-ui)") ||
-    mq("(display-mode: window-controls-overlay)")
-  ) {
-    return true
+  try {
+    const nav = window.navigator as Navigator & { standalone?: boolean }
+    if (nav.standalone === true) return true
+  } catch {
+    /* ignore */
   }
-  const nav = window.navigator as Navigator & { standalone?: boolean }
-  return nav.standalone === true
+  if (typeof window.matchMedia !== "function") return false
+  const modes = ["standalone", "fullscreen", "minimal-ui", "window-controls-overlay"] as const
+  for (const m of modes) {
+    try {
+      if (window.matchMedia(`(display-mode: ${m})`).matches) return true
+    } catch {
+      /* ignore */
+    }
+  }
+  return false
 }
 
 /**
@@ -28,28 +38,40 @@ export function SplashScreen() {
   const [mode, setMode] = useState<"check" | "run" | "done">("check")
 
   useEffect(() => {
-    if (!isInstalledPwa()) {
-      setMode("done")
-      return
-    }
-    try {
-      if (sessionStorage.getItem(STORAGE_KEY)) {
+    let cancelled = false
+    let tSplash: number | undefined
+    /** Небольшая задержка: на iOS/Android корректно определяется standalone/display-mode. */
+    const t0 = window.setTimeout(() => {
+      if (cancelled) return
+      if (!isInstalledPwa()) {
         setMode("done")
         return
       }
-    } catch {
-      /* ignore */
-    }
-    setMode("run")
-    const t = window.setTimeout(() => {
       try {
-        sessionStorage.setItem(STORAGE_KEY, "1")
+        if (sessionStorage.getItem(STORAGE_KEY)) {
+          setMode("done")
+          return
+        }
       } catch {
         /* ignore */
       }
-      setMode("done")
-    }, SHOW_MS)
-    return () => window.clearTimeout(t)
+      setMode("run")
+      tSplash = window.setTimeout(() => {
+        if (cancelled) return
+        try {
+          sessionStorage.setItem(STORAGE_KEY, "1")
+        } catch {
+          /* ignore */
+        }
+        setMode("done")
+      }, SHOW_MS)
+    }, 50)
+
+    return () => {
+      cancelled = true
+      window.clearTimeout(t0)
+      if (tSplash) window.clearTimeout(tSplash)
+    }
   }, [])
 
   if (mode !== "run") return null
@@ -62,7 +84,6 @@ export function SplashScreen() {
       }}
       aria-hidden
     >
-      {/* Radial glow */}
       <div
         className="jazz-splash-animate pointer-events-none absolute h-[min(120vw,720px)] w-[min(120vw,720px)] rounded-full bg-[radial-gradient(circle,oklch(0.55_0.12_65_/_0.25)_0%,transparent_65%)]"
         style={{ animation: "jazz-splash-glow 3s ease-in-out infinite" }}
@@ -76,7 +97,6 @@ export function SplashScreen() {
         }}
       />
 
-      {/* Gold line */}
       <div
         className="jazz-splash-animate mb-10 h-px w-[min(12rem,50vw)] origin-center bg-gradient-to-r from-transparent via-primary to-transparent"
         style={{ animation: "jazz-splash-line 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards" }}

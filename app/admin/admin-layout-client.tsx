@@ -114,7 +114,7 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
     setMobileOpen(false)
   }, [pathname])
 
-  /** Браузерные уведомления при росте числа заявок (вкладка может быть в фоне; без push — не при закрытом браузере). */
+  /** Браузерные уведомления при росте числа заявок. Опрос ~12 с + при возврате на вкладку. Без Web Push — только пока открыт браузер. */
   useEffect(() => {
     if (isLogin || typeof window === "undefined" || !("Notification" in window)) return
     if (!notifyBrowser) {
@@ -122,10 +122,13 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
       return
     }
     let cancelled = false
+    const POLL_MS = 12_000
+
     const tick = async () => {
       const data = await fetchStats()
       if (cancelled || !data || typeof data.reservationsPending !== "number") return
       const next = data.reservationsPending
+      setPendingCount(next)
       const prev = prevPendingRef.current
       prevPendingRef.current = next
       if (prev !== null && next > prev && Notification.permission === "granted") {
@@ -133,18 +136,29 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
           new Notification("Новая заявка на бронирование", {
             body: `Ожидают обработки: ${next}`,
             icon: "/icons/pwa-192.png",
-            tag: "jazz-reservation-pending",
+            // Без фиксированного tag — иначе ОС может не показать «повтор» как новое.
+            requireInteraction: false,
           })
         } catch {
           /* ignore */
         }
       }
     }
+
     void tick()
-    const id = window.setInterval(() => void tick(), 45_000)
+    const id = window.setInterval(() => void tick(), POLL_MS)
+    const onFocus = () => void tick()
+    const onVis = () => {
+      if (document.visibilityState === "visible") void tick()
+    }
+    window.addEventListener("focus", onFocus)
+    document.addEventListener("visibilitychange", onVis)
+
     return () => {
       cancelled = true
       window.clearInterval(id)
+      window.removeEventListener("focus", onFocus)
+      document.removeEventListener("visibilitychange", onVis)
     }
   }, [isLogin, notifyBrowser, fetchStats])
 
@@ -205,6 +219,11 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
               </>
             )}
           </button>
+        )}
+        {mounted && !isLogin && notifyPermission === "denied" && (
+          <p className="px-3 text-xs text-amber-500/90">
+            Уведомления заблокированы в настройках браузера для этого сайта.
+          </p>
         )}
         <a
           href="/"
