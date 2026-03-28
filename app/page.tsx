@@ -1,4 +1,5 @@
 import { getContent } from "@/lib/content"
+import { SplashScreen } from "@/components/splash-screen"
 import { Navigation } from "@/components/navigation"
 import { Hero } from "@/components/hero"
 import { About } from "@/components/about"
@@ -16,6 +17,7 @@ export default async function Home() {
   const content = await getContent()
   return (
     <main>
+      <SplashScreen />
       <Navigation />
       <Hero content={content.sections?.hero} />
       <About content={content.sections?.about} />

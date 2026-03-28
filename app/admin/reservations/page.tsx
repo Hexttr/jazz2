@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Info, Save, RefreshCw, Trash2, MessageCircle, Clock, Users, MapPin, CalendarCheck } from "lucide-react"
+import { Info, Save, RefreshCw, Trash2, MessageCircle, Clock, Users, MapPin, CalendarCheck, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -37,6 +37,13 @@ const STATUS_COLORS: Record<ReservationStatus, string> = {
   archived: "bg-muted text-muted-foreground border-border",
 }
 
+const VK_PEER_HINT = `Уведомления ВКонтакте (личное сообщение через API):
+
+1. Создайте приложение на dev.vk.com и получите токен с правом «Доступ к сообщениям» (или используйте токен сообщества).
+2. В .env на сервере задайте VK_ACCESS_TOKEN.
+3. Укажите здесь peer_id получателя — числовой ID пользователя ВК (можно посмотреть в адресе профиля или через сервисы id).
+4. Пользователь должен разрешить сообщения от сообщества или написать ему первым — иначе VK вернёт ошибку.`
+
 const TELEGRAM_ID_HINT = `Как узнать свой ID в Telegram:
 1. Напишите боту @userinfobot в Telegram
 2. Отправьте ему любое сообщение
@@ -55,6 +62,11 @@ export default function AdminReservationsPage() {
   const [filter, setFilter] = useState<ReservationStatus | "all">("all")
   const [refreshing, setRefreshing] = useState(false)
   const [telegramOpen, setTelegramOpen] = useState(false)
+  const [vkOpen, setVkOpen] = useState(false)
+  const [vkPeerId, setVkPeerId] = useState("")
+  const [savingVk, setSavingVk] = useState(false)
+  const [vkError, setVkError] = useState<string | null>(null)
+  const [vkSuccess, setVkSuccess] = useState(false)
 
   const loadData = useCallback(async (showRefreshing = false) => {
     if (showRefreshing) setRefreshing(true)
@@ -67,9 +79,14 @@ export default function AdminReservationsPage() {
         window.location.href = "/admin/login"
         return
       }
-      const data = (await res.json()) as { reservations?: Reservation[]; telegramId?: string }
+      const data = (await res.json()) as {
+        reservations?: Reservation[]
+        telegramId?: string
+        vkPeerId?: string
+      }
       if (Array.isArray(data.reservations)) setReservations(data.reservations)
       if (data.telegramId != null) setTelegramId(String(data.telegramId))
+      if (data.vkPeerId != null) setVkPeerId(String(data.vkPeerId))
     } catch {
       // ignore
     } finally {
@@ -121,6 +138,42 @@ export default function AdminReservationsPage() {
       setTelegramError("Ошибка соединения")
     } finally {
       setSavingTelegram(false)
+    }
+  }
+
+  async function saveVkPeerId() {
+    setSavingVk(true)
+    setVkError(null)
+    setVkSuccess(false)
+    try {
+      const res = await fetch("/api/admin/reservations/vk", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        cache: "no-store",
+        body: JSON.stringify({ peerId: vkPeerId.trim() }),
+      })
+      const data = (await res.json().catch(() => ({}))) as {
+        success?: boolean
+        error?: string
+        peerId?: string
+      }
+      if (res.status === 401) {
+        window.location.href = "/admin/login"
+        return
+      }
+      if (res.ok && data.error == null) {
+        const saved = data.peerId != null ? String(data.peerId) : vkPeerId.trim()
+        setVkPeerId(saved)
+        setVkSuccess(true)
+        setTimeout(() => setVkSuccess(false), 3000)
+      } else {
+        setVkError(data.error || "Не удалось сохранить peer_id VK")
+      }
+    } catch {
+      setVkError("Ошибка соединения")
+    } finally {
+      setSavingVk(false)
     }
   }
 
@@ -247,6 +300,68 @@ export default function AdminReservationsPage() {
               )}
               <p className="mt-2 text-xs text-muted-foreground/70">
                 Напишите боту @jazz_68_bot команду /start, чтобы получать уведомления.
+              </p>
+            </div>
+          </CollapsibleContent>
+        </div>
+      </Collapsible>
+
+      {/* VK settings */}
+      <Collapsible open={vkOpen} onOpenChange={setVkOpen}>
+        <div className="rounded-xl border border-white/20 bg-card/80">
+          <CollapsibleTrigger asChild>
+            <div className="flex cursor-pointer items-center justify-between px-5 py-4 transition-colors hover:bg-white/[0.02]">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#0077FF]/15">
+                  <Send className="h-4 w-4 text-[#6ab7ff]" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Уведомления ВКонтакте</p>
+                  <p className="text-xs text-muted-foreground">
+                    {vkPeerId ? `peer_id: ${vkPeerId}` : "Не настроено"}
+                  </p>
+                </div>
+              </div>
+              <Badge variant={vkPeerId ? "secondary" : "outline"} className="text-xs">
+                {vkPeerId ? "Активно" : "Выключено"}
+              </Badge>
+            </div>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="border-t border-border/30 px-5 py-4">
+              <div className="mb-3 flex items-center gap-2">
+                <Label className="text-sm">peer_id ВКонтакте</Label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground"
+                      aria-label="Инструкция VK"
+                    >
+                      <Info className="h-3 w-3" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="max-w-xs whitespace-pre-line text-xs">
+                    {VK_PEER_HINT}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Input
+                  value={vkPeerId}
+                  onChange={(e) => setVkPeerId(e.target.value)}
+                  placeholder="123456789"
+                  className="max-w-xs"
+                />
+                <Button size="sm" onClick={() => void saveVkPeerId()} disabled={savingVk}>
+                  <Save className="mr-2 h-4 w-4" />
+                  {savingVk ? "..." : "Сохранить"}
+                </Button>
+              </div>
+              {vkError && <p className="mt-2 text-sm text-destructive">{vkError}</p>}
+              {vkSuccess && <p className="mt-2 text-sm text-green-500">Сохранено</p>}
+              <p className="mt-2 text-xs text-muted-foreground/70">
+                Нужен токен VK_ACCESS_TOKEN в .env на сервере. Текст заявки уходит как личное сообщение.
               </p>
             </div>
           </CollapsibleContent>

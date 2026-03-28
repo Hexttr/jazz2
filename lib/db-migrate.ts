@@ -12,6 +12,7 @@ import {
 const K_APP = "app_content"
 const K_RES = "reservations"
 const K_TG = "telegram"
+const K_VK = "vk"
 
 function readFileJson<T>(filePath: string): T | null {
   try {
@@ -73,5 +74,9 @@ export function runMigrations(db: InstanceType<typeof Database>): void {
   if (!get(K_TG)) {
     const fromFile = readFileJson<{ telegramId?: string }>(TELEGRAM_SETTINGS_FILE)
     set(K_TG, JSON.stringify({ telegramId: typeof fromFile?.telegramId === "string" ? fromFile.telegramId : "" }))
+  }
+
+  if (!get(K_VK)) {
+    set(K_VK, JSON.stringify({ peerId: "" }))
   }
 }
