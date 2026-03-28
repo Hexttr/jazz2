@@ -8,12 +8,17 @@ node_modules/
 .next/
 .env*.local
 deploy.local.env
+backups/
 .DS_Store
+__pycache__/
 
 # Runtime data (сервер)
 data/app-content.json
 data/reservations.json
 data/telegram.json
+data/app.db
+data/app.db-wal
+data/app.db-shm
 public/uploads/*
 !public/uploads/.gitkeep
 storage/uploads/*

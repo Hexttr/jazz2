@@ -1,12 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Bug } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
 type DebugInfo = {
   storage: string
+  databasePath?: string
+  databasePathFromEnv?: string | null
+  databaseFileExists?: boolean
+  databaseWalExists?: boolean
+  databaseShmExists?: boolean
+  appCwd?: string
   dataDir: string
   mergedContentFile: string
   mergedFileExists: boolean
@@ -18,8 +24,38 @@ type DebugInfo = {
 
 export default function AdminDebugPage() {
   const [debug, setDebug] = useState<DebugInfo | null>(null)
+  const [debugError, setDebugError] = useState<string | null>(null)
   const [debugLoading, setDebugLoading] = useState(false)
   const [debugTestLoading, setDebugTestLoading] = useState(false)
+
+  async function loadDebug() {
+    setDebugLoading(true)
+    setDebugError(null)
+    try {
+      const r = await fetch("/api/admin/content-debug", {
+        credentials: "include",
+        cache: "no-store",
+      })
+      const d = await r.json().catch(() => null)
+      if (r.status === 401) {
+        window.location.href = "/admin/login"
+        return
+      }
+      if (r.ok && d && !d.error) {
+        setDebug(d as DebugInfo)
+      } else {
+        setDebugError((d && (d.error as string)) || `Ошибка ${r.status}`)
+      }
+    } catch {
+      setDebugError("Ошибка соединения")
+    } finally {
+      setDebugLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    void loadDebug()
+  }, [])
 
   return (
     <div className="space-y-6">
@@ -29,7 +65,8 @@ export default function AdminDebugPage() {
           Диагностика хранилища
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Локальные файлы в каталоге <code className="text-xs">data/</code> на сервере
+          Контент и заявки в SQLite; каталог <code className="text-xs">data/</code> на сервере. Ниже — полный путь к файлу БД для
+          бэкапа.
         </p>
       </div>
 
@@ -42,25 +79,8 @@ export default function AdminDebugPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex flex-wrap gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={debugLoading}
-              onClick={async () => {
-                setDebugLoading(true)
-                try {
-                  const r = await fetch("/api/admin/content-debug", {
-                    credentials: "include",
-                    cache: "no-store",
-                  })
-                  const d = await r.json().catch(() => null)
-                  if (r.ok && d) setDebug(d)
-                } finally {
-                  setDebugLoading(false)
-                }
-              }}
-            >
-              {debugLoading ? "..." : "Проверить"}
+            <Button variant="outline" size="sm" disabled={debugLoading} onClick={() => void loadDebug()}>
+              {debugLoading ? "..." : "Обновить"}
             </Button>
             <Button
               variant="outline"
@@ -95,12 +115,27 @@ export default function AdminDebugPage() {
               {debugTestLoading ? "..." : "Тест записи"}
             </Button>
           </div>
+          {debugError && (
+            <p className="rounded-lg bg-destructive/15 px-3 py-2 text-sm text-destructive">{debugError}</p>
+          )}
           {debug && (
-            <div className="space-y-1 rounded-lg bg-muted/30 p-3 font-mono text-xs text-muted-foreground">
+            <div className="space-y-2 rounded-lg bg-muted/30 p-3 font-mono text-xs text-muted-foreground break-all">
               <p>Хранилище: {debug.storage}</p>
+              {debug.appCwd != null && <p>process.cwd(): {debug.appCwd}</p>}
+              {debug.databasePathFromEnv != null && debug.databasePathFromEnv !== "" && (
+                <p>DATABASE_PATH в .env: {debug.databasePathFromEnv}</p>
+              )}
+              <p className="text-foreground">
+                <span className="font-semibold text-primary">Файл SQLite (для бэкапа):</span> {debug.databasePath ?? "—"}
+              </p>
+              <p>
+                Файл существует: {debug.databaseFileExists === true ? "да" : debug.databaseFileExists === false ? "нет" : "—"}
+                {debug.databaseWalExists ? " · WAL: -wal есть" : ""}
+                {debug.databaseShmExists ? " · -shm есть" : ""}
+              </p>
               <p>data/: {debug.dataDir}</p>
               <p>
-                app-content.json: {debug.mergedFileExists ? "есть" : "нет (используются menu.json + sections.json)"}
+                app-content.json (legacy): {debug.mergedFileExists ? "есть" : "нет"}
               </p>
               <p>
                 Источник: {debug.source} · Блюд: {debug.dishesCount}

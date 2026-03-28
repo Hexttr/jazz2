@@ -3,10 +3,11 @@ import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import { getSessionTokenFromRequest, verifySession } from "@/lib/auth"
 import { APP_CONTENT_FILE, DATA_DIR } from "@/lib/data-paths"
+import { getDatabasePath } from "@/lib/db"
 import { readJsonFile, writeJsonAtomic } from "@/lib/fs-json"
 
 /**
- * Диагностика локального хранилища (data/*.json).
+ * Диагностика хранилища: SQLite (основное) + legacy JSON в data/.
  */
 export const dynamic = "force-dynamic"
 
@@ -29,8 +30,39 @@ export async function GET(request: NextRequest) {
   } catch {
     mergedFileExists = false
   }
+  const dbPath = getDatabasePath()
+  const databasePathEnv = process.env.DATABASE_PATH?.trim() || null
+  let databaseFileExists = false
+  let databaseWalExists = false
+  let databaseShmExists = false
+  try {
+    await fs.access(dbPath)
+    databaseFileExists = true
+  } catch {
+    databaseFileExists = false
+  }
+  try {
+    await fs.access(`${dbPath}-wal`)
+    databaseWalExists = true
+  } catch {
+    databaseWalExists = false
+  }
+  try {
+    await fs.access(`${dbPath}-shm`)
+    databaseShmExists = true
+  } catch {
+    databaseShmExists = false
+  }
   return NextResponse.json({
-    storage: "filesystem",
+    storage: "sqlite",
+    /** Полный путь к файлу SQLite на сервере (учитывает DATABASE_PATH). */
+    databasePath: dbPath,
+    databasePathFromEnv: databasePathEnv,
+    databaseFileExists,
+    databaseWalExists,
+    databaseShmExists,
+    /** process.cwd() приложения — база для относительных путей. */
+    appCwd: process.cwd(),
     dataDir: DATA_DIR,
     mergedContentFile: APP_CONTENT_FILE,
     mergedFileExists,

@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "deploy:install": "pip install -r scripts/requirements-deploy.txt",
     "deploy:ubuntu": "python scripts/deploy_ubuntu.py",
-    "deploy:fix-env": "python scripts/fix-server-env.py"
+    "deploy:fix-env": "python scripts/fix-server-env.py",
+    "backup:remote": "python scripts/backup_remote.py"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -42,6 +43,7 @@
     "@radix-ui/react-tooltip": "1.2.8",
     "autoprefixer": "^10.4.20",
     "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^12.8.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.1.1",
@@ -66,6 +68,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.0",
     "@types/bcryptjs": "^2.4.6",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",

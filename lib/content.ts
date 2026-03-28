@@ -1,35 +1,37 @@
 import type { AppContent } from "./content-types"
-import { APP_CONTENT_FILE } from "./data-paths"
-import { readJsonFile, writeJsonAtomic } from "./fs-json"
+import { readFromMergedFile, readFromSeedFiles } from "./content-files"
+import { kvGet, kvSet } from "./db-kv"
+import { getDb } from "./db"
 
-async function readFromMergedFile(): Promise<AppContent | null> {
-  return readJsonFile<AppContent>(APP_CONTENT_FILE)
-}
+export type ContentSource = "database" | "merged" | "seed"
 
-async function readFromSeedFiles(): Promise<AppContent> {
-  const path = await import("path")
-  const fs = await import("fs/promises")
-  const menuPath = path.join(process.cwd(), "data", "menu.json")
-  const sectionsPath = path.join(process.cwd(), "data", "sections.json")
-  const [menuBuf, sectionsBuf] = await Promise.all([
-    fs.readFile(menuPath, "utf-8"),
-    fs.readFile(sectionsPath, "utf-8"),
-  ])
-  return {
-    menu: JSON.parse(menuBuf) as AppContent["menu"],
-    sections: JSON.parse(sectionsBuf) as AppContent["sections"],
+function parseAppContent(raw: string): AppContent | null {
+  try {
+    const v = JSON.parse(raw) as AppContent
+    if (v?.menu && v?.sections) return v
+    return null
+  } catch {
+    return null
   }
 }
 
-export type ContentSource = "merged" | "seed"
-
 export async function getContent(): Promise<AppContent> {
+  getDb()
+  const raw = kvGet("app_content")
+  const fromDb = raw ? parseAppContent(raw) : null
+  if (fromDb) return fromDb
+
   const merged = await readFromMergedFile()
   if (merged) return merged
   return await readFromSeedFiles()
 }
 
 export async function getContentWithSource(): Promise<{ content: AppContent; source: ContentSource }> {
+  getDb()
+  const raw = kvGet("app_content")
+  const fromDb = raw ? parseAppContent(raw) : null
+  if (fromDb) return { content: fromDb, source: "database" }
+
   const merged = await readFromMergedFile()
   if (merged) return { content: merged, source: "merged" }
   const seed = await readFromSeedFiles()
@@ -38,10 +40,11 @@ export async function getContentWithSource(): Promise<{ content: AppContent; sou
 
 export async function putContent(
   content: AppContent
-): Promise<{ ok: boolean; writtenTo?: "local"; error?: string }> {
+): Promise<{ ok: boolean; writtenTo?: "database"; error?: string }> {
   try {
-    await writeJsonAtomic(APP_CONTENT_FILE, content)
-    return { ok: true, writtenTo: "local" }
+    getDb()
+    kvSet("app_content", JSON.stringify(content))
+    return { ok: true, writtenTo: "database" }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
     return { ok: false, error: msg }

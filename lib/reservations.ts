@@ -1,5 +1,5 @@
-import { RESERVATIONS_FILE, TELEGRAM_SETTINGS_FILE } from "./data-paths"
-import { readJsonFile, writeJsonAtomic } from "./fs-json"
+import { getDb } from "./db"
+import { kvGet, kvSet } from "./db-kv"
 
 export type ReservationStatus = "pending" | "approved" | "archived"
 
@@ -18,16 +18,27 @@ export type Reservation = {
 
 type TelegramSettings = { telegramId: string }
 
+function parseReservations(raw: string | null): Reservation[] {
+  if (!raw) return []
+  try {
+    const data = JSON.parse(raw) as unknown
+    return Array.isArray(data) ? (data as Reservation[]) : []
+  } catch {
+    return []
+  }
+}
+
 export async function getReservations(): Promise<Reservation[]> {
-  const data = await readJsonFile<Reservation[]>(RESERVATIONS_FILE)
-  return Array.isArray(data) ? data : []
+  getDb()
+  return parseReservations(kvGet("reservations"))
 }
 
 export async function addReservation(
   data: Omit<Reservation, "id" | "status" | "createdAt">
 ): Promise<Reservation | null> {
   try {
-    const list = await getReservations()
+    getDb()
+    const list = parseReservations(kvGet("reservations"))
     const id = Date.now().toString(36) + Math.random().toString(36).slice(2)
     const reservation: Reservation = {
       ...data,
@@ -36,7 +47,7 @@ export async function addReservation(
       createdAt: new Date().toISOString(),
     }
     list.unshift(reservation)
-    await writeJsonAtomic(RESERVATIONS_FILE, list)
+    kvSet("reservations", JSON.stringify(list))
     return reservation
   } catch {
     return null
@@ -45,11 +56,12 @@ export async function addReservation(
 
 export async function updateReservationStatus(id: string, status: ReservationStatus): Promise<boolean> {
   try {
-    const list = await getReservations()
+    getDb()
+    const list = parseReservations(kvGet("reservations"))
     const index = list.findIndex((r) => r.id === id)
     if (index === -1) return false
     list[index] = { ...list[index], status }
-    await writeJsonAtomic(RESERVATIONS_FILE, list)
+    kvSet("reservations", JSON.stringify(list))
     return true
   } catch {
     return false
@@ -58,10 +70,11 @@ export async function updateReservationStatus(id: string, status: ReservationSta
 
 export async function deleteReservation(id: string): Promise<boolean> {
   try {
-    const list = await getReservations()
+    getDb()
+    const list = parseReservations(kvGet("reservations"))
     const next = list.filter((r) => r.id !== id)
     if (next.length === list.length) return false
-    await writeJsonAtomic(RESERVATIONS_FILE, next)
+    kvSet("reservations", JSON.stringify(next))
     return true
   } catch {
     return false
@@ -69,14 +82,21 @@ export async function deleteReservation(id: string): Promise<boolean> {
 }
 
 export async function getTelegramId(): Promise<string> {
-  const data = await readJsonFile<TelegramSettings>(TELEGRAM_SETTINGS_FILE)
-  if (!data || typeof data.telegramId !== "string") return ""
-  return data.telegramId.trim()
+  getDb()
+  const raw = kvGet("telegram")
+  if (!raw) return ""
+  try {
+    const data = JSON.parse(raw) as TelegramSettings
+    return typeof data.telegramId === "string" ? data.telegramId.trim() : ""
+  } catch {
+    return ""
+  }
 }
 
 export async function setTelegramId(telegramId: string): Promise<boolean> {
   try {
-    await writeJsonAtomic(TELEGRAM_SETTINGS_FILE, { telegramId: telegramId.trim() })
+    getDb()
+    kvSet("telegram", JSON.stringify({ telegramId: telegramId.trim() }))
     return true
   } catch {
     return false

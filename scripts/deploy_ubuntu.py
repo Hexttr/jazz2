@@ -192,7 +192,7 @@ echo OK
         client.close()
         tmp_path.unlink(missing_ok=True)
 
-    msg = f"\nOpen: http://{host}:8080/\nData: data/*.json and storage/uploads/ (preserved across deploys).\n"
+    msg = f"\nOpen: http://{host}:8080/\nData: data/app.db (SQLite), legacy JSON, storage/uploads/ — preserved across deploys.\n"
     sys.stdout.buffer.write(msg.encode("utf-8", errors="replace"))
     sys.stdout.buffer.flush()
 
