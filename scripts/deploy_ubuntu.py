@@ -113,6 +113,8 @@ set -e
 APP="{app}"
 TAR="{tar}"
 ENVIN="{envin}"
+# Остановить приложение до копирования data/ — иначе SQLite (WAL) может быть в несогласованном виде в бэкапе.
+systemctl stop jazz2 || true
 if [ -f "$APP/.env" ]; then cp "$APP/.env" /tmp/jazz2.env.save; fi
 UPLOADS_BAK=""
 if [ -d "$APP/storage/uploads" ]; then
