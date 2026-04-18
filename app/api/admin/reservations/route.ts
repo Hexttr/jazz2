@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getSessionTokenFromRequest, verifySession } from "@/lib/auth"
 import { getReservations, updateReservationStatus, getTelegramId, deleteReservation } from "@/lib/reservations"
 import { getVkPeerId } from "@/lib/vk-notify"
+import { getMaxSettings } from "@/lib/max-notify"
 import type { ReservationStatus } from "@/lib/reservations"
 
 export const dynamic = "force-dynamic"
@@ -12,13 +13,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Необходима авторизация" }, { status: 401 })
   }
   try {
-    const [reservations, telegramId, vkPeerId] = await Promise.all([
+    const [reservations, telegramId, vkPeerId, maxSettings] = await Promise.all([
       getReservations(),
       getTelegramId(),
       getVkPeerId(),
+      getMaxSettings(),
     ])
     return NextResponse.json(
-      { reservations, telegramId, vkPeerId },
+      { reservations, telegramId, vkPeerId, maxUserId: maxSettings.userId, maxChatId: maxSettings.chatId },
       {
         headers: {
           "Cache-Control": "no-store, max-age=0",

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { addReservation, getTelegramId, sendTelegramNotification } from "@/lib/reservations"
 import { getVkPeerId, sendVkNotification } from "@/lib/vk-notify"
+import { getMaxSettings, sendMaxNotification } from "@/lib/max-notify"
 
 export const dynamic = "force-dynamic"
 
@@ -93,12 +94,19 @@ export async function POST(request: NextRequest) {
         { status: 503 }
       )
     }
-    const [telegramId, vkPeerId] = await Promise.all([getTelegramId(), getVkPeerId()])
+    const [telegramId, vkPeerId, maxSettings] = await Promise.all([
+      getTelegramId(),
+      getVkPeerId(),
+      getMaxSettings(),
+    ])
     if (telegramId) {
       await sendTelegramNotification(reservation, telegramId)
     }
     if (vkPeerId) {
       await sendVkNotification(reservation, vkPeerId)
+    }
+    if (maxSettings.chatId || maxSettings.userId) {
+      await sendMaxNotification(reservation, maxSettings)
     }
     return NextResponse.json({ success: true })
   } catch (e) {

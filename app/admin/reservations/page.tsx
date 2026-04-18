@@ -1,7 +1,19 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Info, Save, RefreshCw, Trash2, MessageCircle, Clock, Users, MapPin, CalendarCheck, Send } from "lucide-react"
+import {
+  Info,
+  Save,
+  RefreshCw,
+  Trash2,
+  MessageCircle,
+  Clock,
+  Users,
+  MapPin,
+  CalendarCheck,
+  Send,
+  MessageSquare,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -44,6 +56,13 @@ const VK_PEER_HINT = `Уведомления ВКонтакте (личное с
 3. Укажите здесь peer_id получателя — числовой ID пользователя ВК (можно посмотреть в адресе профиля или через сервисы id).
 4. Пользователь должен разрешить сообщения от сообщества или написать ему первым — иначе VK вернёт ошибку.`
 
+const MAX_HINT = `Мессенджер MAX (официальный API: dev.max.ru):
+
+1. Создайте чат-бота в кабинете MAX (business.max.ru → Чат-боты → Интеграция → токен).
+2. В .env на сервере задайте MAX_BOT_TOKEN.
+3. Укажите user_id получателя в MAX или chat_id группового чата (если chat_id заполнен — он приоритетнее).
+4. Пользователь должен начать диалог с ботом, если требуют правила платформы.`
+
 const TELEGRAM_ID_HINT = `Как узнать свой ID в Telegram:
 1. Напишите боту @userinfobot в Telegram
 2. Отправьте ему любое сообщение
@@ -67,6 +86,12 @@ export default function AdminReservationsPage() {
   const [savingVk, setSavingVk] = useState(false)
   const [vkError, setVkError] = useState<string | null>(null)
   const [vkSuccess, setVkSuccess] = useState(false)
+  const [maxOpen, setMaxOpen] = useState(false)
+  const [maxUserId, setMaxUserId] = useState("")
+  const [maxChatId, setMaxChatId] = useState("")
+  const [savingMax, setSavingMax] = useState(false)
+  const [maxError, setMaxError] = useState<string | null>(null)
+  const [maxSuccess, setMaxSuccess] = useState(false)
 
   const loadData = useCallback(async (showRefreshing = false) => {
     if (showRefreshing) setRefreshing(true)
@@ -83,10 +108,14 @@ export default function AdminReservationsPage() {
         reservations?: Reservation[]
         telegramId?: string
         vkPeerId?: string
+        maxUserId?: string
+        maxChatId?: string
       }
       if (Array.isArray(data.reservations)) setReservations(data.reservations)
       if (data.telegramId != null) setTelegramId(String(data.telegramId))
       if (data.vkPeerId != null) setVkPeerId(String(data.vkPeerId))
+      if (data.maxUserId != null) setMaxUserId(String(data.maxUserId))
+      if (data.maxChatId != null) setMaxChatId(String(data.maxChatId))
     } catch {
       // ignore
     } finally {
@@ -174,6 +203,43 @@ export default function AdminReservationsPage() {
       setVkError("Ошибка соединения")
     } finally {
       setSavingVk(false)
+    }
+  }
+
+  async function saveMaxSettings() {
+    setSavingMax(true)
+    setMaxError(null)
+    setMaxSuccess(false)
+    try {
+      const res = await fetch("/api/admin/reservations/max", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        cache: "no-store",
+        body: JSON.stringify({ userId: maxUserId.trim(), chatId: maxChatId.trim() }),
+      })
+      const data = (await res.json().catch(() => ({}))) as {
+        success?: boolean
+        error?: string
+        userId?: string
+        chatId?: string
+      }
+      if (res.status === 401) {
+        window.location.href = "/admin/login"
+        return
+      }
+      if (res.ok && data.error == null) {
+        if (data.userId != null) setMaxUserId(String(data.userId))
+        if (data.chatId != null) setMaxChatId(String(data.chatId))
+        setMaxSuccess(true)
+        setTimeout(() => setMaxSuccess(false), 3000)
+      } else {
+        setMaxError(data.error || "Не удалось сохранить настройки MAX")
+      }
+    } catch {
+      setMaxError("Ошибка соединения")
+    } finally {
+      setSavingMax(false)
     }
   }
 
@@ -362,6 +428,86 @@ export default function AdminReservationsPage() {
               {vkSuccess && <p className="mt-2 text-sm text-green-500">Сохранено</p>}
               <p className="mt-2 text-xs text-muted-foreground/70">
                 Нужен токен VK_ACCESS_TOKEN в .env на сервере. Текст заявки уходит как личное сообщение.
+              </p>
+            </div>
+          </CollapsibleContent>
+        </div>
+      </Collapsible>
+
+      {/* MAX messenger */}
+      <Collapsible open={maxOpen} onOpenChange={setMaxOpen}>
+        <div className="rounded-xl border border-white/20 bg-card/80">
+          <CollapsibleTrigger asChild>
+            <div className="flex cursor-pointer items-center justify-between px-5 py-4 transition-colors hover:bg-white/[0.02]">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-500/15">
+                  <MessageSquare className="h-4 w-4 text-violet-300" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Уведомления в MAX</p>
+                  <p className="text-xs text-muted-foreground">
+                    {maxChatId
+                      ? `chat_id: ${maxChatId}`
+                      : maxUserId
+                        ? `user_id: ${maxUserId}`
+                        : "Не настроено"}
+                  </p>
+                </div>
+              </div>
+              <Badge variant={maxChatId || maxUserId ? "secondary" : "outline"} className="text-xs">
+                {maxChatId || maxUserId ? "Активно" : "Выключено"}
+              </Badge>
+            </div>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="border-t border-border/30 px-5 py-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Label className="text-sm">Настройки MAX</Label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground"
+                      aria-label="Инструкция MAX"
+                    >
+                      <Info className="h-3 w-3" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="max-w-xs whitespace-pre-line text-xs">
+                    {MAX_HINT}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="grid gap-2 sm:max-w-md">
+                <div>
+                  <Label className="text-xs text-muted-foreground">user_id (личный чат)</Label>
+                  <Input
+                    value={maxUserId}
+                    onChange={(e) => setMaxUserId(e.target.value)}
+                    placeholder="Например 12345678"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">chat_id (если нужен чат вместо user)</Label>
+                  <Input
+                    value={maxChatId}
+                    onChange={(e) => setMaxChatId(e.target.value)}
+                    placeholder="Оставьте пустым, если только user_id"
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button size="sm" onClick={() => void saveMaxSettings()} disabled={savingMax}>
+                  <Save className="mr-2 h-4 w-4" />
+                  {savingMax ? "..." : "Сохранить"}
+                </Button>
+              </div>
+              {maxError && <p className="text-sm text-destructive">{maxError}</p>}
+              {maxSuccess && <p className="text-sm text-green-500">Сохранено</p>}
+              <p className="text-xs text-muted-foreground/70">
+                В .env на сервере: <code className="text-[11px]">MAX_BOT_TOKEN</code> — токен бота из кабинета MAX.
               </p>
             </div>
           </CollapsibleContent>

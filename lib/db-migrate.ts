@@ -13,6 +13,7 @@ const K_APP = "app_content"
 const K_RES = "reservations"
 const K_TG = "telegram"
 const K_VK = "vk"
+const K_MAX = "max"
 
 function readFileJson<T>(filePath: string): T | null {
   try {
@@ -78,5 +79,9 @@ export function runMigrations(db: InstanceType<typeof Database>): void {
 
   if (!get(K_VK)) {
     set(K_VK, JSON.stringify({ peerId: "" }))
+  }
+
+  if (!get(K_MAX)) {
+    set(K_MAX, JSON.stringify({ userId: "", chatId: "" }))
   }
 }
