@@ -4,7 +4,7 @@ export function Contacts({ content }: { content?: Record<string, unknown> | null
   const label = (content?.label as string) ?? "Контакты"
   const title = (content?.title as string) ?? "Как нас найти"
   const businessLunch = (content?.businessLunch as { title?: string; text?: string; price?: string }) ?? {}
-  const address = (content?.address as string) ?? "г. Тамбов, ул. Мичуринская, 140 «Б»"
+  const address = (content?.address as string) ?? "г. Тамбов, ул. Мичуринская, 140Б"
   const hours = (content?.hours as string) ?? "Работаем каждый день с 10:00 до 24:00"
   return (
     <section id="contacts" className="py-24 lg:py-32">
@@ -132,7 +132,7 @@ export function Contacts({ content }: { content?: Record<string, unknown> | null
           <div className="lg:col-span-2">
             <div className="relative h-full min-h-[400px] overflow-hidden border border-border">
               <iframe
-                src="https://yandex.ru/map-widget/v1/?mode=search&text=%D0%A2%D0%B0%D0%BC%D0%B1%D0%BE%D0%B2%2C%20%D0%9C%D0%B8%D1%87%D1%83%D1%80%D0%B8%D0%BD%D1%81%D0%BA%D0%B0%D1%8F%2C%20140"
+                src={`https://yandex.ru/map-widget/v1/?mode=search&text=${encodeURIComponent(address)}`}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}

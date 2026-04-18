@@ -121,7 +121,7 @@ export function Footer({ content }: { content?: Record<string, unknown> | null }
               className="flex flex-col gap-2.5 text-sm text-muted-foreground"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
-              <p>г. Тамбов, ул. Мичуринская, 140 «Б»</p>
+              <p>г. Тамбов, ул. Мичуринская, 140Б</p>
               <a href="tel:+74752525697" className="transition-colors hover:text-primary">
                 +7 (4752) 52-56-97
               </a>
