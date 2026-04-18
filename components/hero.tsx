@@ -11,7 +11,7 @@ type HeroContent = {
 
 const defaultHero: HeroContent = {
   label: "Здесь каждое событие становится особенным",
-  title: "Кафе JAZZ",
+  title: "ДЖАЗ кафе",
   text: "Изысканная кухня, мягкий свет, уютный интерьер и джазовые мелодии, которые льются как вино",
   image: "/images/hero.jpg",
   logo: "/images/logo.png",

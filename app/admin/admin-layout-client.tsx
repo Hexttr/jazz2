@@ -188,9 +188,9 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
   const sidebarContent = (
     <>
       <div className="flex h-16 items-center gap-3 border-b border-white/[0.08] px-5">
-        <Link href="/admin" className="flex items-center gap-2.5">
-          <span className="text-2xl font-bold tracking-wide text-primary">JAZZ</span>
-          <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/60">admin</span>
+        <Link href="/admin" className="flex items-baseline gap-2">
+          <span className="text-2xl font-bold tracking-wide text-primary">ДЖАЗ</span>
+          <span className="text-[11px] font-semibold tracking-[0.15em] text-white/60">кафе · admin</span>
         </Link>
       </div>
 
@@ -267,8 +267,8 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
           <Button variant="ghost" size="icon" className="h-9 w-9 text-foreground" onClick={() => setMobileOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
-          <span className="text-lg font-bold tracking-wide text-primary">JAZZ</span>
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">admin</span>
+          <span className="text-lg font-bold tracking-wide text-primary">ДЖАЗ</span>
+          <span className="text-[10px] font-semibold tracking-[0.1em] text-muted-foreground">кафе · admin</span>
         </header>
 
         <main className="min-h-0 flex-1 overflow-auto px-4 py-6 md:px-8 md:py-8">{children}</main>

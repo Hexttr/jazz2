@@ -47,13 +47,9 @@ export function Footer({ content }: { content?: Record<string, unknown> | null }
         <div className="grid gap-12 md:grid-cols-4">
           {/* Brand */}
           <div className="md:col-span-1">
-            <a href="#" className="flex items-center gap-2">
-              <span className="font-sans text-3xl font-bold tracking-wide text-primary">
-                JAZZ
-              </span>
-              <span className="hidden text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:inline">
-                cafe
-              </span>
+            <a href="#" className="flex items-baseline gap-2">
+              <span className="font-sans text-2xl font-bold tracking-wide text-primary sm:text-3xl">ДЖАЗ</span>
+              <span className="text-sm font-semibold tracking-wide text-muted-foreground sm:text-base">кафе</span>
             </a>
             <p
               className="mt-4 text-sm leading-relaxed text-muted-foreground"

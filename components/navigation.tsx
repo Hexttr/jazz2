@@ -32,12 +32,14 @@ export function Navigation() {
       }`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-        <a href="#" className="flex items-center gap-2">
-          <span className="font-sans text-3xl font-bold tracking-wide text-primary">
-            JAZZ
-          </span>
-          <span className="hidden text-sm font-semibold uppercase tracking-[0.3em] text-white sm:inline">
-            cafe
+        <a href="#" className="flex items-baseline gap-2">
+          <span className="font-sans text-2xl font-bold tracking-wide text-primary sm:text-3xl">ДЖАЗ</span>
+          <span
+            className={`text-sm font-semibold tracking-wide sm:text-base ${
+              isScrolled ? "text-foreground/90" : "text-white/95"
+            }`}
+          >
+            кафе
           </span>
         </a>
 

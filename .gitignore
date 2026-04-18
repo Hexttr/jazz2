@@ -8,6 +8,10 @@ node_modules/
 .next/
 .env*.local
 deploy.local.env
+*.pem
+*.ppk
+id_rsa
+id_ed25519
 backups/
 .DS_Store
 __pycache__/

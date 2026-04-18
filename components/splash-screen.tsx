@@ -103,7 +103,7 @@ export function SplashScreen() {
       />
 
       <h1
-        className="jazz-splash-animate font-serif text-5xl font-bold tracking-[0.15em] text-transparent sm:text-6xl md:text-7xl"
+        className="jazz-splash-animate font-serif text-4xl font-bold tracking-[0.1em] text-transparent sm:text-5xl md:text-6xl"
         style={{
           backgroundImage:
             "linear-gradient(105deg, oklch(0.55 0.1 60) 0%, oklch(0.82 0.14 70) 35%, oklch(0.6 0.1 55) 50%, oklch(0.85 0.12 68) 65%, oklch(0.55 0.1 60) 100%)",
@@ -114,7 +114,7 @@ export function SplashScreen() {
             "jazz-splash-title 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards, jazz-splash-shimmer 3.5s linear 0.5s infinite",
         }}
       >
-        JAZZ
+        ДЖАЗ кафе
       </h1>
 
       <p

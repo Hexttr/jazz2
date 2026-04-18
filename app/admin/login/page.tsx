@@ -47,8 +47,9 @@ export default function AdminLoginPage() {
       <div className="relative w-full max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold tracking-wider text-primary">JAZZ</h1>
-          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+          <h1 className="text-4xl font-bold tracking-wide text-primary">ДЖАЗ</h1>
+          <p className="mt-1 text-sm font-semibold text-muted-foreground">кафе</p>
+          <p className="mt-2 text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground/80">
             панель управления
           </p>
         </div>
