@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { getImageUrl, imageUnoptimized } from "@/lib/utils"
+import { visibleNewYearPromo, type NewYearPromo } from "@/lib/new-year-promo"
 
 type HeroContent = {
   label?: string
@@ -7,6 +8,7 @@ type HeroContent = {
   text?: string
   image?: string
   logo?: string
+  newYear?: unknown
 }
 
 const defaultHero: HeroContent = {
@@ -17,10 +19,72 @@ const defaultHero: HeroContent = {
   logo: "/images/logo.png",
 }
 
+function NewYearOffer({ promo }: { promo: NewYearPromo }) {
+  return (
+    <div className="w-full min-w-0 max-w-3xl">
+      <p
+        className="text-xs uppercase tracking-[0.35em] text-primary sm:text-sm"
+        style={{ fontFamily: "var(--font-inter), sans-serif" }}
+      >
+        {promo.label}
+      </p>
+      <p
+        className="mt-2 text-sm text-white/80 sm:text-base"
+        style={{ fontFamily: "var(--font-inter), sans-serif" }}
+      >
+        {promo.dates}
+      </p>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4">
+        {promo.halls.map((hall, index) => (
+          <div
+            key={`${hall.name}-${index}`}
+            className="flex flex-col border border-primary/45 bg-black/50 px-5 py-4 text-left backdrop-blur-sm"
+          >
+            <p
+              className="text-[11px] uppercase tracking-[0.28em] text-primary"
+              style={{ fontFamily: "var(--font-inter), sans-serif" }}
+            >
+              {hall.kind}
+            </p>
+            <div className="mt-2 flex items-end justify-between gap-3">
+              <p className="font-sans text-2xl font-bold leading-none tracking-wide text-white sm:text-3xl">
+                {hall.name}
+              </p>
+              <p className="shrink-0 font-sans text-xl font-bold leading-none text-primary sm:text-3xl">
+                {hall.price}
+              </p>
+            </div>
+            <p
+              className="mt-2 text-xs text-white/70 sm:text-sm"
+              style={{ fontFamily: "var(--font-inter), sans-serif" }}
+            >
+              {hall.detail}
+            </p>
+            <a
+              href="#reservation"
+              className="mt-4 border border-primary bg-primary px-4 py-3 text-center text-xs font-medium uppercase tracking-[0.18em] text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
+              style={{ fontFamily: "var(--font-inter), sans-serif" }}
+            >
+              {promo.button}
+            </a>
+          </div>
+        ))}
+      </div>
+      <p
+        className="mt-4 text-sm leading-relaxed text-white/75"
+        style={{ fontFamily: "var(--font-inter), sans-serif" }}
+      >
+        {promo.note}
+      </p>
+    </div>
+  )
+}
+
 export function Hero({ content }: { content?: Record<string, unknown> | null }) {
   const c: HeroContent = content ? { ...defaultHero, ...content } : defaultHero
+  const promo = visibleNewYearPromo(c.newYear)
   return (
-    <section id="hero" className="relative h-screen w-full overflow-hidden">
+    <section id="hero" className={`relative w-full overflow-x-clip ${promo ? "min-h-dvh" : "h-screen overflow-hidden"}`}>
       <Image
         src={getImageUrl(c.image ?? "/images/hero.jpg") || "/images/hero.jpg"}
         alt="Интерьер Кафе JAZZ"
@@ -30,51 +94,66 @@ export function Hero({ content }: { content?: Record<string, unknown> | null }) 
         quality={90}
         unoptimized={imageUnoptimized(c.image ?? "")}
       />
-      <div className="absolute inset-0 bg-black/60" />
+      <div className={promo ? "absolute inset-0 bg-gradient-to-t from-black/85 via-black/60 to-black/45" : "absolute inset-0 bg-black/60"} />
 
-      <div className="relative z-10 flex h-full flex-col items-center justify-end pb-24 px-6 text-center">
-        <div className="relative mb-6 flex justify-center">
+      <div
+        className={`relative z-10 flex w-full min-w-0 flex-col items-center px-6 text-center ${
+          promo ? "min-h-dvh justify-end pb-10 pt-24 sm:pb-14" : "h-full justify-end pb-24"
+        }`}
+      >
+        <div className={`relative flex justify-center ${promo ? "mb-3 sm:mb-4" : "mb-6"}`}>
           <Image
             src={getImageUrl(c.logo ?? "/images/logo.png") || "/images/logo.png"}
             alt="Логотип Кафе JAZZ"
             width={200}
             height={200}
-            className="object-contain"
+            className={promo ? "h-auto w-28 object-contain sm:w-36" : "object-contain"}
             priority
             unoptimized={imageUnoptimized(c.logo ?? "")}
           />
         </div>
         <p
-          className="mb-4 text-sm uppercase tracking-[0.4em] text-primary"
+          className={`max-w-full min-w-0 text-xs uppercase tracking-[0.22em] text-primary sm:text-sm sm:tracking-[0.4em] ${promo ? "mb-2" : "mb-4"}`}
           style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.labelColor ? { color: content.labelColor as string } : {}) }}
         >
           {c.label}
         </p>
-        <h1 className="mb-6 font-sans text-5xl font-bold leading-tight tracking-wide text-white md:text-7xl lg:text-8xl" style={content?.titleColor ? { color: content.titleColor as string } : undefined}>
+        <h1
+          className={`font-sans font-bold leading-tight tracking-wide text-white ${
+            promo ? "mb-4 text-4xl sm:text-5xl md:text-6xl" : "mb-6 text-5xl md:text-7xl lg:text-8xl"
+          }`}
+          style={content?.titleColor ? { color: content.titleColor as string } : undefined}
+        >
           {c.title}
         </h1>
-        <p
-          className="mb-10 max-w-xl text-lg leading-relaxed text-white/70"
-          style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.textColor ? { color: content.textColor as string } : {}) }}
-        >
-          {c.text}
-        </p>
-        <div className="flex flex-col items-center gap-4 sm:flex-row">
-          <a
-            href="#reservation"
-            className="border border-primary bg-primary px-8 py-3.5 text-sm font-medium uppercase tracking-[0.2em] text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
-            style={{ fontFamily: "var(--font-inter), sans-serif" }}
-          >
-            Забронировать
-          </a>
-          <a
-            href="#menu"
-            className="border border-white/30 px-8 py-3.5 text-sm font-medium uppercase tracking-[0.2em] text-white transition-all hover:border-primary hover:text-primary"
-            style={{ fontFamily: "var(--font-inter), sans-serif" }}
-          >
-            Смотреть меню
-          </a>
-        </div>
+        {promo ? (
+          <NewYearOffer promo={promo} />
+        ) : (
+          <>
+            <p
+              className="mb-10 max-w-xl text-lg leading-relaxed text-white/70"
+              style={{ fontFamily: "var(--font-inter), sans-serif", ...(content?.textColor ? { color: content.textColor as string } : {}) }}
+            >
+              {c.text}
+            </p>
+            <div className="flex flex-col items-center gap-4 sm:flex-row">
+              <a
+                href="#reservation"
+                className="border border-primary bg-primary px-8 py-3.5 text-sm font-medium uppercase tracking-[0.2em] text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
+                style={{ fontFamily: "var(--font-inter), sans-serif" }}
+              >
+                Забронировать
+              </a>
+              <a
+                href="#menu"
+                className="border border-white/30 px-8 py-3.5 text-sm font-medium uppercase tracking-[0.2em] text-white transition-all hover:border-primary hover:text-primary"
+                style={{ fontFamily: "var(--font-inter), sans-serif" }}
+              >
+                Смотреть меню
+              </a>
+            </div>
+          </>
+        )}
       </div>
     </section>
   )

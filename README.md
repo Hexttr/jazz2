@@ -12,7 +12,7 @@
 |---|---|---|
 | Заставка PWA | `components/splash-screen.tsx` | зашита в коде |
 | Шапка | `components/navigation.tsx` | слово «ДЖАЗ кафе» в коде; телефон — первое значение из контактов в БД |
-| Первый экран | `components/hero.tsx` | `sections.hero` |
+| Первый экран | `components/hero.tsx` | `sections.hero`. Пока `hero.newYear.enabled` не `false`, вместо подзаголовка и кнопок «Забронировать» / «Смотреть меню» — новогодние корпоративы. Выключение в админке возвращает прежний экран. Если поля в базе ещё нет, блок включён, тексты из `lib/new-year-promo.ts` |
 | О нас | `components/about.tsx` | `sections.about` |
 | Меню | `components/menu-section.tsx` | `menu` + `sections.menu` |
 | Банкеты | `components/events.tsx` | `sections.events` |

@@ -6,6 +6,8 @@ import { Save, ChevronDown, ChevronRight, Plus, Trash2, FileText } from "lucide-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { newYearPromoFrom, type NewYearHall, type NewYearPromo } from "@/lib/new-year-promo"
 import { ImageDropzone } from "@/components/admin/image-dropzone"
 import { IconPicker } from "@/components/admin/icon-picker"
 import type { SectionsContent, AppContent } from "@/lib/content-types"
@@ -126,6 +128,25 @@ export default function AdminSectionsPage() {
       const nested = (block[nestedKey] as Record<string, unknown>) || {}
       const next = { ...block, [nestedKey]: { ...nested, [field]: value } }
       return { ...s, [key]: next }
+    })
+  }
+
+  function updateHeroPromo(patch: Partial<NewYearPromo>) {
+    setSections((s) => {
+      if (!s) return s
+      const hero = { ...((s.hero as Record<string, unknown>) || {}) }
+      const current = newYearPromoFrom(hero.newYear)
+      return { ...s, hero: { ...hero, newYear: { ...current, ...patch } } }
+    })
+  }
+
+  function updateHeroPromoHall(index: number, field: keyof NewYearHall, value: string) {
+    setSections((s) => {
+      if (!s) return s
+      const hero = { ...((s.hero as Record<string, unknown>) || {}) }
+      const current = newYearPromoFrom(hero.newYear)
+      const halls = current.halls.map((hall, i) => (i === index ? { ...hall, [field]: value } : hall))
+      return { ...s, hero: { ...hero, newYear: { ...current, halls } } }
     })
   }
 
@@ -386,6 +407,66 @@ export default function AdminSectionsPage() {
                             />
                           </div>
                         </div>
+                        {(() => {
+                          const promo = newYearPromoFrom(block.newYear)
+                          return (
+                            <div className="space-y-4 rounded-lg border border-primary/40 bg-primary/5 p-4">
+                              <div className="flex items-start justify-between gap-4">
+                                <div className="space-y-1">
+                                  <p className="font-medium">Новогодние корпоративы</p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Пока включено, на первом экране скрываются подзаголовок и кнопки «Забронировать» и «Смотреть меню». Вместо них — два зала со ссылкой на бронь. Выключите после праздников — прежний экран вернётся.
+                                  </p>
+                                </div>
+                                <Switch
+                                  checked={promo.enabled}
+                                  onCheckedChange={(checked) => updateHeroPromo({ enabled: checked })}
+                                  aria-label="Показывать новогодние корпоративы на первом экране"
+                                />
+                              </div>
+                              <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                  <Label>Подпись блока</Label>
+                                  <Input value={promo.label} onChange={(e) => updateHeroPromo({ label: e.target.value })} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Даты</Label>
+                                  <Input value={promo.dates} onChange={(e) => updateHeroPromo({ dates: e.target.value })} />
+                                </div>
+                              </div>
+                              <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                  <Label>Примечание</Label>
+                                  <Input value={promo.note} onChange={(e) => updateHeroPromo({ note: e.target.value })} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Текст кнопки</Label>
+                                  <Input value={promo.button} onChange={(e) => updateHeroPromo({ button: e.target.value })} />
+                                </div>
+                              </div>
+                              {promo.halls.map((hall, index) => (
+                                <div key={index} className="grid gap-3 rounded-lg border border-white/15 p-3 sm:grid-cols-2">
+                                  <div className="space-y-2">
+                                    <Label>Зал {index + 1}: название</Label>
+                                    <Input value={hall.name} onChange={(e) => updateHeroPromoHall(index, "name", e.target.value)} />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label>Тип зала</Label>
+                                    <Input value={hall.kind} onChange={(e) => updateHeroPromoHall(index, "kind", e.target.value)} />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label>Цена</Label>
+                                    <Input value={hall.price} onChange={(e) => updateHeroPromoHall(index, "price", e.target.value)} />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label>Уточнение</Label>
+                                    <Input value={hall.detail} onChange={(e) => updateHeroPromoHall(index, "detail", e.target.value)} />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )
+                        })()}
                       </div>
                     )}
                     {openSection === "about" && (
