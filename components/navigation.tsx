@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Menu, X, Phone } from "lucide-react"
+import { CalendarDays, Menu, X, Phone } from "lucide-react"
 import { FALLBACK_PHONES, telHref } from "@/lib/site-contacts"
 
 const navLinks = [
@@ -69,9 +69,10 @@ export function Navigation({ phone }: { phone?: string }) {
           </a>
           <a
             href="#reservation"
-            className="rounded-none border border-primary bg-primary px-6 py-2.5 text-base font-medium tracking-wider text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
+            className="inline-flex items-center gap-2 rounded-none border border-primary bg-primary px-6 py-2.5 text-base font-medium tracking-wider text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
+            <CalendarDays className="h-4 w-4" />
             Бронь зала
           </a>
         </div>
@@ -116,9 +117,10 @@ export function Navigation({ phone }: { phone?: string }) {
               <a
                 href="#reservation"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="inline-block border border-primary bg-primary px-6 py-2.5 text-center text-base font-medium tracking-wider text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
+                className="inline-flex items-center justify-center gap-2 border border-primary bg-primary px-6 py-2.5 text-center text-base font-medium tracking-wider text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
                 style={{ fontFamily: "var(--font-inter), sans-serif" }}
               >
+                <CalendarDays className="h-4 w-4" />
                 Бронь зала
               </a>
             </div>

@@ -21,7 +21,7 @@ const defaultHero: HeroContent = {
 
 function NewYearOffer({ promo }: { promo: NewYearPromo }) {
   return (
-    <div className="w-full min-w-0 max-w-3xl">
+    <div className="w-full min-w-0 max-w-4xl">
       <h2 className="font-sans text-3xl font-bold tracking-wide text-primary sm:text-4xl">
         {promo.label}
       </h2>
@@ -32,11 +32,11 @@ function NewYearOffer({ promo }: { promo: NewYearPromo }) {
       >
         {promo.dates}
       </p>
-      <div className="mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4">
+      <div className="mt-5 grid items-stretch gap-3 sm:grid-cols-2 sm:gap-4">
         {promo.halls.map((hall, index) => (
           <div
             key={`${hall.name}-${index}`}
-            className="flex flex-col border border-primary/45 bg-black/50 px-5 py-4 text-left backdrop-blur-sm"
+            className="flex h-full flex-col border border-primary/45 bg-black/50 px-5 py-4 text-left backdrop-blur-sm"
           >
             {hall.kind ? (
               <p
@@ -46,23 +46,23 @@ function NewYearOffer({ promo }: { promo: NewYearPromo }) {
                 {hall.kind}
               </p>
             ) : null}
-            <div className={`flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-3 ${hall.kind ? "mt-2" : ""}`}>
-              <p className="min-w-0 font-sans text-2xl font-bold leading-none tracking-wide text-white sm:text-3xl">
+            <div className={`flex items-baseline justify-between gap-3 ${hall.kind ? "mt-2" : ""}`}>
+              <p className="whitespace-nowrap font-sans text-xl font-bold leading-none tracking-wide text-white sm:text-2xl">
                 {hall.name}
               </p>
-              <p className="shrink-0 font-sans text-xl font-bold leading-none text-primary sm:text-3xl">
+              <p className="shrink-0 whitespace-nowrap font-sans text-xl font-bold leading-none text-primary sm:text-2xl">
                 {hall.price}
               </p>
             </div>
             <p
-              className="mt-2 text-xs text-white/70 sm:text-sm"
+              className="mb-4 mt-2 text-xs text-white/70 sm:text-sm"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
               {hall.detail}
             </p>
             <a
               href="#reservation"
-              className="mt-4 border border-primary bg-primary px-4 py-3 text-center text-xs font-medium uppercase tracking-[0.18em] text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
+              className="mt-auto border border-primary bg-primary px-4 py-3 text-center text-xs font-medium uppercase tracking-[0.18em] text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
               {promo.button}
@@ -120,7 +120,7 @@ export function Hero({ content }: { content?: Record<string, unknown> | null }) 
         </p>
         <h1
           className={`font-sans font-bold leading-tight tracking-wide text-white ${
-            promo ? "mb-8 text-4xl sm:mb-10 sm:text-5xl md:text-6xl" : "mb-6 text-5xl md:text-7xl lg:text-8xl"
+            promo ? "mb-14 text-4xl sm:mb-20 sm:text-5xl md:text-6xl" : "mb-6 text-5xl md:text-7xl lg:text-8xl"
           }`}
           style={content?.titleColor ? { color: content.titleColor as string } : undefined}
         >
