@@ -1,4 +1,5 @@
 import { getContent } from "@/lib/content"
+import { siteContacts } from "@/lib/site-contacts"
 import { SplashScreen } from "@/components/splash-screen"
 import { Navigation } from "@/components/navigation"
 import { Hero } from "@/components/hero"
@@ -15,10 +16,11 @@ export const revalidate = 300
 
 export default async function Home() {
   const content = await getContent()
+  const contacts = siteContacts(content.sections?.contacts)
   return (
     <main>
       <SplashScreen />
-      <Navigation />
+      <Navigation phone={contacts.phones[0]} />
       <Hero content={content.sections?.hero} />
       <About content={content.sections?.about} />
       <MenuSection menu={content.menu} sectionContent={content.sections?.menu} />
@@ -26,7 +28,7 @@ export default async function Home() {
       <Gallery content={content.sections?.gallery} />
       <Reservation content={content.sections?.reservation} />
       <Contacts content={content.sections?.contacts} />
-      <Footer content={content.sections?.footer} />
+      <Footer content={content.sections?.footer} contacts={content.sections?.contacts} />
     </main>
   )
 }

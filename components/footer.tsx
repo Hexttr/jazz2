@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { siteContacts, telHref } from "@/lib/site-contacts"
 
 const privacyText = `Кафе JAZZ соблюдает вашу конфиденциальность. Мы собираем только те данные, которые вы добровольно указываете при бронировании столика или обратной связи: имя, контактный телефон и при необходимости электронную почту.
 
@@ -27,9 +28,16 @@ const termsText = `Используя сайт Кафе JAZZ, вы соглаш�
 
 По всем вопросам: kafejazz@yandex.ru, +7 (4752) 52-56-97.`
 
-export function Footer({ content }: { content?: Record<string, unknown> | null }) {
+export function Footer({
+  content,
+  contacts,
+}: {
+  content?: Record<string, unknown> | null
+  contacts?: Record<string, unknown> | null
+}) {
   const [openPrivacy, setOpenPrivacy] = useState(false)
   const [openTerms, setOpenTerms] = useState(false)
+  const site = siteContacts(contacts)
   const tagline = (content?.tagline as string) ?? "С 2010 года мы создаём пространство, где каждый чувствует себя как дома"
   const hoursList = (content?.hours as { day: string; hours: string }[]) ?? [
     { day: "Понедельник", hours: "10:00 – 24:00" },
@@ -121,15 +129,14 @@ export function Footer({ content }: { content?: Record<string, unknown> | null }
               className="flex flex-col gap-2.5 text-sm text-muted-foreground"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
-              <p>г. Тамбов, ул. Мичуринская, 140Б</p>
-              <a href="tel:+74752525697" className="transition-colors hover:text-primary">
-                +7 (4752) 52-56-97
-              </a>
-              <a href="tel:+79156612821" className="transition-colors hover:text-primary">
-                +7 (915) 661-28-21
-              </a>
-              <a href="mailto:kafejazz@yandex.ru" className="transition-colors hover:text-primary">
-                kafejazz@yandex.ru
+              <p>{site.address}</p>
+              {site.phones.map((phone) => (
+                <a key={phone} href={telHref(phone)} className="transition-colors hover:text-primary">
+                  {phone}
+                </a>
+              ))}
+              <a href={`mailto:${site.email}`} className="transition-colors hover:text-primary">
+                {site.email}
               </a>
             </div>
           </div>

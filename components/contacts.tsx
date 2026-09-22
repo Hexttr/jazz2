@@ -1,11 +1,11 @@
 import { MapPin, Phone, Clock, Mail, UtensilsCrossed } from "lucide-react"
+import { siteContacts, telHref } from "@/lib/site-contacts"
 
 export function Contacts({ content }: { content?: Record<string, unknown> | null }) {
   const label = (content?.label as string) ?? "Контакты"
   const title = (content?.title as string) ?? "Как нас найти"
   const businessLunch = (content?.businessLunch as { title?: string; text?: string; price?: string }) ?? {}
-  const address = (content?.address as string) ?? "г. Тамбов, ул. Мичуринская, 140Б"
-  const hours = (content?.hours as string) ?? "Работаем каждый день с 10:00 до 24:00"
+  const { address, hours, phones, email } = siteContacts(content)
   return (
     <section id="contacts" className="py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -78,20 +78,16 @@ export function Contacts({ content }: { content?: Record<string, unknown> | null
               </div>
               <div>
                 <h3 className="mb-1 font-sans font-semibold">Телефон</h3>
-                <a
-                  href="tel:+74752525697"
-                  className="block text-sm text-muted-foreground transition-colors hover:text-primary"
-                  style={{ fontFamily: "var(--font-inter), sans-serif" }}
-                >
-                  +7 (4752) 52-56-97
-                </a>
-                <a
-                  href="tel:+79156612821"
-                  className="block text-sm text-muted-foreground transition-colors hover:text-primary"
-                  style={{ fontFamily: "var(--font-inter), sans-serif" }}
-                >
-                  +7 (915) 661-28-21
-                </a>
+                {phones.map((phone) => (
+                  <a
+                    key={phone}
+                    href={telHref(phone)}
+                    className="block text-sm text-muted-foreground transition-colors hover:text-primary"
+                    style={{ fontFamily: "var(--font-inter), sans-serif" }}
+                  >
+                    {phone}
+                  </a>
+                ))}
               </div>
             </div>
 
@@ -117,11 +113,11 @@ export function Contacts({ content }: { content?: Record<string, unknown> | null
               <div>
                 <h3 className="mb-1 font-sans font-semibold">Email</h3>
                 <a
-                  href="mailto:kafejazz@yandex.ru"
+                  href={`mailto:${email}`}
                   className="text-sm text-muted-foreground transition-colors hover:text-primary"
                   style={{ fontFamily: "var(--font-inter), sans-serif" }}
                 >
-                  kafejazz@yandex.ru
+                  {email}
                 </a>
               </div>
             </div>

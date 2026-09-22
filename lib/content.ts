@@ -15,6 +15,7 @@ function parseAppContent(raw: string): AppContent | null {
   }
 }
 
+/** Живой контент — только SQLite (`kv.app_content`). JSON в `data/` не подмешивается, если запись уже есть. */
 export async function getContent(): Promise<AppContent> {
   getDb()
   const raw = kvGet("app_content")

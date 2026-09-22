@@ -714,6 +714,21 @@ export default function AdminSectionsPage() {
                           />
                         </div>
                         <div className="space-y-2">
+                          <Label>Телефоны (по одному на строку)</Label>
+                          <Input
+                            value={((block.phones as string[]) || []).join("\n")}
+                            onChange={(e) =>
+                              updateSection(
+                                openSection,
+                                "phones",
+                                e.target.value.split("\n").map((s) => s.trim()).filter(Boolean)
+                              )
+                            }
+                            className="h-auto min-h-[60px]"
+                            placeholder="+7 (4752) 52-56-97"
+                          />
+                        </div>
+                        <div className="space-y-2">
                           <Label>Email</Label>
                           <Input
                             value={(block.email as string) ?? ""}

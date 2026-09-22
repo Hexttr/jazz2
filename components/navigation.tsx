@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Menu, X, Phone } from "lucide-react"
+import { FALLBACK_PHONES, telHref } from "@/lib/site-contacts"
 
 const navLinks = [
   { href: "#about", label: "О нас" },
@@ -11,7 +12,8 @@ const navLinks = [
   { href: "#contacts", label: "Контакты" },
 ]
 
-export function Navigation() {
+export function Navigation({ phone }: { phone?: string }) {
+  const headerPhone = phone?.trim() || FALLBACK_PHONES[0]
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -58,12 +60,12 @@ export function Navigation() {
 
         <div className="hidden items-center gap-6 lg:flex">
           <a
-            href="tel:+74752525697"
+            href={telHref(headerPhone)}
             className="flex items-center gap-2 text-base text-foreground/70 transition-colors hover:text-primary"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
             <Phone className="h-4 w-4" />
-            +7 (4752) 52-56-97
+            {headerPhone}
           </a>
           <a
             href="#reservation"
@@ -104,12 +106,12 @@ export function Navigation() {
             ))}
             <div className="mt-4 flex flex-col gap-3 border-t border-border pt-4">
               <a
-                href="tel:+74752525697"
+                href={telHref(headerPhone)}
                 className="flex items-center gap-2 text-foreground/70"
                 style={{ fontFamily: "var(--font-inter), sans-serif" }}
               >
                 <Phone className="h-4 w-4" />
-                +7 (4752) 52-56-97
+                {headerPhone}
               </a>
               <a
                 href="#reservation"
