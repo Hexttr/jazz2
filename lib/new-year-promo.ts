@@ -22,14 +22,14 @@ export const DEFAULT_NEW_YEAR_PROMO: NewYearPromo = {
   button: "Забронировать зал",
   halls: [
     {
-      name: "Гранд",
-      kind: "Банкетный зал",
+      name: "Банкетный зал",
+      kind: "",
       price: "5 000 ₽",
       detail: "с гостя, с программой",
     },
     {
-      name: "Амбианс",
-      kind: "Малый зал",
+      name: "Малый зал",
+      kind: "",
       price: "4 500 ₽",
       detail: "с гостя, с программой",
     },
@@ -46,9 +46,13 @@ export function newYearPromoFrom(raw: unknown): NewYearPromo {
   const sourceHalls = Array.isArray(input.halls) ? input.halls : []
   const halls = DEFAULT_NEW_YEAR_PROMO.halls.map((fallback, index) => {
     const hall = sourceHalls[index]
+    const kind = textOr(hall?.kind, fallback.kind)
+    let name = textOr(hall?.name, fallback.name)
+    const legacy = name.trim().toLowerCase()
+    if (legacy === "гранд" || legacy === "амбианс") name = kind.trim() || fallback.name
     return {
-      name: textOr(hall?.name, fallback.name),
-      kind: textOr(hall?.kind, fallback.kind),
+      name,
+      kind: kind.trim().toLowerCase() === name.trim().toLowerCase() ? "" : kind,
       price: textOr(hall?.price, fallback.price),
       detail: textOr(hall?.detail, fallback.detail),
     }

@@ -22,14 +22,12 @@ const defaultHero: HeroContent = {
 function NewYearOffer({ promo }: { promo: NewYearPromo }) {
   return (
     <div className="w-full min-w-0 max-w-3xl">
-      <p
-        className="text-xs uppercase tracking-[0.35em] text-primary sm:text-sm"
-        style={{ fontFamily: "var(--font-inter), sans-serif" }}
-      >
+      <h2 className="font-sans text-3xl font-bold tracking-wide text-primary sm:text-4xl">
         {promo.label}
-      </p>
+      </h2>
+      <div className="mx-auto mt-3 h-px w-16 bg-primary" />
       <p
-        className="mt-2 text-sm text-white/80 sm:text-base"
+        className="mt-3 text-sm text-white/80 sm:text-base"
         style={{ fontFamily: "var(--font-inter), sans-serif" }}
       >
         {promo.dates}
@@ -40,14 +38,16 @@ function NewYearOffer({ promo }: { promo: NewYearPromo }) {
             key={`${hall.name}-${index}`}
             className="flex flex-col border border-primary/45 bg-black/50 px-5 py-4 text-left backdrop-blur-sm"
           >
-            <p
-              className="text-[11px] uppercase tracking-[0.28em] text-primary"
-              style={{ fontFamily: "var(--font-inter), sans-serif" }}
-            >
-              {hall.kind}
-            </p>
-            <div className="mt-2 flex items-end justify-between gap-3">
-              <p className="font-sans text-2xl font-bold leading-none tracking-wide text-white sm:text-3xl">
+            {hall.kind ? (
+              <p
+                className="text-[11px] uppercase tracking-[0.28em] text-primary"
+                style={{ fontFamily: "var(--font-inter), sans-serif" }}
+              >
+                {hall.kind}
+              </p>
+            ) : null}
+            <div className={`flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-3 ${hall.kind ? "mt-2" : ""}`}>
+              <p className="min-w-0 font-sans text-2xl font-bold leading-none tracking-wide text-white sm:text-3xl">
                 {hall.name}
               </p>
               <p className="shrink-0 font-sans text-xl font-bold leading-none text-primary sm:text-3xl">
@@ -120,7 +120,7 @@ export function Hero({ content }: { content?: Record<string, unknown> | null }) 
         </p>
         <h1
           className={`font-sans font-bold leading-tight tracking-wide text-white ${
-            promo ? "mb-4 text-4xl sm:text-5xl md:text-6xl" : "mb-6 text-5xl md:text-7xl lg:text-8xl"
+            promo ? "mb-8 text-4xl sm:mb-10 sm:text-5xl md:text-6xl" : "mb-6 text-5xl md:text-7xl lg:text-8xl"
           }`}
           style={content?.titleColor ? { color: content.titleColor as string } : undefined}
         >
