@@ -1,6 +1,10 @@
 import { MapPin, Phone, Clock, Mail, UtensilsCrossed } from "lucide-react"
 import { siteContacts, telHref } from "@/lib/site-contacts"
 
+/** Карточка организации Jazz на Яндекс Картах: здание на Мичуринской, 140Б. */
+const JAZZ_MAP_WIDGET =
+  "https://yandex.ru/map-widget/v1/?ll=41.399717%2C52.762089&z=18&oid=1212095130&ol=biz"
+
 export function Contacts({ content }: { content?: Record<string, unknown> | null }) {
   const label = (content?.label as string) ?? "Контакты"
   const title = (content?.title as string) ?? "Как нас найти"
@@ -128,7 +132,7 @@ export function Contacts({ content }: { content?: Record<string, unknown> | null
           <div className="lg:col-span-2">
             <div className="relative h-full min-h-[400px] overflow-hidden border border-border">
               <iframe
-                src={`https://yandex.ru/map-widget/v1/?mode=search&text=${encodeURIComponent(address)}`}
+                src={JAZZ_MAP_WIDGET}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}

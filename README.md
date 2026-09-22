@@ -21,7 +21,7 @@
 | Контакты и карта | `components/contacts.tsx` | `sections.contacts` |
 | Подвал | `components/footer.tsx` | слоган и часы — `sections.footer`; адрес, телефоны и email — те же `sections.contacts` |
 
-Карта Яндекса ищет тот же `sections.contacts.address`, что написан в карточке адреса. Общая функция: `lib/site-contacts.ts`.
+Карта в контактах — виджет организации Jazz на Яндекс Картах (здание на Мичуринской, 140Б, крупный масштаб), а не поиск по строке адреса. Карточки адреса, телефонов и email по-прежнему из `sections.contacts` через `lib/site-contacts.ts`.
 
 Страница кэшируется на 5 минут (`revalidate = 300`). Сохранение в админке вызывает `revalidatePath("/")`.
 
