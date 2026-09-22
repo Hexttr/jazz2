@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { Sparkles } from "lucide-react"
 import { getImageUrl, imageUnoptimized } from "@/lib/utils"
 import { visibleNewYearPromo, type NewYearPromo } from "@/lib/new-year-promo"
 
@@ -25,7 +26,23 @@ function NewYearOffer({ promo }: { promo: NewYearPromo }) {
       <h2 className="font-sans text-3xl font-bold tracking-wide text-primary sm:text-4xl">
         {promo.label}
       </h2>
-      <div className="mx-auto mt-3 h-px w-16 bg-primary" />
+      <div className="mt-4 flex justify-center">
+        <div className="inline-flex max-w-full items-center gap-3 border border-primary/55 bg-black/50 px-4 py-2.5 text-left backdrop-blur-sm sm:px-5">
+          <Sparkles className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+          <p className="min-w-0 leading-tight">
+            <span
+              className="block text-[10px] uppercase tracking-[0.26em] text-primary sm:text-[11px]"
+              style={{ fontFamily: "var(--font-inter), sans-serif" }}
+            >
+              Организатор развлекательной программы
+            </span>
+            <span className="mt-1 block font-sans text-base font-bold tracking-wide text-white sm:text-lg">
+              Агентство праздников «Триумф»
+            </span>
+          </p>
+        </div>
+      </div>
+      <div className="mx-auto mt-4 h-px w-16 bg-primary" />
       <p
         className="mt-3 text-sm text-white/80 sm:text-base"
         style={{ fontFamily: "var(--font-inter), sans-serif" }}
@@ -98,16 +115,16 @@ export function Hero({ content }: { content?: Record<string, unknown> | null }) 
 
       <div
         className={`relative z-10 flex w-full min-w-0 flex-col items-center px-6 text-center ${
-          promo ? "min-h-dvh justify-end pb-10 pt-24 sm:pb-14" : "h-full justify-end pb-24"
+          promo ? "min-h-dvh justify-end pb-8 pt-20 sm:pb-10" : "h-full justify-end pb-24"
         }`}
       >
-        <div className={`relative flex justify-center ${promo ? "mb-3 sm:mb-4" : "mb-6"}`}>
+        <div className={`relative flex justify-center ${promo ? "mb-2" : "mb-6"}`}>
           <Image
             src={getImageUrl(c.logo ?? "/images/logo.png") || "/images/logo.png"}
             alt="Логотип Кафе JAZZ"
             width={200}
             height={200}
-            className={promo ? "h-auto w-28 object-contain sm:w-36" : "object-contain"}
+            className={promo ? "h-auto w-24 object-contain sm:w-32" : "object-contain"}
             priority
             unoptimized={imageUnoptimized(c.logo ?? "")}
           />
@@ -120,7 +137,7 @@ export function Hero({ content }: { content?: Record<string, unknown> | null }) 
         </p>
         <h1
           className={`font-sans font-bold leading-tight tracking-wide text-white ${
-            promo ? "mb-14 text-4xl sm:mb-20 sm:text-5xl md:text-6xl" : "mb-6 text-5xl md:text-7xl lg:text-8xl"
+            promo ? "mb-10 text-4xl sm:mb-14 sm:text-5xl md:text-6xl" : "mb-6 text-5xl md:text-7xl lg:text-8xl"
           }`}
           style={content?.titleColor ? { color: content.titleColor as string } : undefined}
         >
