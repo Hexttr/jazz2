@@ -37,7 +37,7 @@ export function TriumphOffer() {
             tabIndex={-1}
             onOpenAutoFocus={(event) => {
               event.preventDefault()
-              event.currentTarget.focus()
+              if (event.currentTarget instanceof HTMLElement) event.currentTarget.focus()
             }}
           >
             <div
