@@ -23,7 +23,7 @@ const defaultHero: HeroContent = {
 function NewYearOffer({ promo }: { promo: NewYearPromo }) {
   return (
     <div className="w-full min-w-0 max-w-4xl">
-      <h2 className="font-sans text-3xl font-bold tracking-wide text-primary sm:text-4xl">
+      <h2 className="font-sans text-4xl font-bold leading-tight tracking-wide text-white sm:text-5xl">
         {promo.label}
       </h2>
       <TriumphOffer />

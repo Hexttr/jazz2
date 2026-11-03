@@ -163,6 +163,24 @@
   }
 }
 
+.triumph-dialog-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+
+.triumph-dialog-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.triumph-dialog-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.triumph-dialog-scroll::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 999px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .jazz-splash-animate {
     animation: none !important;
