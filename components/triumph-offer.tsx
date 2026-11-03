@@ -52,10 +52,10 @@ export function TriumphOffer() {
               </div>
               <img
                 src="/images/ivan-vasilievich-new-year.webp"
-                alt="Новогодний банкет: царское облачение и праздничный зал с ёлкой"
+                alt="Новогодний тронный зал: царь, придворный в меховой шапке и ёлка"
                 width={1280}
                 height={720}
-                className="h-36 w-full object-cover object-[center_30%] sm:h-44"
+                className="h-40 w-full object-cover object-center sm:h-52"
               />
               <div
                 className="px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 sm:px-8 sm:pb-8"
