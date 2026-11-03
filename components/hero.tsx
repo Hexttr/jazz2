@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { Sparkles } from "lucide-react"
+import { TriumphOffer } from "@/components/triumph-offer"
 import { getImageUrl, imageUnoptimized } from "@/lib/utils"
 import { visibleNewYearPromo, type NewYearPromo } from "@/lib/new-year-promo"
 
@@ -26,22 +26,7 @@ function NewYearOffer({ promo }: { promo: NewYearPromo }) {
       <h2 className="font-sans text-3xl font-bold tracking-wide text-primary sm:text-4xl">
         {promo.label}
       </h2>
-      <div className="mt-4 flex justify-center">
-        <div className="inline-flex max-w-full items-center gap-3 border border-primary/55 bg-black/50 px-4 py-2.5 text-left backdrop-blur-sm sm:px-5">
-          <Sparkles className="h-4 w-4 shrink-0 text-primary" aria-hidden />
-          <p className="min-w-0 leading-tight">
-            <span
-              className="block text-[10px] uppercase tracking-[0.26em] text-primary sm:text-[11px]"
-              style={{ fontFamily: "var(--font-inter), sans-serif" }}
-            >
-              Организатор развлекательной программы
-            </span>
-            <span className="mt-1 block font-sans text-base font-bold tracking-wide text-white sm:text-lg">
-              Агентство праздников «Триумф»
-            </span>
-          </p>
-        </div>
-      </div>
+      <TriumphOffer />
       <div className="mx-auto mt-4 h-px w-16 bg-primary" />
       <p
         className="mt-3 text-sm text-white/80 sm:text-base"
